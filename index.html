@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gold Tech Sistemas | ERP que transforma seu negócio</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  </head>
+  <body>
+    <!-- NAVIGATION -->
+    <nav id="mainNav">
+      <a href="#" class="logo">
+        <img
+          src="assets/logo.png"
+          alt="Imagem da equipe Gold Tech"
+          loading="lazy"
+        />
+      </a>
+      <ul class="nav-links">
+        <li><a href="#hero">Início</a></li>
+        <li><a href="#recursos">Recursos</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#nichos">Nichos</a></li>
+        <li><a href="#depoimentos">Depoimentos</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <a href="#contato" class="btn-nav">Fale Conosco</a>
+      <button class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <a href="#hero" onclick="toggleMenu()">Início</a>
+      <a href="#recursos" onclick="toggleMenu()">Recursos</a>
+      <a href="#sobre" onclick="toggleMenu()">Sobre</a>
+      <a href="#nichos" onclick="toggleMenu()">Nichos</a>
+      <a href="#depoimentos" onclick="toggleMenu()">Depoimentos</a>
+      <a href="#faq" onclick="toggleMenu()">FAQ</a>
+      <a href="#contato" onclick="toggleMenu()">Fale Conosco</a>
+    </div>
+
+    <!-- HERO SECTION -->
+    <section id="hero">
+      <div class="hero-inner">
+        <div class="hero-text">
+          <span class="hero-badge reveal">
+            <span class="dot"></span>
+            Automação fiscal · Sete Lagoas, MG
+          </span>
+          <h1 class="hero-title reveal delay-1">
+            Gestão que <span class="gold italic">transforma</span> seu negócio.
+          </h1>
+          <p class="sub reveal delay-2">
+            ERP completo com emissão de NF-e, NFC-e e MDF-e — integrado à SEFAZ,
+            sem burocracia. Para varejo de todos os portes.
+          </p>
+          <div class="hero-actions reveal delay-3">
+            <a href="#contato" class="btn-primary">
+              <span>Solicitar demonstração gratuita</span>
+              <svg
+                class="arrow"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 0L6.59 1.41L12.17 7H0V9H12.17L6.59 14.59L8 16L16 8L8 0Z"
+                  fill="currentColor"
+                />
+              </svg>
+            </a>
+            <a href="#recursos" class="btn-ghost">
+              <span class="play-icon">▶</span>
+              Ver recursos
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-card reveal delay-4">
+          <p class="hero-card-label">Resultados Gold Tech</p>
+          <div class="metric">
+            <p class="metric-value" data-target="230" data-suffix="+">0</p>
+            <p class="metric-label">Clientes ativos</p>
+            <div class="metric-bar" style="--pct: 85%"></div>
+          </div>
+          <div class="metric">
+            <p class="metric-value" data-target="15" data-suffix="+">0</p>
+            <p class="metric-label">Anos de experiência</p>
+            <div class="metric-bar" style="--pct: 90%"></div>
+          </div>
+          <div class="metric">
+            <p class="metric-value" data-target="100" data-suffix="%">0</p>
+            <p class="metric-label">Foco no varejo</p>
+            <div class="metric-bar" style="--pct: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+    <!-- Linha de separação -->
+
+    <!-- ABOUT SECTION -->
+    <section id="sobre">
+      <div class="inner">
+        <span class="tag reveal">Nossa história</span>
+        <h2 class="reveal delay-1">
+          Parceria para o<br /><span class="gold italic">seu sucesso.</span>
+        </h2>
+
+        <div class="about-layout">
+          <!-- Espaço para a imagem (coluna da esquerda) -->
+          <div class="about-image-placeholder reveal delay-2">
+            <img src="assets/eu.jpeg" alt="Patrick - Fundador" />
+          </div>
+          <!-- Conteúdo de texto (coluna da direita) -->
+          <div class="about-text reveal delay-3">
+            <p>
+              A Gold Tech Sistemas nasceu com o propósito de
+              <strong>simplificar a gestão empresarial</strong>, oferecendo um
+              sistema de gestão completo para o varejo, com automação fiscal e
+              comercial eficiente e confiável.
+            </p>
+            <p>
+              Desde o início, nosso foco sempre foi resolver problemas reais do
+              dia a dia das empresas, eliminando processos manuais, reduzindo
+              erros e trazendo mais controle para a operação. Com nossas
+              soluções, é possível centralizar a emissão de documentos fiscais
+              (NF-e, NFC-e, CT-e e MDF-e), o controle de estoque e a gestão de
+              vendas em um único sistema, de forma simples e segura.
+            </p>
+            <p>
+              Mais do que tecnologia, acreditamos em
+              <strong>proximidade</strong>. Trabalhamos ao lado dos nossos
+              clientes, oferecendo suporte ágil, implantação eficiente e
+              acompanhamento contínuo, garantindo que cada empresa utilize o
+              sistema com o máximo de aproveitamento.
+            </p>
+            <p>
+              Hoje, atendemos empresas em todo o Brasil e seguimos evoluindo
+              constantemente, com o compromisso de entregar
+              <strong>organização, segurança e inteligência</strong> para quem
+              busca crescer com consistência.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+    <!-- Linha de separação -->
+
+    <!-- NICHOS SECTION (CAROUSEL) -->
+    <section id="nichos">
+      <div class="inner">
+        <span class="tag reveal">Nossos segmentos</span>
+        <h2 class="reveal delay-1">
+          Prontos para <span class="gold italic">acelerar você.</span>
+        </h2>
+
+        <div class="carousel-container reveal delay-2">
+          <div class="carousel-track">
+            <!-- Nicho 1: Padarias -->
+            <div class="carousel-item">
+              <img src="assets/padaria.svg" alt="Padarias" />
+            </div>
+            <!-- Nicho 2: Restaurantes -->
+            <div class="carousel-item">
+              <img src="assets/restaurante.svg" alt="Restaurantes" />
+            </div>
+            <!-- Nicho 3: Loja de Roupa -->
+            <div class="carousel-item">
+              <img src="assets/roupa.svg" alt="Loja de Roupas" />
+            </div>
+            <!-- Nicho 4: Açougues -->
+            <div class="carousel-item">
+              <img src="assets/acougues.svg" alt="Açougues" />
+            </div>
+            <!-- Nicho 5: Óticas -->
+            <div class="carousel-item">
+              <img src="assets/oticas.svg" alt="Óticas" />
+            </div>
+            <!-- Nicho 6: Loja de Material de Construção -->
+            <div class="carousel-item">
+              <img src="assets/material.svg" alt="Material de Construção" />
+            </div>
+            <!-- Nicho 7: Hortifrúti -->
+            <div class="carousel-item">
+              <img src="assets/hortifruti.svg" alt="Hortifrúti" />
+            </div>
+            <!-- Duplicar itens para o efeito de carrossel contínuo -->
+            <div class="carousel-item">
+              <img src="assets/padaria.svg" alt="Padarias" />
+            </div>
+            <div class="carousel-item">
+              <img src="assets/restaurante.svg" alt="Restaurantes" />
+            </div>
+            <div class="carousel-item">
+              <img src="assets/roupa.svg" alt="Loja de Roupas" />
+            </div>
+            <div class="carousel-item">
+              <img src="assets/acougues.svg" alt="Açougues" />
+            </div>
+            <div class="carousel-item">
+              <img src="assets/oticas.svg" alt="Óticas" />
+            </div>
+            <div class="carousel-item">
+              <img src="assets/material.svg" alt="Material de Construção" />
+            </div>
+            <div class="carousel-item">
+              <img src="assets/hortifruti.svg" alt="Hortifrúti" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+    <!-- Linha de separação -->
+
+    <!-- FEATURES SECTION -->
+    <section id="recursos">
+      <div class="inner">
+        <div class="features-header">
+          <span class="tag reveal">O que oferecemos</span>
+          <h2 class="reveal delay-1">
+            Tudo que você precisa<br />em
+            <span class="gold italic">um único sistema.</span>
+          </h2>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card reveal">
+            <span class="feature-num">01</span>
+            <span class="feature-icon">🧾</span>
+            <h3>Emissão de Documentos Fiscais</h3>
+            <p>
+              Emita todos os principais documentos fiscais obrigatórios — NF-e,
+              NFC-e e MDF-e — com cálculo automático de impostos e transmissão
+              em tempo real à SEFAZ. Zero retrabalho, zero multas.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-1">
+            <span class="feature-num">02</span>
+            <span class="feature-icon">📦</span>
+            <h3>Controle Total de Estoque</h3>
+            <p>
+              Gerencie entradas, saídas, transferências e inventários com
+              controle fiscal e financeiro integrado. Múltiplos depósitos,
+              alertas de reposição e rastreabilidade completa de cada item.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-2">
+            <span class="feature-num">03</span>
+            <span class="feature-icon">📊</span>
+            <h3>Gestão Financeira Completa</h3>
+            <p>
+              Contas a pagar e receber, fluxo de caixa, conciliação bancária e
+              DRE. Tenha uma visão clara e atualizada da saúde financeira do seu
+              negócio a qualquer momento.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-3">
+            <span class="feature-num">04</span>
+            <span class="feature-icon">🤝</span>
+            <h3>Clientes e Fornecedores</h3>
+            <p>
+              Cadastro completo com histórico de compras, limites de crédito,
+              condições de pagamento e gestão de relacionamento. Tudo
+              centralizado para decisões mais rápidas e seguras.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-4">
+            <span class="feature-num">05</span>
+            <span class="feature-icon">🛒</span>
+            <h3>Gestão de Vendas e PDV</h3>
+            <p>
+              Ponto de venda ágil, controle de pedidos, orçamentos e cupons
+              fiscais via NFC-e. Acompanhe cada venda em tempo real e reduza
+              filas com um checkout eficiente.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-5">
+            <span class="feature-num">06</span>
+            <span class="feature-icon">📈</span>
+            <h3>Painel Intuitivo e Relatórios</h3>
+            <p>
+              Dashboard com os indicadores mais importantes do negócio na tela
+              inicial. Relatórios completos de vendas, estoque, financeiro e
+              fiscal — exportáveis e personalizáveis.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-1">
+            <span class="feature-num">07</span>
+            <span class="feature-icon">🔑</span>
+            <h3>Certificado Digital</h3>
+            <p>
+              Emitimos o seu certificado digital A1 e A3 diretamente, sem
+              burocracia. Indispensável para assinar documentos fiscais
+              eletrônicos com validade jurídica.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-2">
+            <span class="feature-num">08</span>
+            <span class="feature-icon">🔒</span>
+            <h3>Segurança e Confiabilidade</h3>
+            <p>
+              Seus dados protegidos com tecnologia avançada de criptografia e
+              backup automático. Estrutura estável para que sua operação nunca
+              pare — mesmo nos períodos de maior movimento.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+          <article class="feature-card reveal delay-3">
+            <span class="feature-num">09</span>
+            <span class="feature-icon">🛠️</span>
+            <h3>Suporte Especializado Local</h3>
+            <p>
+              Atendimento humanizado por especialistas em Sete Lagoas e região.
+              Da implantação ao dia a dia, nossa equipe está ao seu lado para
+              garantir que o sistema funcione perfeitamente.
+            </p>
+            <span class="feature-arrow">→</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+    <!-- Linha de separação -->
+
+    <!-- NOVA SEÇÃO DE CLIENTES (CARROSSEL) -->
+    <section id="clientes">
+      <div class="inner">
+        <h2 class="reveal delay-1">
+          Mais de 10 anos impulsionando
+          <span class="gold italic">negócios em todo o Brasil.</span>
+        </h2>
+
+        <div class="clients-carousel-container reveal delay-2">
+          <div class="clients-carousel-track">
+            <!-- LOGOMARCAS DOS CLIENTES 1-12 -->
+            <div class="clients-carousel-item">
+              <img src="assets/1.svg" alt="Cliente 1" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/2.svg" alt="Cliente 2" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/3.svg" alt="Cliente 3" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/4.svg" alt="Cliente 4" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/5.svg" alt="Cliente 5" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/6.svg" alt="Cliente 6" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/7.svg" alt="Cliente 7" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/8.svg" alt="Cliente 8" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/9.svg" alt="Cliente 9" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/10.svg" alt="Cliente 10" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/11.svg" alt="Cliente 11" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/12.svg" alt="Cliente 12" />
+            </div>
+            <!-- Duplicar itens para o efeito de carrossel contínuo -->
+            <div class="clients-carousel-item">
+              <img src="assets/1.svg" alt="Cliente 1" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/2.svg" alt="Cliente 2" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/3.svg" alt="Cliente 3" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/4.svg" alt="Cliente 4" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/5.svg" alt="Cliente 5" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/6.svg" alt="Cliente 6" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/7.svg" alt="Cliente 7" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/8.svg" alt="Cliente 8" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/9.svg" alt="Cliente 9" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/10.svg" alt="Cliente 10" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/11.svg" alt="Cliente 11" />
+            </div>
+            <div class="clients-carousel-item">
+              <img src="assets/12.svg" alt="Cliente 12" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+    <!-- Linha de separação -->
+
+    <!-- TESTIMONIALS SECTION -->
+    <section id="depoimentos">
+      <div class="inner">
+        <span class="tag reveal">Quem já usa aprova</span>
+        <h2 class="reveal delay-1">
+          O que nossos clientes<br /><span class="gold italic"
+            >dizem sobre nós.</span
+          >
+        </h2>
+
+        <div class="testimonials-grid">
+            <article class="testimonial-card reveal delay-1">
+            <span class="quote-mark">"</span>
+            <div class="stars">★★★★★</div>
+            <p>
+              O sistema da Gold Tech revolucionou nossa gestão de estoque e
+              vendas. A emissão de notas fiscais é super rápida e sem erros.
+              Recomendo a todos os varejistas!
+            </p>
+            <div class="testimonial-author">
+              <div class="avatar">JS</div>
+              <div class="author-info">
+                <strong>João Silva</strong>
+                <span>CEO · Tech Solutions</span>
+              </div>
+            </div>
+          </article>
+          <article class="testimonial-card reveal delay-2">
+            <span class="quote-mark">"</span>
+            <div class="stars">★★★★★</div>
+            <p>
+              A integração de todos os departamentos em um único ERP nos deu uma
+              visão 360º do negócio. As decisões ficaram mais assertivas e o
+              crescimento, inevitável.
+            </p>
+            <div class="testimonial-author">
+              <div class="avatar">AM</div>
+              <div class="author-info">
+                <strong>Ana Martins</strong>
+                <span>Diretora Financeira · Mega Store</span>
+              </div>
+            </div>
+          </article>
+          <article class="testimonial-card reveal delay-3">
+            <span class="quote-mark">"</span>
+            <div class="stars">★★★★★</div>
+            <p>
+              A equipe de suporte é fantástica! Sempre pronta para ajudar e
+              resolver qualquer dúvida. O sistema é intuitivo e nos poupa muito
+              tempo no dia a dia.
+            </p>
+            <div class="testimonial-author">
+              <div class="avatar">RC</div>
+              <div class="author-info">
+                <strong>Ricardo Costa</strong>
+                <span>Gerente · Varejo Fácil</span>
+              </div>
+            </div>
+          </article>
+          <article class="testimonial-card reveal delay-1">
+            <span class="quote-mark">"</span>
+            <div class="stars">★★★★★</div>
+            <p>
+              Antes eu perdia horas tentando fechar o caixa e conciliar o
+              estoque. Com a Gold Tech, tudo bate na hora. A NFC-e sai em
+              segundos e o cliente não espera mais na fila.
+            </p>
+            <div class="testimonial-author">
+              <div class="avatar">FO</div>
+              <div class="author-info">
+                <strong>Fernanda Oliveira</strong>
+                <span>Proprietária · Mercadinho Bela Vista</span>
+              </div>
+            </div>
+          </article>
+          <article class="testimonial-card reveal delay-2">
+            <span class="quote-mark">"</span>
+            <div class="stars">★★★★★</div>
+            <p>
+              Implantamos o sistema em duas lojas ao mesmo tempo e o suporte da
+              Gold Tech foi impecável em cada etapa. O controle de estoque entre
+              as unidades nunca foi tão preciso.
+            </p>
+            <div class="testimonial-author">
+              <div class="avatar">MB</div>
+              <div class="author-info">
+                <strong>Marcos Borges</strong>
+                <span>Diretor · Rede Calçados Prime</span>
+              </div>
+            </div>
+          </article>
+          <article class="testimonial-card reveal delay-3">
+            <span class="quote-mark">"</span>
+            <div class="stars">★★★★★</div>
+            <p>
+              Os relatórios financeiros me deram uma clareza que eu nunca tive
+              antes. Agora sei exatamente onde estou ganhando e onde posso
+              melhorar. Vale cada centavo investido.
+            </p>
+            <div class="testimonial-author">
+              <div class="avatar">CL</div>
+              <div class="author-info">
+                <strong>Carla Lima</strong>
+                <span>Sócia-Gestora · Empório Natural</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+    <!-- Linha de separação -->
+
+    <!-- CONTACT SECTION -->
+    <section id="contato">
+      <div class="inner">
+        <span class="tag reveal">Fale conosco</span>
+        <h2 class="reveal delay-1">
+          Pronto para <span class="gold italic">começar?</span>
+        </h2>
+        <p class="sub reveal delay-2">
+          Preencha o formulário ou use nossos contatos diretos.
+        </p>
+
+        <div class="contact-layout">
+          <div class="contact-form-wrap reveal delay-2">
+            <form action="https://formspree.io/f/maqkenaz" method="POST">
+              <div class="form-group">
+                <label for="name">Nome Completo</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  placeholder="Seu nome"
+                />
+              </div>
+              <div class="form-group">
+                <label for="email">E-mail</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  placeholder="seu@email.com"
+                />
+              </div>
+              <div class="form-group">
+                <label for="company">Empresa</label>
+                <input
+                  type="text"
+                  id="company"
+                  name="company"
+                  placeholder="Nome da empresa"
+                />
+              </div>
+              <div class="form-group">
+                <label for="phone">WhatsApp</label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  placeholder="(99) 9 9999-9999"
+                  maxlength="16"
+                  oninput="mascaraTelefone(this)"
+                />
+              </div>
+              <div class="form-group">
+                <label for="message">Mensagem</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  placeholder="Descreva suas necessidades..."
+                ></textarea>
+              </div>
+              <button type="submit" class="btn-submit" id="submitBtn">
+                Solicitar demonstração gratuita →
+              </button>
+            </form>
+          </div>
+
+          <div class="contact-sidebar reveal delay-3">
+            <div class="contact-block">
+              <p class="contact-block-label">WhatsApp</p>
+              <!-- Emoji antes do contato -->
+              <a href="https://wa.me/5531999554328" target="_blank"
+                >📞 (31) 99955-4328</a
+              >
+            </div>
+            <div class="contact-block">
+              <p class="contact-block-label">E-mail</p>
+              <!-- Emoji antes do contato -->
+              <a href="mailto:goldtechsistemas@outlook.com"
+                >📧 goldtechsistemas@outlook.com</a
+              >
+            </div>
+            <div class="contact-block">
+              <p class="contact-block-label">Endereço</p>
+              <!-- Emoji antes do contato -->
+              <p>📍 Sete Lagoas, MG</p>
+            </div>
+            <div class="contact-block">
+              <p class="contact-block-label">Horário de Atendimento</p>
+              <!-- Emoji antes do contato -->
+              <p>⏰ Seg – Sex · 08h às 18h</p>
+            </div>
+
+            <div class="social-row">
+              <a
+                href="https://wa.me/5531999554328"
+                target="_blank"
+                class="social-btn"
+                aria-label="WhatsApp"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                  />
+                </svg>
+              </a>
+              <a
+                href="mailto:goldtechsistemas@outlook.com"
+                class="social-btn"
+                aria-label="E-mail"
+                >✉</a
+              >
+              <a
+                href="https://instagram.com/Gold_Tech_Sistemas"
+                target="_blank"
+                class="social-btn"
+                aria-label="Instagram"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6-1.281-.059-1.69-.073-4.949-.073zM12 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOVA SEÇÃO DE PERGUNTAS FREQUENTES (FAQ) -->
+    <section id="faq">
+      <div class="inner">
+        <h2>Perguntas Frequentes:</h2>
+
+        <div class="faq-container">
+          <div class="faq-item reveal delay-1">
+            <div class="faq-question">
+              O sistema atende quais tipos de empresas?
+              <span class="arrow-icon">></span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Nosso sistema ERP é flexível e atende a uma ampla gama de
+                empresas, desde pequenos negócios até grandes corporações, em
+                diversos setores como varejo, serviços, indústria e e-commerce.
+                Ele pode ser adaptado às necessidades específicas de cada tipo
+                de empresa.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item reveal delay-2">
+            <div class="faq-question">
+              O ERP emite quais tipos de notas fiscais?
+              <span class="arrow-icon">></span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                O Gold Tech Sistemas permite a emissão de diversos tipos de
+                documentos fiscais eletrônicos, incluindo NF-e (Nota Fiscal
+                Eletrônica de Produtos), NFC-e (Nota Fiscal de Consumidor
+                Eletrônica), NFS-e (Nota Fiscal de Serviços Eletrônica) e CT-e
+                (Conhecimento de Transporte Eletrônico), garantindo a
+                conformidade fiscal do seu negócio.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item reveal delay-3">
+            <div class="faq-question">
+              O sistema funciona offline ou só com internet?
+              <span class="arrow-icon">></span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Nosso sistema é predominantemente online, o que garante acesso
+                de qualquer lugar e a qualquer momento, além de atualizações
+                automáticas e backups seguros na nuvem. No entanto, para algumas
+                funcionalidades específicas de frente de caixa, pode haver modos
+                de operação que permitem o registro de vendas offline e
+                posterior sincronização.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item reveal delay-4">
+            <div class="faq-question">
+              O ERP tem controle de estoque?
+              <span class="arrow-icon">></span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Sim, o Gold Tech Sistemas oferece um módulo completo de controle
+                de estoque, que inclui gestão de entradas e saídas, inventário,
+                controle de lotes, grade de produtos (tamanho, cor, etc.), e
+                relatórios para otimização de compras e prevenção de perdas.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item reveal delay-5">
+            <div class="faq-question">
+              A Gold Tech Sistemas presta suporte e treinamento?
+              <span class="arrow-icon">></span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Sim, oferecemos suporte especializado e treinamento completo
+                para toda a sua equipe, desde a implantação do sistema até o uso
+                diário. Nossa equipe está sempre pronta para ajudar a garantir
+                que você aproveite ao máximo todas as funcionalidades do ERP.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item reveal delay-6">
+            <div class="faq-question">
+              O sistema é fácil de usar?
+              <span class="arrow-icon">></span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Desenvolvemos o Gold Tech Sistemas com foco na usabilidade e
+                intuitividade. A interface é limpa e organizada, facilitando o
+                aprendizado e o uso diário, mesmo para usuários sem experiência
+                prévia com sistemas ERP. Além disso, oferecemos treinamento para
+                garantir uma adaptação tranquila.
+              </p>
+            </div>
+          </div>
+
+          <div class="faq-item reveal delay-1">
+            <div class="faq-question">
+              Quais são os custos para contratar?
+              <span class="arrow-icon">></span>
+            </div>
+            <div class="faq-answer">
+              <p>
+                Os custos para contratar o Gold Tech Sistemas variam de acordo
+                com o tamanho da sua empresa, o número de usuários e os módulos
+                que você precisa. Oferecemos planos flexíveis e personalizados.
+                Entre em contato conosco para solicitar uma demonstração
+                gratuita e um orçamento sem compromisso, adaptado às suas
+                necessidades.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-logo-wrap">
+        <a href="#" class="logo">
+          <img
+            src="assets/logo.png"
+            alt="Imagem da equipe Gold Tech"
+            loading="lazy"
+          />
+        </a>
+      </div>
+      <p class="footer-copy">
+        © 2026 <span>Gold Tech Sistemas</span> · Sete Lagoas, MG · Todos os
+        direitos reservados.
+      </p>
+    </footer>
+
+    <script src="js/script.js"></script>
+  </body>
+</html>
