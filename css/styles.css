@@ -709,7 +709,7 @@ h2 {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 6rem;
+  gap: 4rem;
   align-items: start;
   margin-top: 0;
 }
@@ -725,12 +725,12 @@ h2 {
   color: var(--text-soft);
   font-size: 1.2rem;
   text-align: center;
-  padding: 1rem;
+  padding: 0.5rem;
   overflow: hidden;
 }
 
 .about-image-placeholder img {
-  max-width: 95%;
+  max-width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
@@ -815,7 +815,7 @@ h2 {
 
 /* 4. Frente de Caixa (Frente Direita) */
 .interfaces-grid .interface-card:nth-child(4) {
-  bottom: 0;
+  bottom: -20px;
   right: 8%;
   width: 48%;
   z-index: 4;
@@ -1208,10 +1208,6 @@ h2 {
     flex: 0 0 calc(100vw - 3rem);
   }
 
-  .carousel-track {
-    animation: scrollCarousel 15s linear infinite;
-  }
-
   .contact-layout {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -1272,10 +1268,6 @@ h2 {
     height: 350px;
     margin: 0;
   }
-
-  .carousel-track {
-    animation: scrollCarousel 15s linear infinite;
-  }
 }
 
 /* Tablet: 2 itens visíveis */
@@ -1284,10 +1276,6 @@ h2 {
     width: 240px;
     height: 320px;
     margin: 0 0.75rem;
-  }
-
-  .carousel-track {
-    animation: scrollCarousel 15s linear infinite;
   }
 }
 
@@ -1298,10 +1286,6 @@ h2 {
     height: 350px;
     margin: 0 0.75rem;
   }
-
-  .carousel-track {
-    animation: scrollCarousel 15s linear infinite;
-  }
 }
 
 /* Desktop: 4 itens visíveis */
@@ -1311,10 +1295,6 @@ h2 {
     height: 350px;
     margin: 0 1rem;
   }
-
-  .carousel-track {
-    animation: scrollCarousel 15s linear infinite;
-  }
 }
 
 /* Large Desktop: 5-6 itens visíveis */
@@ -1323,10 +1303,6 @@ h2 {
     width: 280px;
     height: 350px;
     margin: 0 1rem;
-  }
-
-  .carousel-track {
-    animation: scrollCarousel 15s linear infinite;
   }
 }
 
@@ -1923,7 +1899,7 @@ footer .logo img {
   }
 
   .carousel-track {
-    animation: scrollCarouselMobile 15s linear infinite;
+    animation: scrollCarouselMobile 40s linear infinite;
   }
 
   .carousel-item {
@@ -1955,7 +1931,7 @@ footer .logo img {
   }
 
   .clients-carousel-track {
-    animation: scrollClientsCarouselMobile 15s linear infinite;
+    animation: scrollClientsCarouselMobile 40s linear infinite;
   }
 }
 
