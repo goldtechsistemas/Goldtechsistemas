@@ -238,6 +238,10 @@ section {
   box-sizing: border-box;
 }
 
+#clientes .inner {
+  max-width: 1400px;
+}
+
 .tag {
   font-family: "DM Mono", monospace;
   font-size: 0.72rem;
