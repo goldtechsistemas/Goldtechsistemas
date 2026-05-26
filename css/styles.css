@@ -713,37 +713,37 @@ h2 {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: start;
+  gap: 6rem;
+  align-items: stretch; /* O Grid vai esticar as duas colunas para terem a mesma altura */
   margin-top: 0;
 }
 
 .about-image-placeholder {
   grid-column: 1 / 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 250px;
-  background: none;
-  border: none;
-  color: var(--text-soft);
-  font-size: 1.2rem;
-  text-align: center;
-  padding: 0.5rem;
-  overflow: hidden;
+  position: relative; /* ESSENCIAL: Cria uma "caixa" para prender a imagem absoluta */
+  width: 100%;
+  height: 100%; /* Garante que a caixa ocupe toda a altura gerada pelo texto */
 }
 
 .about-image-placeholder img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  object-fit: cover;
+  position: absolute; /* A MÁGICA: Tira a imagem do cálculo de altura da tela */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Corta a imagem para não distorcer */
+  object-position: bottom; /* Mantém o foco no rosto/topo da imagem */
+  border-radius: 8px; /* Opcional, para deixar as bordas suaves */
 }
 
 .about-text {
   grid-column: 2 / 3;
   text-align: left;
   margin-top: 0;
+  /* Isso garante que o texto fique centralizado e defina a altura da linha */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .about-text p {
@@ -754,6 +754,10 @@ h2 {
   color: var(--text-soft);
   line-height: 1.9;
   margin-bottom: 1.2rem;
+}
+
+.about-text p:last-child {
+  margin-bottom: 0;
 }
 
 .about-text p strong {
@@ -1069,6 +1073,7 @@ h2 {
   justify-content: space-between;
   gap: 1rem;
 }
+
 .stat-row:first-child {
   border-top: 1px solid var(--border);
 }
@@ -1085,6 +1090,7 @@ h2 {
 .stat-desc {
   text-align: right;
 }
+
 .stat-desc strong {
   display: block;
   font-size: 0.85rem;
@@ -1092,6 +1098,7 @@ h2 {
   color: var(--text-mid);
   margin-bottom: 0.25rem;
 }
+
 .stat-desc span {
   font-size: 0.78rem;
   color: var(--text-soft);
@@ -1115,11 +1122,13 @@ h2 {
   justify-content: center;
   margin-bottom: 1.5rem;
 }
+
 #nichos .tag::before {
   order: 0;
   margin-left: 0;
   margin-right: 0.75rem;
 }
+
 #nichos h2 {
   text-align: center;
   margin-bottom: 3rem;
@@ -1334,6 +1343,7 @@ h2 {
   min-height: 380px;
   height: 100%;
 }
+
 .testimonial-card:hover {
   border-color: rgba(201, 162, 39, 0.25);
 }
@@ -1387,6 +1397,7 @@ h2 {
   color: var(--text);
   margin-bottom: 0.2rem;
 }
+
 .author-info span {
   font-size: 0.75rem;
   color: var(--text-soft);
@@ -1418,14 +1429,17 @@ h2 {
   position: relative;
   transition: all 0.3s;
 }
+
 .modalidade-card:hover {
   border-color: rgba(201, 162, 39, 0.3);
   transform: translateY(-4px);
 }
+
 .modalidade-card.destaque {
   background: var(--surface2);
   border-color: var(--gold);
 }
+
 .modalidade-card.destaque:hover {
   border-color: var(--gold-light);
 }
@@ -1470,6 +1484,7 @@ h2 {
   flex-grow: 1;
   margin-bottom: 2rem;
 }
+
 .modalidade-list li {
   font-size: 0.87rem;
   color: var(--text-soft);
@@ -1479,6 +1494,7 @@ h2 {
   gap: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.03);
 }
+
 .modalidade-list li::before {
   content: "✓";
   color: var(--gold);
@@ -1499,15 +1515,18 @@ h2 {
   border: 1px solid var(--border);
   color: var(--text-soft);
 }
+
 .btn-modalidade:hover {
   border-color: var(--gold);
   color: var(--gold);
 }
+
 .btn-modalidade.destaque {
   background: var(--gold);
   color: #000;
   border-color: var(--gold);
 }
+
 .btn-modalidade.destaque:hover {
   background: var(--gold-light);
 }
@@ -1532,11 +1551,13 @@ h2 {
   justify-content: center;
   margin-bottom: 1.5rem;
 }
+
 #clientes .tag::before {
   order: 0;
   margin-left: 0;
   margin-right: 0.75rem;
 }
+
 #clientes h2 {
   text-align: center;
   margin-bottom: 3rem;
@@ -1588,6 +1609,7 @@ h2 {
 .form-group {
   margin-bottom: 1.5rem;
 }
+
 .form-group label {
   display: block;
   font-size: 0.8rem;
@@ -1595,6 +1617,7 @@ h2 {
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
+
 .form-group input,
 .form-group textarea {
   width: 100%;
@@ -1605,16 +1628,19 @@ h2 {
   font-size: 0.9rem;
   font-family: "DM Sans", sans-serif;
 }
+
 .form-group input::placeholder,
 .form-group textarea::placeholder {
   color: var(--text-soft);
   opacity: 0.6;
 }
+
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
   border-color: var(--gold);
 }
+
 .form-group textarea {
   min-height: 120px;
   resize: vertical;
@@ -1636,6 +1662,7 @@ h2 {
   border: none;
   cursor: pointer;
 }
+
 .btn-submit:hover {
   background: var(--gold-light);
 }
@@ -1657,6 +1684,7 @@ h2 {
   color: var(--text-soft);
   margin-bottom: 0.5rem;
 }
+
 .contact-block a,
 .contact-block p {
   font-size: 0.95rem;
@@ -1664,6 +1692,7 @@ h2 {
   text-decoration: none;
   transition: color 0.2s;
 }
+
 .contact-block a:hover {
   color: var(--gold);
 }
@@ -1673,6 +1702,7 @@ h2 {
   gap: 1rem;
   margin-top: 1rem;
 }
+
 .social-btn {
   width: 40px;
   height: 40px;
@@ -1686,6 +1716,7 @@ h2 {
   font-size: 1.2rem;
   border-radius: var(--radius);
 }
+
 .social-btn:hover {
   color: var(--gold);
   border-color: var(--gold);
@@ -1788,6 +1819,7 @@ footer {
   color: var(--text-soft);
   text-align: center;
 }
+
 .footer-copy span {
   color: var(--text-mid);
   font-weight: 500;
@@ -1994,5 +2026,31 @@ footer .logo img {
 
   .contact-block-label {
     font-size: 0.65rem;
+  }
+}
+
+/* =========================================
+   Correção para Telas Menores (Celulares/Tablets)
+   ========================================= */
+@media (max-width: 900px) {
+  .about-layout {
+    grid-template-columns: 1fr; /* Coloca uma coluna embaixo da outra */
+    gap: 3rem; /* Diminui o espaço gigante entre imagem e texto no mobile */
+  }
+
+  .about-image-placeholder {
+    grid-column: 1 / -1; /* Ocupa a tela toda no mobile */
+    height: auto; /* Remove a trava de altura do desktop */
+  }
+
+  .about-image-placeholder img {
+    position: relative; /* DESLIGA o absolute. A imagem volta a ocupar espaço real! */
+    height: 400px; /* Define uma altura bacana para o celular (pode ajustar como preferir) */
+    width: 100%;
+    object-fit: cover; /* Continua cortando certinho sem amassar o rosto */
+  }
+
+  .about-text {
+    grid-column: 1 / -1; /* O texto também passa a ocupar a tela toda */
   }
 }
