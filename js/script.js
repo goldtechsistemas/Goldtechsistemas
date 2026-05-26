@@ -50,61 +50,119 @@ document.querySelector('form').addEventListener('submit', function(e) {
     btn.disabled = true;
 });
 
-// Carousel swipe/drag functionality
+// ==========================================
+// Carrossel Infinito e Arrastável (Sem Pulos)
+// ==========================================
 const carousels = document.querySelectorAll('.carousel-track, .clients-carousel-track');
 
-carousels.forEach(carousel => {
+carousels.forEach(track => {
+    // 1. Duplica os itens para criar a ilusão de infinito
+    const items = Array.from(track.children);
+    items.forEach(item => {
+        const clone = item.cloneNode(true);
+        track.appendChild(clone);
+    });
+
+    const parent = track.parentElement; // O container que tem o overflow: hidden
     let isDown = false;
     let startX;
     let scrollLeft;
+    let animationId;
 
-    carousel.addEventListener('mousedown', (e) => {
+    // Velocidade do scroll automático (aumente para mais rápido)
+    const autoScrollSpeed = 1;
+
+    // 2. Função de Scroll Automático Suave
+    function autoScroll() {
+        if (!isDown) {
+            parent.scrollLeft += autoScrollSpeed;
+
+            // Se rolou até a metade (onde começam os clones), volta para o início sem o usuário notar
+            if (parent.scrollLeft >= (track.scrollWidth / 2)) {
+                parent.scrollLeft = 0;
+            }
+        }
+        animationId = requestAnimationFrame(autoScroll);
+    }
+
+    // Inicia o movimento
+    autoScroll();
+
+    // 3. Controles de Mouse (Desktop)
+    parent.addEventListener('mousedown', (e) => {
         isDown = true;
-        carousel.style.animationPlayState = 'paused';
-        startX = e.pageX - carousel.offsetLeft;
-        scrollLeft = carousel.parentElement.scrollLeft;
-        carousel.style.cursor = 'grabbing';
+        parent.style.cursor = 'grabbing';
+        startX = e.pageX - parent.offsetLeft;
+        scrollLeft = parent.scrollLeft;
+        cancelAnimationFrame(animationId); // Pausa o scroll automático
     });
 
-    carousel.addEventListener('mouseleave', () => {
+    parent.addEventListener('mouseleave', () => {
+        if(isDown) {
+            isDown = false;
+            parent.style.cursor = 'grab';
+            autoScroll(); // Retoma o scroll automático
+        }
+    });
+
+    parent.addEventListener('mouseup', () => {
         isDown = false;
-        carousel.style.animationPlayState = 'running';
-        carousel.style.cursor = 'grab';
+        parent.style.cursor = 'grab';
+        autoScroll(); // Retoma o scroll automático
     });
 
-    carousel.addEventListener('mouseup', () => {
-        isDown = false;
-        carousel.style.animationPlayState = 'running';
-        carousel.style.cursor = 'grab';
-    });
-
-    carousel.addEventListener('mousemove', (e) => {
+    parent.addEventListener('mousemove', (e) => {
         if (!isDown) return;
         e.preventDefault();
-        const x = e.pageX - carousel.offsetLeft;
-        const walk = (x - startX) * 1;
-        carousel.parentElement.scrollLeft = scrollLeft - walk;
+        const x = e.pageX - parent.offsetLeft;
+        const walk = (x - startX) * 1.5; // O 1.5 é a sensibilidade do arrasto
+        let newScrollLeft = scrollLeft - walk;
+
+        // Lida com o loop infinito se o usuário arrastar rápido demais para os lados
+        if (newScrollLeft >= (track.scrollWidth / 2)) {
+            newScrollLeft -= (track.scrollWidth / 2);
+            startX = e.pageX - parent.offsetLeft;
+            scrollLeft = newScrollLeft;
+        } else if (newScrollLeft <= 0) {
+            newScrollLeft += (track.scrollWidth / 2);
+            startX = e.pageX - parent.offsetLeft;
+            scrollLeft = newScrollLeft;
+        }
+
+        parent.scrollLeft = newScrollLeft;
     });
 
-    // Touch events for mobile
-    carousel.addEventListener('touchstart', (e) => {
+    // 4. Controles de Touch (Mobile)
+    parent.addEventListener('touchstart', (e) => {
         isDown = true;
-        carousel.style.animationPlayState = 'paused';
-        startX = e.touches[0].pageX - carousel.offsetLeft;
-        scrollLeft = carousel.parentElement.scrollLeft;
-    });
+        startX = e.touches[0].pageX - parent.offsetLeft;
+        scrollLeft = parent.scrollLeft;
+        cancelAnimationFrame(animationId);
+    }, { passive: true });
 
-    carousel.addEventListener('touchend', () => {
+    parent.addEventListener('touchend', () => {
         isDown = false;
-        carousel.style.animationPlayState = 'running';
+        autoScroll();
     });
 
-    carousel.addEventListener('touchmove', (e) => {
+    parent.addEventListener('touchmove', (e) => {
         if (!isDown) return;
-        const x = e.touches[0].pageX - carousel.offsetLeft;
-        const walk = (x - startX) * 1;
-        carousel.parentElement.scrollLeft = scrollLeft - walk;
-    });
+        const x = e.touches[0].pageX - parent.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        let newScrollLeft = scrollLeft - walk;
+
+        if (newScrollLeft >= (track.scrollWidth / 2)) {
+            newScrollLeft -= (track.scrollWidth / 2);
+            startX = e.touches[0].pageX - parent.offsetLeft;
+            scrollLeft = newScrollLeft;
+        } else if (newScrollLeft <= 0) {
+            newScrollLeft += (track.scrollWidth / 2);
+            startX = e.touches[0].pageX - parent.offsetLeft;
+            scrollLeft = newScrollLeft;
+        }
+
+        parent.scrollLeft = newScrollLeft;
+    }, { passive: true });
 });
 
 // Phone mask formatting

@@ -1,0 +1,52 @@
+{
+  "depoimentos": [
+    {
+      "id": 1,
+      "nome": "Fernanda",
+      "empresa": "Primos Gás",
+      "imagem": "assets/Depo1.jpeg",
+      "texto": "Minha experiência com a Gold Tech Sistemas é a melhor possível, aí de mim se não fosse o excelente trabalho deles.\nAntes eu não conseguia tirar notas fiscais para meus clientes fazerem orçamentos, era bem complicado.\nHoje, depois que me apresentaram o trabalho deles, tudo ficou muito mais fácil aqui na loja: o sistema é fácil de mexer e todas as minhas dúvidas e dificuldades eles me ajudam na hora. São nota 1000!",
+      "estrelas": 5
+    },
+    {
+      "id": 2,
+      "nome": "Sulivam",
+      "empresa": "AGRO RS LTDA",
+      "imagem": "assets/Depo2.jpeg",
+      "texto": "Depois que começamos a usar as soluções da Gold Tech Sistemas, o sistema ajudou muito na rotina aqui da loja.\nHoje a emissão de notas é muito mais simples, o controle ficou mais organizado e o atendimento deles sempre ajuda quando precisamos. Facilitou demais o nosso dia a dia.",
+      "estrelas": 5
+    },
+    {
+      "id": 3,
+      "nome": "Thiago Menegazzo",
+      "empresa": "Verde Sete",
+      "imagem": "assets/Depo3.jpeg",
+      "texto": "Lidamos com um volume grande de vendas de equipamentos e produtos de jardinagem, e a parte fiscal sempre foi um ponto crítico. Desde que adotamos a solução da Gold Tech Sistemas, a emissão de notas ficou muito mais rápida e o controle das vendas ficou muito mais claro. Hoje temos menos preocupação com multas, o suporte responde na hora e a rotina da loja ficou muito mais fluida. O sistema realmente ajudou a gente a vender mais e a se preocupar menos.",
+      "estrelas": 5
+    },
+    {
+      "id": 4,
+      "nome": "Marcelo",
+      "empresa": "MS PECAS E SERVICOS",
+      "imagem": "assets/Depo4.jpeg",
+      "texto": "A gente trabalha o dia todo com venda de peças e serviços para caminhões, então rapidez e organização fazem muita diferença no balcão. Hoje a gente consegue atender melhor os clientes, com menos erro e menos preocupação com a parte fiscal. O sistema realmente ajudou muito na nossa rotina.",
+      "estrelas": 5
+    },
+    {
+      "id": 5,
+      "nome": "Gregue",
+      "empresa": "SETE TRILHAS BIKE",
+      "imagem": "assets/Depo5.jpeg",
+      "texto": "Na nossa loja trabalhamos com venda de bicicletas e todo tipo de equipamento de ciclismo, com cliente entrando e saindo o dia inteiro. Antes era difícil manter o controle das vendas e ainda dar conta da parte fiscal. Depois que passamos a usar o sistema da Gold Tech Sistemas, ficou muito mais tranquilo: a emissão de notas no balcão ficou rápida, o caixa ficou mais organizado e a gente consegue acompanhar melhor o que está saindo em bikes, peças e acessórios. Hoje consigo focar mais em atender bem o ciclista, porque sei que o sistema está cuidando da parte chata pra mim.",
+      "estrelas": 5
+    },
+    {
+      "id": 6,
+      "nome": "VITOR MALVERDE",
+      "empresa": "PEDIU BEBEU",
+      "imagem": "assets/Depo6.jpeg",
+      "texto": "Quando o contador disse que eu precisava de um sistema com urgência, fiquei desesperado. A Gold Tech resolveu tudo em um dia e sem aquela burocracia toda.",
+      "estrelas": 5
+    }
+  ]
+}

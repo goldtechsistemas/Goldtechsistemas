@@ -228,49 +228,45 @@ section {
   overflow: hidden;
 }
 .inner {
-  max-width: 1200px;
-  margin: 0 auto;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  padding: 80px 5%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .tag {
-  font-family: "DM Mono", monospace;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--gold);
+  color: #dca73a; /* Cor dourada */
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 2px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: 15px;
+  margin-bottom: 20px;
 }
+
+/* Linha horizontal antes da tag */
 .tag::before {
-  content: "";
+  content: '';
   display: block;
-  width: 32px;
-  height: 1px;
-  background: var(--gold);
+  width: 40px;
+  height: 2px;
+  background-color: #dca73a;
 }
 
-h1,
-h2 {
-  font-family: Arial, Helvetica, sans-serif;
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.01em;
-}
-h1 {
-  font-size: clamp(3rem, 6vw, 5.5rem);
-}
-h2 {
-  font-size: clamp(2.2rem, 4vw, 3.6rem);
+.inner h2 {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  font-weight: 800;
+  margin-bottom: 60px;
+  letter-spacing: -1px;
 }
 
-.gold {
-  color: var(--gold);
-}
-.italic {
+.gold.italic {
+  color: #dca73a;
   font-style: italic;
+  font-weight: 700;
 }
 
 .sub {
@@ -577,11 +573,6 @@ h2 {
   width: 100%;
 }
 
-.features-header h2 {
-  text-align: center;
-  width: 100%;
-}
-
 .features-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -714,7 +705,6 @@ h2 {
   height: auto;
   display: block;
   object-fit: cover;
-  border-radius: 10px;
 }
 
 .about-text {
@@ -736,6 +726,124 @@ h2 {
 .about-text p strong {
   color: var(--text-mid);
   font-weight: 500;
+}
+
+/* INTERFACES SECTION */
+#interfaces {
+  background: var(--bg);
+}
+
+#interfaces h2 {
+  margin-bottom: 3rem;
+}
+
+/* =========================================
+   Grid de Interfaces (Efeito de Sobreposição)
+   ========================================= */
+.interfaces-grid {
+  position: relative;
+  width: 100%;
+  max-width: 1100px;
+  aspect-ratio: 16 / 9; /* Mantém a proporção do bloco para o posicionamento absoluto */
+  margin: 0 auto;
+}
+
+/* Estilo padrão das imagens (Mockups) */
+.interface-card {
+  position: absolute;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.interface-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Oculta os títulos H3 abaixo das imagens, pois o texto já está no SVG */
+.interface-card h3 {
+  display: none;
+}
+
+/* 1. Dashboard (Fundo Esquerda) */
+.interfaces-grid .interface-card:nth-child(1) {
+  top: 0;
+  left: 0;
+  width: 52%;
+  z-index: 1;
+}
+
+/* 2. Relatório de Vendas (Fundo Direita) */
+.interfaces-grid .interface-card:nth-child(2) {
+  top: 3%;
+  right: 0;
+  width: 58%;
+  z-index: 2;
+}
+
+/* 4. Frente de Caixa (Frente Direita) */
+.interfaces-grid .interface-card:nth-child(4) {
+  bottom: 0;
+  right: 8%;
+  width: 48%;
+  z-index: 4;
+}
+
+/* 5. Configurações (Fundo Esquerda) */
+.interfaces-grid .interface-card:nth-child(5) {
+  bottom: 15%;
+  left: 5%;
+  width: 45%;
+  z-index: 0;
+}
+
+/* =========================================
+   Card: Diagnóstico Inteligente (Meio Centro)
+   ========================================= */
+.diagnostic-card {
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 40%;
+  background-color: #151821; /* Fundo azul escuro/acinzentado */
+  border: 1px solid rgba(220, 167, 58, 0.2); /* Borda dourada sutil */
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+  z-index: 3;
+}
+
+.diagnostic-card h3 {
+  color: #dca73a;
+  font-size: 1.25rem;
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-weight: 700;
+}
+
+.diagnostic-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.diagnostic-card ul li {
+  font-size: 0.95rem;
+  color: #d1d5db;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Adiciona o ícone de "check" automaticamente em cada item da lista */
+.diagnostic-card ul li::before {
+  content: '✓';
+  color: #ffffff;
+  font-weight: bold;
 }
 
 @media (max-width: 1024px) {
@@ -984,17 +1092,26 @@ h2 {
   margin-bottom: 3rem;
 }
 
-.carousel-container {
+.carousel-container,
+.clients-carousel-container {
   position: relative;
   width: 100%;
-  overflow: hidden;
+  overflow-x: hidden; /* Importante: esconde a barra de rolagem nativa */
+  cursor: grab; /* Indica ao usuário que pode arrastar */
   margin-top: 2rem;
 }
 
-.carousel-track {
+/* Quando o usuário estiver arrastando (o JS adiciona isso no style, mas é bom ter no CSS base) */
+.carousel-container:active,
+.clients-carousel-container:active {
+  cursor: grabbing;
+}
+
+.carousel-track,
+.clients-carousel-track {
   display: flex;
-  transition: transform 0.5s ease-in-out;
-  animation: scrollCarousel 10s linear infinite;
+  width: max-content; /* Garante que a track estiche de acordo com o número de itens */
+  /* Sem transition e sem animation! */
 }
 
 .carousel-item {
@@ -1018,6 +1135,11 @@ h2 {
   transform: scale(1.02);
 }
 
+.carousel-item:hover img {
+  transform: scale(1.1) translate(0, 0);
+  filter: brightness(0.9) contrast(1.1);
+}
+
 .carousel-item img {
   width: 100%;
   height: 100%;
@@ -1029,23 +1151,11 @@ h2 {
   right: 0;
   bottom: 0;
   filter: brightness(0.7) contrast(1.1);
+  transition:
+    transform 0.4s ease,
+    filter 0.3s ease;
 }
 
-@keyframes scrollCarousel {
-  0% {
-    transform: translateX(0);
-  }
-  99% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-.carousel-track:hover {
-  animation-play-state: paused;
-}
 
 /* Responsividade para diferentes tamanhos de tela */
 /* Mobile: 1 item visível */
@@ -1063,7 +1173,7 @@ h2 {
   }
 
   .carousel-track {
-    animation: scrollCarousel 10s linear infinite;
+    animation: scrollCarousel 15s linear infinite;
   }
 
   .contact-layout {
@@ -1128,7 +1238,7 @@ h2 {
   }
 
   .carousel-track {
-    animation: scrollCarousel 10s linear infinite;
+    animation: scrollCarousel 15s linear infinite;
   }
 }
 
@@ -1141,7 +1251,7 @@ h2 {
   }
 
   .carousel-track {
-    animation: scrollCarousel 10s linear infinite;
+    animation: scrollCarousel 15s linear infinite;
   }
 }
 
@@ -1154,7 +1264,7 @@ h2 {
   }
 
   .carousel-track {
-    animation: scrollCarousel 10s linear infinite;
+    animation: scrollCarousel 15s linear infinite;
   }
 }
 
@@ -1167,7 +1277,7 @@ h2 {
   }
 
   .carousel-track {
-    animation: scrollCarousel 10s linear infinite;
+    animation: scrollCarousel 15s linear infinite;
   }
 }
 
@@ -1180,7 +1290,7 @@ h2 {
   }
 
   .carousel-track {
-    animation: scrollCarousel 10s linear infinite;
+    animation: scrollCarousel 15s linear infinite;
   }
 }
 
@@ -1249,14 +1359,8 @@ h2 {
 .avatar {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, #ff8c00, #ff4500);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Playfair Display", serif;
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #000;
+  border-radius: 50%;
+  object-fit: cover;
   flex-shrink: 0;
 }
 
@@ -1401,8 +1505,11 @@ h2 {
 }
 
 #clientes .inner {
-  max-width: 1200px;
-  margin: 0 auto;
+  color: #ffffff;
+  font-family: 'Inter', system-ui, sans-serif;
+  padding: 80px 5%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 #clientes .tag {
@@ -1420,18 +1527,6 @@ h2 {
   padding: 0 4rem;
 }
 
-.clients-carousel-container {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  margin-top: 2rem;
-}
-
-.clients-carousel-track {
-  display: flex;
-  transition: transform 0.5s ease-in-out;
-  animation: scrollClientsCarousel 25s linear infinite;
-}
 
 .clients-carousel-item {
   flex: 0 0 auto;
@@ -1457,21 +1552,6 @@ h2 {
   filter: brightness(130%);
 }
 
-@keyframes scrollClientsCarousel {
-  0% {
-    transform: translateX(0);
-  }
-  99% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-.clients-carousel-track:hover {
-  animation-play-state: paused;
-}
 
 /* ─── SEÇÃO CONTATO ─── */
 #contato {
@@ -1744,6 +1824,27 @@ footer .logo img {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  .interfaces-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    aspect-ratio: auto;
+    height: auto;
+  }
+
+  .interfaces-grid > div {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    transform: none !important;
+  }
+
+  .diagnostic-card {
+    padding: 30px;
+  }
   .testimonials-grid {
     grid-template-columns: 1fr;
   }
@@ -1788,7 +1889,7 @@ footer .logo img {
   }
 
   .carousel-track {
-    animation: scrollCarouselMobile 30s linear infinite;
+    animation: scrollCarouselMobile 15s linear infinite;
   }
 
   .carousel-item {
@@ -1801,11 +1902,8 @@ footer .logo img {
     0% {
       transform: translateX(0);
     }
-    99% {
-      transform: translateX(calc(-100vw * 7));
-    }
     100% {
-      transform: translateX(0);
+      transform: translateX(calc(-100vw * 7));
     }
   }
   .clients-carousel-item {
@@ -1823,7 +1921,7 @@ footer .logo img {
   }
 
   .clients-carousel-track {
-    animation: scrollClientsCarouselMobile 30s linear infinite;
+    animation: scrollClientsCarouselMobile 15s linear infinite;
   }
 }
 
@@ -1831,15 +1929,17 @@ footer .logo img {
   0% {
     transform: translateX(0);
   }
-  99% {
-    transform: translateX(calc(-100vw * 12));
-  }
   100% {
-    transform: translateX(0);
+    transform: translateX(calc(-100vw * 12));
   }
 }
 
 @media (max-width: 480px) {
+  .interfaces-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
   .contact-layout {
     grid-template-columns: 1fr;
     gap: 2rem;
