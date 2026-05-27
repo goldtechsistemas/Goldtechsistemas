@@ -1646,6 +1646,28 @@ h2 {
   resize: vertical;
 }
 
+.form-message {
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+  min-height: 20px;
+  transition: all 0.3s ease;
+}
+
+.form-message.success {
+  background: rgba(37, 211, 102, 0.1);
+  color: #25d366;
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.form-message.error {
+  background: rgba(255, 69, 69, 0.1);
+  color: #ff4545;
+  border: 1px solid rgba(255, 69, 69, 0.3);
+}
+
 .btn-submit {
   font-family: "DM Mono", monospace;
   font-size: 0.82rem;
@@ -2026,6 +2048,54 @@ footer .logo img {
 
   .contact-block-label {
     font-size: 0.65rem;
+  }
+}
+
+/* ───────────────────────────────────────
+   FLOATING WHATSAPP BUTTON
+   ─────────────────────────────────────── */
+.whatsapp-float {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #25d366 0%, #20ba5a 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
+  z-index: 99;
+  transition: all 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.6);
+}
+
+.whatsapp-float:active {
+  transform: scale(0.95);
+}
+
+@media (max-width: 768px) {
+  .whatsapp-float {
+    bottom: 20px;
+    right: 20px;
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (max-width: 480px) {
+  .whatsapp-float {
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
   }
 }
 

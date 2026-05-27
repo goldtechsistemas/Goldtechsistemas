@@ -52,10 +52,48 @@ document
   .forEach((el) => counterObserver.observe(el));
 
 // Form submission - Formspree integration
-document.querySelector("form").addEventListener("submit", function (e) {
+const form = document.getElementById("contactForm");
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
   const btn = document.getElementById("submitBtn");
+  const messageDiv = document.getElementById("formMessage");
   btn.textContent = "Enviando...";
   btn.disabled = true;
+
+  const formData = new FormData(form);
+
+  fetch(form.action, {
+    method: "POST",
+    body: formData,
+    headers: {
+      Accept: "application/json",
+    },
+  })
+    .then((response) => {
+      if (response.ok) {
+        messageDiv.textContent = "✓ Mensagem enviada com sucesso! Entraremos em contato em breve.";
+        messageDiv.classList.add("success");
+        form.reset();
+        btn.textContent = "Solicitar demonstração gratuita →";
+        btn.disabled = false;
+        setTimeout(() => {
+          messageDiv.textContent = "";
+          messageDiv.classList.remove("success");
+        }, 5000);
+      } else {
+        throw new Error("Erro ao enviar formulário");
+      }
+    })
+    .catch((error) => {
+      messageDiv.textContent = "✗ Erro ao enviar. Tente novamente.";
+      messageDiv.classList.add("error");
+      btn.textContent = "Solicitar demonstração gratuita →";
+      btn.disabled = false;
+      setTimeout(() => {
+        messageDiv.textContent = "";
+        messageDiv.classList.remove("error");
+      }, 5000);
+    });
 });
 
 // ==========================================
