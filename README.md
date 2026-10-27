@@ -1,241 +1,214 @@
-# 🏢 Gold Tech Sistemas - Website
+<div align="center">
 
-Bem-vindo ao repositório do website da **Gold Tech Sistemas**, uma solução ERP completa para varejo com emissão de NF-e, NFC-e e MDF-e.
+<img src="assets/logo.png" alt="Gold Tech Sistemas" width="220" />
 
-![Status](https://img.shields.io/badge/Status-Ativo-brightgreen)
-![License](https://img.shields.io/badge/License-MIT-blue)
-![HTML5](https://img.shields.io/badge/HTML5-E34C26?logo=html5&logoColor=white)
+# Gold Tech Sistemas — Website institucional
+
+Site oficial da **Gold Tech Sistemas**, ERP completo para varejo com emissão de NF-e, NFC-e e MDF-e, sediado em Sete Lagoas, MG.
+
+[![Deploy](https://img.shields.io/badge/Vercel-online-000000?logo=vercel&logoColor=white)](https://goldtechsistemas.vercel.app)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
 
----
+**[🌐 Ver site no ar](https://goldtechsistemas.vercel.app)**
 
-## ✨ Características
+</div>
 
-- 🎨 **Design Moderno**: Interface clean e profissional
-- 📱 **Totalmente Responsivo**: Funciona perfeitamente em mobile, tablet e desktop
-- ⚡ **Performance**: Sem dependências externas, 100% vanilla HTML/CSS/JS
-- 🎯 **Interativo**: Animações suaves, carrosséis com drag/swipe, scroll reveal
-- 📧 **Formulário Funcional**: Integração com Formspree para recebimento de emails
-- ♿ **Acessível**: Semântica HTML5 adequada
-- 🎬 **Animações**: Scroll animations, carousel automático, hover effects
+<br />
+
+<p align="center">
+  <img src="docs/screenshots/hero.jpg" alt="Página inicial do site Gold Tech Sistemas" width="100%" />
+</p>
 
 ---
 
-## 🚀 Seções Incluídas
+## Sumário
 
-| Seção | Descrição |
-|-------|-----------|
-| 🏠 **Hero** | Banner principal com chamada para ação |
-| 📋 **Recursos** | Grid de features do ERP |
-| 👥 **Sobre** | Histórico e valores da empresa |
-| 🎯 **Nichos** | Carrossel com segmentos de negócio |
-| 💬 **Depoimentos** | Grid de testimonials de clientes |
-| ❓ **FAQ** | Accordion com perguntas frequentes |
-| 📞 **Contato** | Formulário + informações de contato |
-| 👔 **Clientes** | Carousel com logos de clientes |
-
----
-
-## 📁 Estrutura do Projeto
-
-```
-Site Patrick/
-├── 📄 index.html           # Arquivo principal (HTML semântico)
-├── 🎨 css/
-│   └── styles.css          # Todos os estilos (1700+ linhas)
-├── ⚙️ js/
-│   └── script.js           # Lógica JavaScript (vanilla)
-├── 🖼️ assets/              # Imagens, logos e favicon
-│   ├── logo.png
-│   ├── favicon.ico
-│   ├── eu.jpeg
-│   └── svg/
-│       ├── padaria.svg
-│       ├── restaurante.svg
-│       └── ... (mais SVGs)
-└── 📖 README.md            # Este arquivo
-```
+- [Sobre o projeto](#sobre-o-projeto)
+- [Galeria](#galeria)
+- [Funcionalidades](#funcionalidades)
+- [Tecnologias](#tecnologias)
+- [Estrutura de pastas](#estrutura-de-pastas)
+- [Como rodar localmente](#como-rodar-localmente)
+- [Personalização](#personalização)
+- [Deploy](#deploy)
+- [Créditos](#créditos)
 
 ---
 
-## 🎨 Paleta de Cores
+## Sobre o projeto
 
-```css
---gold:        #c9a227    /* Ouro principal */
---gold-light:  #e8c45a    /* Ouro claro */
---bg:          #060608    /* Fundo escuro */
---surface:     #0c0c10    /* Surface 1 */
---text:        #f4f2ed    /* Texto principal */
---text-soft:   #8a8880    /* Texto secundário */
-```
+Landing page institucional criada para apresentar a Gold Tech Sistemas e gerar contatos comerciais. O site mostra os recursos do ERP, os segmentos atendidos, telas reais do sistema e depoimentos de clientes, e leva o visitante a pedir uma demonstração pelo formulário ou pelo WhatsApp.
+
+O projeto foi feito em **HTML, CSS e JavaScript puros**, sem frameworks nem etapa de build, o que deixa o site leve, rápido e fácil de manter.
 
 ---
 
-## 💻 Funcionalidades JavaScript
+## Galeria
 
-### Menu Mobile
-```javascript
-toggleMenu()  // Abre/fecha menu responsivo
-```
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/sobre.jpg" alt="Seção Nossa História" /></td>
+    <td width="50%"><img src="docs/screenshots/nichos.jpg" alt="Carrossel de segmentos atendidos" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Nossa história</b></td>
+    <td align="center"><b>Segmentos atendidos</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/recursos.jpg" alt="Grade de recursos do ERP" /></td>
+    <td width="50%"><img src="docs/screenshots/interfaces.jpg" alt="Telas do sistema" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Recursos do ERP</b></td>
+    <td align="center"><b>Interfaces do sistema</b></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/depoimentos.jpg" alt="Depoimentos de clientes" /></td>
+    <td width="50%"><img src="docs/screenshots/contato.jpg" alt="Formulário de contato" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Depoimentos</b></td>
+    <td align="center"><b>Contato</b></td>
+  </tr>
+</table>
 
-### Animações
-- **Scroll Reveal**: Elementos aparecem com animação ao entrar em viewport
-- **Counter Animation**: Números animados para métricas
-- **Carrossel Automático**: Nichos e clientes rolam continuamente
-- **Drag/Swipe**: Usuários podem arrastar carrosséis em desktop/mobile
+### Versão mobile
 
-### Formulário
-- **Máscara de Telefone**: Formata automaticamente números de telefone
-- **Integração Formspree**: Recebe emails diretamente
-- **Validação**: Campos obrigatórios funcionam via HTML5
-
-### Efeitos Visuais
-- **Navigation Scroll**: Muda cor da barra ao rolar
-- **FAQ Accordion**: Abre/fecha perguntas
-- **Hover Effects**: Feedback visual em elementos interativos
+<p align="center">
+  <img src="docs/screenshots/mobile.jpg" alt="Site no celular" width="300" />
+</p>
 
 ---
 
-## 🔧 Tecnologias
+## Funcionalidades
+
+**Seções da página**
+
+| Seção | Conteúdo |
+|---|---|
+| **Hero** | Chamada principal, CTA de demonstração e contadores animados (clientes, anos de experiência) |
+| **Sobre** | História e proposta de valor da empresa |
+| **Nichos** | Carrossel automático com os segmentos atendidos (restaurantes, óticas, açougues, padarias etc.) |
+| **Recursos** | Grade com os 9 módulos do ERP: fiscal, estoque, financeiro, PDV, relatórios e mais |
+| **Clientes** | Carrossel com logos de clientes |
+| **Interfaces** | Telas reais do sistema (dashboard, frente de caixa, financeiro) |
+| **Depoimentos** | Avaliações de clientes com foto, nome e empresa |
+| **Contato** | Formulário integrado ao Formspree e canais diretos (WhatsApp, e-mail, Instagram) |
+| **FAQ** | Perguntas frequentes em formato acordeão |
+
+**Interatividade**
+
+- Layout responsivo do celular ao desktop grande
+- Animações de entrada ao rolar a página (Intersection Observer)
+- Carrosséis com rolagem automática e suporte a arrastar/deslizar
+- Máscara automática no campo de telefone
+- Menu mobile e barra de navegação que muda ao rolar
+- Botão flutuante de WhatsApp
+
+---
+
+## Tecnologias
 
 | Tecnologia | Uso |
-|------------|-----|
-| **HTML5** | Estrutura semântica |
-| **CSS3** | Grid, Flexbox, Animações, Variáveis CSS |
-| **JavaScript (Vanilla)** | Interatividade, sem frameworks |
-| **Google Fonts** | Tipografia (Playfair Display, DM Sans, DM Mono) |
-| **Formspree** | Backend para formulário |
-| **Intersection Observer** | Scroll animations otimizadas |
+|---|---|
+| HTML5 | Estrutura semântica da página |
+| CSS3 | Grid, Flexbox, variáveis CSS, animações e media queries |
+| JavaScript (vanilla) | Carrosséis, contadores, máscara de telefone, menu e FAQ |
+| [Google Fonts](https://fonts.google.com) | Playfair Display, DM Sans e DM Mono |
+| [Formspree](https://formspree.io) | Recebimento dos envios do formulário por e-mail |
+| [Vercel](https://vercel.com) | Hospedagem e deploy |
 
 ---
 
-## 📱 Breakpoints Responsivos
+## Estrutura de pastas
 
-| Dispositivo | Largura | Layout |
-|------------|---------|--------|
-| 📱 Mobile | ≤480px | 1 coluna, botões full-width |
-| 📱 Tablet Pequeno | 481-600px | 1-2 colunas |
-| 📱 Tablet | 601-768px | 2 colunas |
-| 💻 Tablet Grande | 769-1024px | 2-3 colunas |
-| 🖥️ Desktop | 1025-1440px | Layout completo |
-| 🖥️ Grande Desktop | 1441px+ | Layout expandido |
-
----
-
-## ⚙️ Configuração
-
-### 1️⃣ Clonar o Repositório
-```bash
-git clone https://github.com/seu-usuario/gold-tech-website.git
-cd "Site Patrick"
+```
+.
+├── index.html            # Página única do site
+├── css/
+│   └── styles.css        # Estilos e breakpoints responsivos
+├── js/
+│   └── script.js         # Interações da página
+├── assets/               # Logo, favicon, fotos dos nichos, depoimentos e logos de clientes
+└── docs/
+    └── screenshots/      # Imagens usadas neste README
 ```
 
-### 2️⃣ Abrir Localmente
+---
+
+## Como rodar localmente
+
+Não há dependências nem etapa de build.
+
 ```bash
-# Opção 1: Abrir arquivo diretamente
+git clone https://github.com/goldtechsistemas/Goldtechsistemas.git
+cd Goldtechsistemas
+
+# Opção 1: abrir direto no navegador
 open index.html
 
-# Opção 2: Usar Live Server (recomendado)
-npx live-server
-```
-
-### 3️⃣ Configurar Formspree
-1. Acesse [formspree.io](https://formspree.io)
-2. Crie uma nova conta
-3. Obtenha seu ID do formulário
-4. Substitua em `index.html`:
-```html
-<form action="https://formspree.io/f/SEU_ID_AQUI" method="POST">
+# Opção 2: servidor local
+npx serve .
 ```
 
 ---
 
-## 📝 Customização
+## Personalização
 
-### Cores
-Edite as variáveis CSS em `css/styles.css`:
+**Cores:** a paleta fica nas variáveis CSS no início de `css/styles.css`:
+
 ```css
 :root {
-  --gold: #c9a227;        /* Altere a cor principal */
-  --bg: #060608;          /* Altere o fundo */
-  /* ... outras cores */
+  --gold: #c9a227;        /* cor de destaque */
+  --gold-light: #e8c45a;
+  --bg: #060608;          /* fundo */
+  --text: #f4f2ed;
 }
 ```
 
-### Textos
-Edite direto em `index.html` as seções:
-- Hero title
-- About section
-- Features
-- Testimonials
-- FAQ
-- Contact info
+**Textos e seções:** edite diretamente em `index.html`.
 
-### Velocidade dos Carrosséis
-Em `css/styles.css`, altere a duração da animação:
-```css
-animation: scrollCarousel 25s linear infinite;  /* Reduza para mais rápido */
+**Depoimentos:** edite os cards da seção `#depoimentos` em `index.html` e coloque a foto correspondente em `assets/`.
+
+**Formulário:** troque o ID do Formspree no atributo `action` do formulário em `index.html`:
+
+```html
+<form action="https://formspree.io/f/SEU_ID" method="POST">
 ```
 
-### Logos e Imagens
-Coloque seus arquivos em `assets/`:
-- `logo.png` - Logo principal
-- `favicon.ico` - Ícone do navegador
-- `eu.jpeg` - Foto do fundador
-- SVGs para nichos e clientes
+**Velocidade dos carrosséis:** ajuste a duração da animação `scrollCarousel` em `css/styles.css`.
 
 ---
 
-## 🎯 Performance
+## Deploy
 
-- ✅ Sem JavaScript pesado
-- ✅ CSS otimizado (~1700 linhas)
-- ✅ Imagens otimizadas para web
-- ✅ Lazy loading ativado
-- ✅ Scrollbar customizado
-- ✅ Sem frameworks externos
+O site está publicado na **Vercel**, em [goldtechsistemas.vercel.app](https://goldtechsistemas.vercel.app). Por ser um site estático, basta apontar a Vercel (ou qualquer hospedagem estática) para a raiz do repositório.
 
 ---
 
-## 📧 Contato & Suporte
+## Contato
 
-- **Email**: goldtechsistemas@outlook.com
-- **WhatsApp**: (31) 99955-4328
-- **Endereço**: Sete Lagoas, MG
-- **Horário**: Seg-Sex, 08h às 18h
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para detalhes.
+| | |
+|---|---|
+| **WhatsApp** | (31) 99955-4328 |
+| **E-mail** | goldtechsistemas@gmail.com |
+| **Endereço** | Rua República Guiana, 40, Nova Cidade, Sete Lagoas, MG |
+| **Atendimento** | Segunda a sexta, das 08h às 18h |
 
 ---
 
-## 🙏 Agradecimentos
+## Créditos
 
-- Google Fonts pela tipografia
-- Formspree pelos serviços de formulário
-- Comunidade open source
-
----
-
-## 📈 Roadmap
-
-- [ ] Blog integrado
-- [ ] Seção de pricing
-- [ ] Chat de suporte ao vivo
-- [ ] Integração com CRM
-- [ ] Multilíngue (PT/EN)
-- [ ] PWA (Progressive Web App)
-
----
+Site desenvolvido pela **Connect Dreams** para a Gold Tech Sistemas.
 
 <div align="center">
 
-**Feito com ❤️ para Gold Tech Sistemas**
+<br />
 
-![Last Updated](https://img.shields.io/badge/Last%20Updated-May%202026-blue)
+© Gold Tech Sistemas. Todos os direitos reservados.
+
+<sub>Desenvolvido por <b>Connect Dreams</b></sub>
 
 </div>
