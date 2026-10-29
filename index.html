@@ -1,921 +1,1237 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gold Tech Sistemas | ERP que transforma seu negócio</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-  </head>
-  <body>
-    <!-- NAVIGATION -->
-    <nav id="mainNav">
-      <a href="#" class="logo">
-        <img
-          src="assets/logo.png"
-          alt="Imagem da equipe Gold Tech"
-          loading="lazy"
-        />
-      </a>
-      <ul class="nav-links">
-        <li><a href="#hero">Início</a></li>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gold Tech Sistemas | Emissor de NF-e, NFC-e e ERP para o varejo</title>
+<meta name="description" content="Emissor de NF-e e NFC-e e ERP para o varejo: notas sem erro, caixa rápido, estoque e financeiro. Suporte humano em Sete Lagoas-MG. Demonstração gratuita.">
+<link rel="canonical" href="https://goldtechsistemas.com/">
+<meta name="theme-color" content="#0d0c0a">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="Gold Tech Sistemas">
+<meta property="og:url" content="https://goldtechsistemas.com/">
+<meta property="og:title" content="Gold Tech Sistemas | Você vende. O sistema cuida da parte fiscal.">
+<meta property="og:description" content="NF-e e NFC-e sem erro, caixa rápido e suporte humano. Peça uma demonstração gratuita.">
+<meta property="og:image" content="https://goldtechsistemas.com/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Gold Tech Sistemas","url":"https://goldtechsistemas.com/","logo":"https://goldtechsistemas.com/img/logo.webp","image":"https://goldtechsistemas.com/img/og.jpg","telephone":"+55-31-99554-4328","email":"goldtechsistemas@gmail.com","taxID":"50.073.146/0001-35","address":{"@type":"PostalAddress","streetAddress":"Rua República Guiana, 40 - Nova Cidade","addressLocality":"Sete Lagoas","addressRegion":"MG","addressCountry":"BR"},"openingHours":"Mo-Fr 08:00-18:00","sameAs":["https://instagram.com/gold_tech_sistemas"]}</script>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1438303835161320');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none" alt=""
+src="https://www.facebook.com/tr?id=1438303835161320&ev=PageView&noscript=1"></noscript>
+<!-- End Meta Pixel Code -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap">
+<style>
+/* Layout: "do balcão à SEFAZ" — headline ao lado de uma NFC-e autorizada; marca preto+dourado,
+   uma única faixa clara (papel de cupom) para o formulário. Visual escuro único, por escolha da marca. */
+:root {
+  color-scheme: dark;
+  --ink: #0d0c0a;
+  --ink-2: #15130f;
+  --ink-3: #1e1b15;
+  --line: rgba(230, 196, 100, 0.14);
+  --line-2: rgba(241, 236, 224, 0.08);
+  --text: #f1ece0;
+  --muted: #aaa392;
+  --faint: #857f70;
+  --gold: #d6a82e;
+  --gold-hi: #f0c95a;
+  --gold-dim: rgba(214, 168, 46, 0.13);
+  --on-gold: #17130a;
+  --paper: #f4efe3;
+  --paper-ink: #1d1a14;
+  --paper-muted: #6b6455;
+  --paper-line: #d6ccb6;
+  --paper-gold: #7f6110;
+  --ok: #34a872;
+  --ok-ink: #1f7a50;
+  --ok-dim: rgba(52, 168, 114, 0.14);
+  --crit: #e8705a;
+  --crit-dim: rgba(232, 112, 90, 0.14);
+  --high: #e8a83a;
+  --high-dim: rgba(232, 168, 58, 0.14);
+  --mid: #8fa4c8;
+  --mid-dim: rgba(143, 164, 200, 0.14);
+  --wa: #25d366;
+  --screen-bg: #e6e8ec;
+
+  --f-sans: "Onest", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-accent: "Playfair Display", Georgia, "Times New Roman", serif;
+  --f-mono: ui-monospace, "Cascadia Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --t-xs: 0.8125rem;
+  --t-sm: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.25rem;
+  --t-xl: clamp(1.6rem, 1.2rem + 1.6vw, 2.35rem);
+  --t-hero: clamp(2.3rem, 1.4rem + 3.6vw, 3.9rem);
+
+  --gutter-l: max(clamp(16px, 4vw, 32px), env(safe-area-inset-left, 0px));
+  --gutter-r: max(clamp(16px, 4vw, 32px), env(safe-area-inset-right, 0px));
+  --top-h: 0px;
+  --nav-h: 64px;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--f-sans);
+  font-size: var(--t-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 60; background: var(--ink);
+}
+h1, h2, h3, h4 { margin: 0; line-height: 1.12; text-wrap: balance; letter-spacing: -0.02em; }
+p { margin: 0; text-wrap: pretty; }
+a { color: inherit; }
+.nw { white-space: nowrap; }
+img { display: block; max-width: 100%; height: auto; }
+em.au { font-family: var(--f-accent); font-style: italic; font-weight: 700; color: var(--gold-hi); letter-spacing: 0; }
+:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; border-radius: 6px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+.wrap { max-width: 1224px; margin-inline: auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+section[id] { scroll-margin-top: calc(var(--top-h) + var(--nav-h) + 12px); }
+
+/* ---------- topo: faixa da prévia + navegação ---------- */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; }
+.ribbon { background: var(--gold); color: var(--on-gold); height: var(--top-h); }
+.ribbon .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ribbon-label { font-size: var(--t-xs); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ribbon-label b { font-weight: 800; }
+.seg { display: flex; background: rgba(23, 19, 10, 0.14); border-radius: 999px; padding: 3px; flex-shrink: 0; }
+.seg button {
+  font: 600 var(--t-xs) / 1 var(--f-sans); color: var(--on-gold); background: transparent; border: 0;
+  padding: 8px 14px; border-radius: 999px; cursor: pointer;
+}
+.seg button[aria-pressed="true"] { background: var(--on-gold); color: var(--gold-hi); }
+
+.sitenav { background: rgba(13, 12, 10, 0.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line-2); }
+.sitenav .wrap { height: var(--nav-h); display: flex; align-items: center; gap: 28px; }
+.sitenav .brand img { height: 38px; width: auto; }
+.sitenav ul { display: flex; gap: 26px; list-style: none; margin: 0 0 0 auto; padding: 0; }
+.sitenav ul a { text-decoration: none; color: var(--muted); font-size: var(--t-sm); font-weight: 500; }
+.sitenav ul a:hover { color: var(--text); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font: 700 var(--t-sm) / 1 var(--f-sans); text-decoration: none; border-radius: 12px;
+  padding: 16px 22px; border: 1px solid transparent; cursor: pointer; transition: transform .15s, background .15s, border-color .15s;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-gold { background: var(--gold); color: var(--on-gold); }
+.btn-gold:hover { background: var(--gold-hi); }
+.btn-line { border-color: rgba(241, 236, 224, 0.22); color: var(--text); background: rgba(241, 236, 224, 0.03); }
+.btn-line:hover { border-color: var(--gold); }
+.btn-sm { padding: 11px 16px; border-radius: 10px; font-size: var(--t-xs); }
+.btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+.wa-ico { color: var(--wa); }
+.t-short { display: none; }
+
+/* ---------- hero ---------- */
+.hero { position: relative; overflow: hidden; padding-block: clamp(48px, 7vw, 96px) clamp(56px, 7vw, 96px); }
+.hero::before {
+  content: ""; position: absolute; inset: -20% -10% auto 35%; height: 120%;
+  background: radial-gradient(closest-side, rgba(214, 168, 46, 0.16), transparent 70%); pointer-events: none;
+}
+.hero .wrap { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: clamp(36px, 5vw, 72px); align-items: center; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 10px; font-size: var(--t-xs); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--gold-hi); text-wrap: balance;
+}
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 4px var(--ok-dim); flex-shrink: 0; }
+.hero h1 { font-size: var(--t-hero); font-weight: 800; margin-top: 20px; }
+.hero .lede { font-size: clamp(1.05rem, 1rem + 0.35vw, 1.25rem); color: var(--muted); margin-top: 22px; max-width: 34em; }
+.hero .lede strong { color: var(--text); font-weight: 600; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+.cta-note { font-size: var(--t-xs); color: var(--faint); margin-top: 14px; }
+.proof { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: 36px; padding-top: 26px; border-top: 1px solid var(--line-2); }
+.faces { display: flex; }
+.faces img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ink); margin-left: -10px; object-fit: cover; }
+.faces img:first-child { margin-left: 0; }
+.proof-txt { font-size: var(--t-sm); color: var(--muted); line-height: 1.35; }
+.proof-txt strong { color: var(--text); display: block; }
+.stars { color: var(--gold-hi); letter-spacing: 2px; font-size: var(--t-sm); }
+.proof-stat { border-left: 1px solid var(--line-2); padding-left: 22px; font-size: var(--t-sm); color: var(--muted); line-height: 1.35; }
+.proof-a { display: flex; align-items: center; gap: 14px; }
+.proof-stat strong { display: block; color: var(--text); font-size: var(--t-lg); }
+
+/* NFC-e de exemplo */
+.nfce-stage { position: relative; justify-self: center; width: min(100%, 380px); }
+.nfce {
+  position: relative; margin: 0; background: var(--paper); color: var(--paper-ink);
+  font-family: var(--f-mono); font-size: 12.5px; line-height: 1.5; padding: 22px 22px 34px;
+  transform: rotate(-1.6deg); box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  --zz: 10px;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zz)) 100%;
+          mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--zz)) 100%;
+}
+.nfce-head { text-align: center; display: grid; gap: 2px; }
+.nfce-head strong { font-size: 13.5px; }
+.nfce-head span { color: var(--paper-muted); font-size: 11px; }
+.nfce hr { border: 0; border-top: 1.5px dashed var(--paper-line); margin: 12px 0; }
+.nfce-items { width: 100%; border-collapse: collapse; }
+.nfce-items td { padding: 2px 0; vertical-align: top; }
+.nfce-items td:last-child { text-align: right; white-space: nowrap; }
+.nfce-items .q { color: var(--paper-muted); font-size: 11px; }
+.nfce-line { display: flex; justify-content: space-between; gap: 12px; }
+.nfce-total { font-weight: 700; font-size: 15px; }
+.nfce-key { margin-top: 4px; color: var(--paper-muted); font-size: 11px; }
+.nfce-key code { display: block; color: var(--paper-ink); font: 600 11.5px/1.5 var(--f-mono); letter-spacing: 0.02em; word-spacing: 2px; }
+.stamp {
+  margin-top: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  border: 2px solid var(--ok-ink); color: var(--ok-ink); border-radius: 8px; padding: 8px 10px;
+  font: 800 12px/1.2 var(--f-sans); letter-spacing: 0.04em; text-transform: uppercase; transform: rotate(-2deg);
+  animation: stamp .5s cubic-bezier(.2, 1.4, .4, 1) .5s both;
+}
+.stamp svg { width: 16px; height: 16px; }
+@keyframes stamp { from { transform: rotate(-2deg) scale(1.5); opacity: .2; } to { transform: rotate(-2deg) scale(1); opacity: 1; } }
+.ex-tag { position: absolute; top: 10px; right: 12px; font: 600 10px/1 var(--f-sans); color: var(--paper-muted); text-transform: uppercase; letter-spacing: .08em; }
+.chip {
+  position: absolute; display: flex; align-items: center; gap: 8px; white-space: nowrap;
+  background: var(--ink-3); border: 1px solid var(--line); color: var(--text);
+  font: 600 12.5px/1 var(--f-sans); padding: 10px 14px; border-radius: 999px; box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.8);
+}
+.chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.chip code { font-family: var(--f-mono); color: var(--gold-hi); }
+.chip-a { top: 64px; left: -54px; }
+.chip-b { bottom: 70px; right: -40px; }
+
+/* ---------- faixa de logos ---------- */
+.logos { border-block: 1px solid var(--line-2); padding-block: 26px; background: var(--ink-2); }
+.logos .wrap { display: flex; align-items: center; gap: 28px; }
+.logos-label { font-size: var(--t-xs); color: var(--muted); line-height: 1.4; flex-shrink: 0; max-width: 190px; }
+.logos-label strong { color: var(--text); display: block; }
+.marquee { overflow: hidden; min-width: 0; flex: 1; -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+.marquee-track { display: flex; gap: 14px; width: max-content; animation: slide 48s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.marquee img { width: 64px; height: 64px; border-radius: 14px; object-fit: cover; filter: grayscale(1) brightness(0.9); opacity: .75; transition: filter .2s, opacity .2s; }
+.marquee img:hover { filter: none; opacity: 1; }
+@keyframes slide { to { transform: translateX(calc(-50% - 7px)); } }
+@media (prefers-reduced-motion: reduce) { .marquee-track { flex-wrap: wrap; width: auto; } .marquee-track [aria-hidden] { display: none; } }
+
+/* ---------- seções genéricas ---------- */
+.sec { padding-block: clamp(64px, 9vw, 112px); }
+.sec-head { max-width: 760px; display: grid; gap: 14px; margin-bottom: clamp(32px, 4vw, 52px); }
+.sec-head h2 { font-size: var(--t-xl); font-weight: 800; }
+.sec-head p { color: var(--muted); font-size: var(--t-md); max-width: 40em; }
+.kicker { font-size: var(--t-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--gold); }
+.check { width: 18px; height: 18px; flex-shrink: 0; color: var(--ok); }
+
+.mid-cta {
+  margin-top: 32px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 28px;
+  padding: 22px 26px; border: 1px solid var(--line); border-radius: 18px; background: var(--gold-dim);
+}
+.mid-cta p { font-size: var(--t-lg); font-weight: 700; line-height: 1.3; }
+.mid-cta p span { display: block; font-size: var(--t-sm); font-weight: 400; color: var(--muted); margin-top: 4px; }
+
+/* problemas */
+.pains { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.pain { background: var(--ink-2); border: 1px solid var(--line-2); border-radius: 18px; padding: 26px; display: flex; flex-direction: column; gap: 12px; }
+.tag-bad, .tag-good { font-size: var(--t-xs); font-weight: 700; text-transform: uppercase; letter-spacing: .06em; display: flex; gap: 8px; align-items: center; }
+.tag-bad { color: var(--crit); }
+.tag-bad::before { content: ""; width: 14px; height: 2px; background: currentColor; }
+.tag-good { color: var(--ok); margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line-2); }
+.pain h3 { font-size: var(--t-lg); font-weight: 700; }
+.pain p { color: var(--muted); font-size: var(--t-sm); }
+.pain p.fix { color: var(--text); }
+
+/* recursos */
+.pillars { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line-2); border: 1px solid var(--line-2); border-radius: 18px; overflow: hidden; }
+.pillar { background: var(--ink); padding: 28px 24px; display: grid; gap: 12px; align-content: start; }
+.pillar-tag { font: 600 12px/1 var(--f-mono); color: var(--gold); }
+.pillar h3 { font-size: var(--t-lg); font-weight: 700; }
+.pillar ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.pillar li { font-size: var(--t-sm); color: var(--muted); padding-left: 18px; position: relative; }
+.pillar li::before { content: ""; position: absolute; left: 0; top: .62em; width: 8px; height: 2px; background: var(--gold); }
+.pillar li small { display: block; color: var(--faint); font-size: var(--t-xs); }
+.included { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; }
+.included > span:first-child { font-size: var(--t-xs); color: var(--faint); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; margin-right: 4px; }
+.pill { font-size: var(--t-xs); font-weight: 600; padding: 8px 12px; border-radius: 999px; background: var(--gold-dim); color: var(--gold-hi); }
+
+/* telas */
+.alt { background: var(--ink-2); border-block: 1px solid var(--line-2); }
+.window { border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--ink-3); box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .9); }
+.window-bar { background: var(--ink-3); color: var(--muted); font-size: var(--t-xs); padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.window-bar b { color: var(--text); font-weight: 600; }
+.tela-count { font: 600 var(--t-xs)/1 var(--f-mono); color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
+.shots-box { position: relative; }
+.shots { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; }
+.shots::-webkit-scrollbar { display: none; }
+.shots:focus-visible { outline-offset: -3px; }
+.slide { flex: 0 0 100%; scroll-snap-align: start; scroll-snap-stop: always; }
+.shots-nav {
+  position: absolute; top: 50%; z-index: 2; width: 46px; height: 46px; margin-top: -23px; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; color: var(--gold-hi); background: rgba(13, 12, 10, .84);
+  border: 1px solid rgba(214, 168, 46, .55); box-shadow: 0 10px 26px -10px rgba(0, 0, 0, .7);
+  transition: opacity .2s, background .2s, color .2s, transform .2s;
+}
+.shots-nav svg { width: 22px; height: 22px; }
+.shots-nav.prev { left: 14px; }
+.shots-nav.next { right: 14px; }
+.shots-nav:disabled { opacity: 0; pointer-events: none; }
+@media (hover: hover) { .shots-nav:hover { background: var(--gold); color: var(--on-gold); transform: scale(1.06); } }
+.shot {
+  display: block; position: relative; width: 100%; aspect-ratio: 16 / 9; padding: 0; margin: 0; border: 0;
+  background: var(--screen-bg); color: inherit; font: inherit; cursor: zoom-in;
+}
+.shot img { width: 100%; height: 100%; object-fit: scale-down; }
+.shot .zoom {
+  position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 6px;
+  font: 700 12px/1 var(--f-sans); color: var(--on-gold); background: var(--gold); padding: 8px 11px; border-radius: 999px;
+  box-shadow: 0 6px 18px -6px rgba(0, 0, 0, .5); transition: transform .2s;
+}
+.shot:hover .zoom { transform: scale(1.06); }
+.shot .zoom svg { width: 14px; height: 14px; }
+.caps { display: grid; margin-top: 14px; }
+.caps > p { grid-area: 1 / 1; visibility: hidden; }
+.caps > p.on { visibility: visible; }
+.screen-cap { color: var(--muted); font-size: var(--t-sm); max-width: 60em; }
+.screen-more { margin-top: 10px; font-size: var(--t-xs); color: var(--faint); }
+.screen-more a { color: var(--gold-hi); font-weight: 600; text-underline-offset: 3px; }
+
+.lightbox { margin: 0; inset: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; padding: 0; border: 0; background: transparent; }
+.lightbox::backdrop { background: rgba(8, 7, 6, .9); }
+.lightbox[open] { display: grid; place-items: center; }
+.lb-fig { margin: 0; display: grid; gap: 12px; justify-items: center; padding: 64px 16px 24px; }
+.lb-fig img { max-width: calc(100vw - 32px); max-height: calc(100vh - 140px); width: auto; height: auto; border-radius: 10px; background: #fff; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
+.lb-fig figcaption { color: var(--muted); font-size: var(--t-sm); text-align: center; }
+.lb-hint { display: none; font-size: var(--t-xs); color: var(--faint); text-align: center; }
+.lb-close {
+  position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); right: calc(16px + env(safe-area-inset-right, 0px));
+  width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--ink-3); color: var(--text);
+  font: 400 26px/1 var(--f-sans); cursor: pointer; display: grid; place-items: center;
+}
+
+/* segmentos */
+.segs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.seg-tile {
+  position: relative; display: block; border-radius: 14px; overflow: hidden; aspect-ratio: 4 / 5; isolation: isolate;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.seg-tile img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2, .7, .2, 1), filter .3s; }
+.seg-tile::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 2px var(--gold); opacity: 0; transition: opacity .3s; pointer-events: none; }
+.seg-go {
+  position: absolute; top: 12px; left: 12px; z-index: 1; display: inline-flex; align-items: center; gap: 6px;
+  background: var(--gold); color: var(--on-gold); font: 700 12.5px/1 var(--f-sans); padding: 9px 12px; border-radius: 999px;
+  opacity: 0; transform: translateY(-8px); transition: opacity .25s, transform .25s; white-space: nowrap;
+}
+.seg-go svg { width: 14px; height: 14px; }
+@media (hover: hover) {
+  .seg-tile:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -22px rgba(214, 168, 46, .6); }
+  .seg-tile:hover img { transform: scale(1.06); filter: brightness(.88); }
+  .seg-tile:hover::after, .seg-tile:hover .seg-go { opacity: 1; }
+  .seg-tile:hover .seg-go { transform: none; }
+}
+.seg-tile:focus-visible::after, .seg-tile:focus-visible .seg-go { opacity: 1; transform: none; }
+@media (hover: none) {
+  .seg-go { opacity: 1; transform: none; padding: 8px; }
+  .seg-go span { display: none; }
+}
+.segs-note { margin-top: 20px; color: var(--muted); font-size: var(--t-sm); }
+.segs-note a { color: var(--gold-hi); font-weight: 600; }
+
+/* depoimentos */
+.quotes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.quote { margin: 0; background: var(--ink); border: 1px solid var(--line-2); border-radius: 18px; padding: 26px; display: flex; flex-direction: column; gap: 12px; }
+.q-title { font-size: var(--t-lg); font-weight: 700; line-height: 1.3; text-wrap: balance; }
+.quote blockquote { margin: 0; color: var(--muted); font-size: var(--t-sm); line-height: 1.6; }
+.who { display: flex; align-items: center; gap: 12px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line-2); }
+.who img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+.who b { display: block; font-size: var(--t-sm); }
+.who span { font-size: var(--t-xs); color: var(--muted); }
+.swipe-hint { display: none; font-size: var(--t-xs); color: var(--faint); margin-top: 10px; }
+.q-dots { display: none; justify-content: center; gap: 6px; margin-top: 16px; }
+.q-dots i { width: 6px; height: 6px; border-radius: 999px; background: rgba(241, 236, 224, .22); transition: width .25s, background .25s; }
+.q-dots i.on { width: 20px; background: var(--gold); }
+
+/* equipe + como funciona */
+.about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(28px, 6vw, 88px); align-items: center; }
+.about h2 { font-size: var(--t-xl); font-weight: 800; margin-top: 12px; }
+.about p.body { color: var(--muted); margin-top: 16px; max-width: 38em; }
+.steps {
+  list-style: none; margin: 0; padding: clamp(22px, 3vw, 32px); display: grid; gap: 26px; counter-reset: s;
+  border-radius: 24px; border: 1px solid var(--line);
+  background: linear-gradient(160deg, rgba(240, 201, 90, .2), rgba(214, 168, 46, .04) 45%), var(--ink-2);
+  box-shadow: 0 34px 70px -36px rgba(0, 0, 0, .9);
+}
+.steps li { counter-increment: s; position: relative; display: grid; gap: 4px; align-content: start; padding-left: 54px; }
+.steps li::before {
+  content: counter(s); position: absolute; left: 0; top: -4px; width: 34px; height: 34px; border-radius: 999px;
+  display: grid; place-items: center; font: 700 var(--t-sm)/1 var(--f-mono); color: var(--on-gold); background: var(--gold);
+}
+.steps li:not(:last-child)::after { content: ""; position: absolute; left: 16px; top: 36px; bottom: -20px; width: 2px; border-radius: 2px; background: rgba(214, 168, 46, .35); }
+.steps b { font-size: var(--t-md); }
+.steps span { font-size: var(--t-sm); color: var(--muted); }
+
+/* formulário (faixa papel) */
+.paper { background: var(--paper); color: var(--paper-ink); }
+.paper .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: clamp(32px, 5vw, 72px); align-items: start; }
+.paper .kicker { color: var(--paper-gold); }
+.paper h2 { font-size: var(--t-xl); font-weight: 800; margin-top: 12px; }
+.paper em.au { color: var(--paper-gold); }
+.paper .intro p { color: var(--paper-muted); margin-top: 14px; max-width: 32em; }
+.gets { list-style: none; margin: 26px 0 0; padding: 0; display: grid; gap: 12px; }
+.gets li { display: flex; gap: 12px; font-weight: 500; }
+.gets .check { color: var(--ok-ink); margin-top: 3px; }
+.direct { margin-top: 30px; padding: 18px 20px; border: 1.5px dashed var(--paper-line); border-radius: 14px; display: grid; gap: 6px; }
+.direct span { font-size: var(--t-xs); color: var(--paper-muted); }
+.direct a { font-weight: 700; font-size: var(--t-lg); text-decoration: none; display: inline-flex; gap: 10px; align-items: center; }
+.direct a svg { width: 22px; height: 22px; color: #1aa851; }
+.form-card { background: #fffdf8; border: 1px solid var(--paper-line); border-radius: 20px; padding: clamp(22px, 3vw, 32px); box-shadow: 0 24px 50px -30px rgba(60, 45, 10, .45); }
+.form-card h3 { font-size: var(--t-lg); font-weight: 800; }
+.form-card form > p { color: var(--paper-muted); font-size: var(--t-sm); margin-top: 6px; }
+.field { display: grid; gap: 6px; margin-top: 16px; }
+.field label { font-size: var(--t-sm); font-weight: 600; }
+.field input, .field select {
+  font: 500 16px/1.2 var(--f-sans); color: var(--paper-ink); background: #fff; border: 1.5px solid var(--paper-line);
+  border-radius: 12px; padding: 14px; width: 100%;
+}
+.field input:focus, .field select:focus { outline: none; border-color: #b8901f; box-shadow: 0 0 0 4px rgba(214, 168, 46, .2); }
+.field select.flash { animation: flash 1.4s ease; }
+@keyframes flash { 0%, 60% { border-color: #b8901f; box-shadow: 0 0 0 5px rgba(214, 168, 46, .35); } 100% { box-shadow: 0 0 0 0 rgba(214, 168, 46, 0); } }
+.form-card .btn { width: 100%; margin-top: 22px; font-size: var(--t-md); padding: 18px; }
+.privacy { font-size: var(--t-xs); color: var(--paper-muted); margin-top: 12px; text-align: center; }
+.done { text-align: center; display: grid; gap: 10px; justify-items: center; padding: 24px 0; }
+.done svg { width: 48px; height: 48px; color: var(--ok-ink); }
+.done p { color: var(--paper-muted); }
+
+/* dúvidas */
+.faq-layout { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+.faq-aside { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--top-h) + var(--nav-h) + 24px); display: grid; gap: 14px; }
+.faq-aside h2 { font-size: var(--t-xl); font-weight: 800; }
+.faq-aside > p { color: var(--muted); }
+.faq-help { margin-top: 10px; padding: 20px; border: 1px solid var(--line-2); border-radius: 16px; background: var(--ink-2); display: grid; gap: 12px; justify-items: start; }
+.faq-help b { font-size: var(--t-md); }
+.faq-help span { font-size: var(--t-sm); color: var(--muted); }
+.faq-help.mob { display: none; }
+.tbc-note { font-size: var(--t-xs); color: var(--high); display: flex; gap: 8px; align-items: flex-start; }
+.faq details { border-bottom: 1px solid var(--line-2); }
+.faq details:first-child { border-top: 1px solid var(--line-2); }
+.faq summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; padding: 20px 0; font-weight: 600; font-size: var(--t-md); }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--gold); font: 400 1.5rem/1 var(--f-sans); transition: transform .2s; flex-shrink: 0; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { color: var(--muted); padding-bottom: 22px; max-width: 62ch; }
+.tbc {
+  display: inline-block; margin-left: 8px; font: 700 10.5px/1 var(--f-sans); text-transform: uppercase; letter-spacing: .06em;
+  color: var(--high); border: 1px dashed currentColor; border-radius: 999px; padding: 4px 8px; vertical-align: 2px; white-space: nowrap;
+}
+
+/* chamada final */
+.final {
+  text-align: center; padding-block: clamp(64px, 8vw, 104px); border-top: 1px solid var(--line-2);
+  background: radial-gradient(ellipse 70% 90% at 50% 0%, rgba(214, 168, 46, .17), transparent 70%), var(--ink);
+}
+.final h2 { font-size: clamp(1.9rem, 1.3rem + 2.4vw, 3rem); font-weight: 800; max-width: 16em; margin-inline: auto; }
+.final p { color: var(--muted); margin: 18px auto 0; max-width: 34em; }
+.final .cta-row { justify-content: center; }
+.checks { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px 24px; margin-top: 22px; font-size: var(--t-sm); color: var(--muted); }
+.checks span { display: inline-flex; gap: 8px; align-items: center; }
+
+/* rodapé */
+footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); padding-block: 56px 32px; font-size: var(--t-sm); }
+.foot-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)); gap: 36px 40px; }
+.foot-brand img { height: 58px; width: auto; }
+.foot-brand p { color: var(--muted); margin-top: 18px; max-width: 30ch; }
+.foot-brand .btn { margin-top: 20px; }
+.foot-col h4 { font-size: var(--t-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--gold); margin-bottom: 16px; }
+.foot-col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.foot-col li { color: var(--muted); line-height: 1.45; }
+.foot-col a { color: var(--text); text-decoration: none; display: inline-flex; gap: 8px; align-items: center; padding-block: 6px; margin-block: -6px; }
+.foot-col a:hover { color: var(--gold-hi); }
+.foot-col svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gold); }
+.foot-col .wa-ico { color: var(--wa); }
+.foot-bottom { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line-2); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 24px; font-size: var(--t-xs); color: var(--faint); }
+.legal { display: flex; flex-wrap: wrap; }
+.legal span:not(:last-child)::after { content: "·"; margin-inline: 8px; }
+
+.fab {
+  position: fixed; right: calc(20px + env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
+  width: 58px; height: 58px; border-radius: 50%; background: var(--wa); color: #fff; display: grid; place-items: center;
+  box-shadow: 0 10px 30px -6px rgba(37, 211, 102, .5); transition: opacity .25s, transform .25s;
+}
+.fab svg { width: 28px; height: 28px; }
+.fab.away { opacity: 0; transform: translateY(14px) scale(.9); pointer-events: none; }
+.mbar { display: none; }
+
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.form-err { margin-top: 12px; font-size: var(--t-xs); color: #a3261a; }
+.form-err a { color: inherit; font-weight: 700; }
+#lead button[disabled] { opacity: .7; cursor: progress; }
+
+/* ---------- responsivo ---------- */
+@media (min-width: 901px) {
+  /* notebook de 768–800 px de altura: prova social do topo aparece sem rolar */
+  .hero { padding-top: clamp(36px, 6.5vh, 80px); }
+  .proof { margin-top: 30px; padding-top: 22px; }
+}
+@media (max-width: 1060px) {
+  .pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chip-a { left: -16px; }
+  .chip-b { right: -10px; }
+  .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr); }
+  .nfce-stage { margin-top: 12px; }
+  .sitenav ul { display: none; }
+  .sitenav .btn { margin-left: auto; }
+  .pains { grid-template-columns: minmax(0, 1fr); }
+  .quotes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .segs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .about { grid-template-columns: minmax(0, 1fr); }
+  .faq-help.desk { display: none; }
+  .faq-help.mob { display: grid; }
+  .paper .wrap { grid-template-columns: minmax(0, 1fr); }
+  .faq-layout { grid-template-columns: minmax(0, 1fr); }
+  .faq-aside { position: static; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .order, .plan { grid-template-columns: minmax(0, 1fr); }
+  .logos .wrap { flex-direction: column; align-items: stretch; gap: 16px; }
+  .logos-label { max-width: none; }
+}
+@media (max-width: 720px) {
+  .ribbon-label .long { display: none; }
+  .pillars { grid-template-columns: minmax(0, 1fr); }
+  :root { --nav-h: 58px; }
+  .proof { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; }
+  .proof-a { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .proof-stat { border-left: 1px solid var(--line-2); padding-left: 16px; }
+  .hero .cta-row .btn, .final .cta-row .btn, .foot-brand .btn { width: 100%; }
+  .quotes {
+    margin-left: calc(-1 * var(--gutter-l)); margin-right: calc(-1 * var(--gutter-r));
+    padding-left: var(--gutter-l); padding-right: var(--gutter-r); scroll-padding-left: var(--gutter-l);
+    scrollbar-width: none;
+  }
+  .quotes::-webkit-scrollbar { display: none; }
+  .quotes { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 14px; padding-bottom: 6px; }
+  .quote { flex: 0 0 86%; scroll-snap-align: start; }
+  .q-dots { display: flex; }
+  .swipe-hint { display: block; text-align: center; }
+  .checks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .checks span { flex-direction: column; gap: 6px; font-size: var(--t-xs); text-align: center; }
+  .mid-cta .btn { width: 100%; }
+  .fab { display: none; }
+  /* sem desfoque no celular: rolagem mais leve em aparelhos simples */
+  .sitenav { backdrop-filter: none; background: rgba(13, 12, 10, .97); }
+  .mbar {
+    display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; position: fixed; inset: auto 0 0; z-index: 45;
+    padding: 10px var(--gutter-r) calc(10px + env(safe-area-inset-bottom, 0px)) var(--gutter-l);
+    background: rgba(13, 12, 10, .97); border-top: 1px solid var(--line-2); transition: transform .25s;
+  }
+  .mbar.away { transform: translateY(110%); }
+  .mbar .btn { padding: 14px 10px; }
+  .shots-nav { width: 38px; height: 38px; margin-top: -19px; }
+  .shots-nav svg { width: 18px; height: 18px; }
+  .shots-nav.prev { left: 8px; }
+  .shots-nav.next { right: 8px; }
+  .legal { flex-direction: column; gap: 2px; }
+  .legal span:not(:last-child)::after { display: none; }
+  .wtable { min-width: 0; }
+  .wtable .bar { display: none; }
+  .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
+  .foot-grid > .foot-brand, .foot-grid > .foot-col:nth-child(2) { grid-column: 1 / -1; }
+  footer.site { padding-bottom: calc(32px + 76px + env(safe-area-inset-bottom, 0px)); }
+  .item { grid-template-columns: minmax(0, 1fr); }
+  .sev { grid-row: auto; justify-self: start; padding: 7px 12px; }
+  .snippet { grid-column: 1; }
+  .sitenav .brand img { height: 32px; }
+}
+@media (max-width: 720px) and (orientation: portrait) {
+  .lb-hint { display: block; }
+}
+@media (max-width: 400px) {
+  .t-full { display: none; }
+  .t-short { display: inline; }
+}
+@media (max-width: 360px) {
+  .btn:not(.btn-sm) { font-size: 0.875rem; }
+  .btn > svg:not(.wa-ico) { display: none; }
+  .form-card .btn { font-size: var(--t-sm); padding: 16px 12px; }
+  .nfce { font-size: 11.5px; padding: 18px 16px 30px; }
+  .nfce-key code { font-size: 10.5px; }
+}
+@media (max-width: 420px) {
+  .kpis { grid-template-columns: minmax(0, 1fr); }
+  .chip-a { top: -14px; left: 4px; }
+  .chip-b { bottom: -10px; right: 4px; }
+  .seg button { padding: 8px 11px; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <nav class="sitenav" id="sitenav" aria-label="Navegação do site">
+    <div class="wrap">
+      <a class="brand" href="#inicio"><img src="img/logo.webp" width="151" height="38" alt="Gold Tech Sistemas"></a>
+      <ul>
         <li><a href="#recursos">Recursos</a></li>
-        <li><a href="#sobre">Sobre</a></li>
-        <li><a href="#nichos">Nichos</a></li>
-        <li><a href="#depoimentos">Depoimentos</a></li>
-        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#telas">O sistema</a></li>
+        <li><a href="#segmentos">Segmentos</a></li>
+        <li><a href="#clientes">Clientes</a></li>
+        <li><a href="#duvidas">Dúvidas</a></li>
       </ul>
-      <a href="#contato" class="btn-nav">Fale Conosco</a>
-      <button class="hamburger" onclick="toggleMenu()">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </nav>
-
-    <div class="mobile-menu" id="mobileMenu">
-      <a href="#hero" onclick="toggleMenu()">Início</a>
-      <a href="#recursos" onclick="toggleMenu()">Recursos</a>
-      <a href="#sobre" onclick="toggleMenu()">Sobre</a>
-      <a href="#nichos" onclick="toggleMenu()">Nichos</a>
-      <a href="#depoimentos" onclick="toggleMenu()">Depoimentos</a>
-      <a href="#faq" onclick="toggleMenu()">FAQ</a>
-      <a href="#contato" onclick="toggleMenu()">Fale Conosco</a>
+      <a class="btn btn-gold btn-sm" href="#demonstracao"><span class="t-full">Demonstração grátis</span><span class="t-short">Demo grátis</span></a>
     </div>
+  </nav>
+</header>
 
-    <!-- HERO SECTION -->
-    <section id="hero">
-      <div class="hero-inner">
-        <div class="hero-text">
-          <span class="hero-badge reveal">
-            <span class="dot"></span>
-            Automação fiscal · Sete Lagoas, MG
-          </span>
-          <h1 class="hero-title reveal delay-1">
-            Gestão que <span class="gold italic">transforma</span> seu negócio.
-          </h1>
-          <p class="sub reveal delay-2">
-            ERP completo para varejo com emissão de NF-e e NFC-e sem erro, sem
-            travar e sem dor de cabeça com a Receita.
-          </p>
-          <div class="hero-actions reveal delay-3">
-            <a href="#contato" class="btn-primary">
-              <span>Solicitar demonstração gratuita</span>
-              <svg
-                class="arrow"
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M8 0L6.59 1.41L12.17 7H0V9H12.17L6.59 14.59L8 16L16 8L8 0Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </a>
-            <a href="#recursos" class="btn-ghost">
-              <span class="play-icon">▶</span>
-              Ver recursos
-            </a>
-          </div>
+<!-- ======================= NOVA VERSÃO ======================= -->
+<main id="v-previa">
+  <section class="hero" id="inicio">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow"><span>Emissor de <span class="nw">NF-e</span> e <span class="nw">NFC-e</span> + ERP para o varejo</span></span>
+        <h1>Você vende. O sistema cuida <em class="au">da parte fiscal.</em></h1>
+        <p class="lede">Notas emitidas sem erro, caixa rápido no movimento, estoque e financeiro no mesmo lugar. <strong>E suporte humano de verdade sempre que você precisar.</strong></p>
+        <div class="cta-row">
+          <a class="btn btn-gold" href="#demonstracao">Quero uma demonstração grátis
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a class="btn btn-line" href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener">
+            <svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg>
+            Falar no WhatsApp
+          </a>
         </div>
-
-        <div class="hero-card reveal delay-4">
-          <p class="hero-card-label">Resultados Gold Tech</p>
-          <div class="metric">
-            <p class="metric-value" data-target="230" data-suffix="+">0</p>
-            <p class="metric-label">Clientes ativos</p>
-            <div class="metric-bar" style="--pct: 85%"></div>
+        <p class="cta-note">Demonstração gratuita · Sem fidelidade · Seg a sex, 8h às 18h</p>
+        <div class="proof">
+          <div class="proof-a">
+          <div class="faces" aria-hidden="true">
+            <img src="img/depo1.webp" width="40" height="40" alt="" decoding="async"><img src="img/depo3.webp" width="40" height="40" alt="" decoding="async"><img src="img/depo2.webp" width="40" height="40" alt="" decoding="async"><img src="img/depo5.webp" width="40" height="40" alt="" decoding="async">
           </div>
-          <div class="metric">
-            <p class="metric-value" data-target="15" data-suffix="+">0</p>
-            <p class="metric-label">Anos de experiência</p>
-            <div class="metric-bar" style="--pct: 90%"></div>
+          <p class="proof-txt"><span class="stars" aria-hidden="true">★★★★★</span><strong>230+ empresas já confiam</strong></p>
           </div>
-          <div class="metric">
-            <p class="metric-value" data-target="100" data-suffix="%">0</p>
-            <p class="metric-label">Foco no varejo</p>
-            <div class="metric-bar" style="--pct: 100%"></div>
-          </div>
+          <p class="proof-stat"><strong>15+ anos</strong>automatizando o varejo</p>
         </div>
       </div>
-    </section>
 
-    <div class="section-divider"></div>
-    <!-- Linha de separação -->
-
-    <!-- ABOUT SECTION -->
-    <section id="sobre">
-      <div class="inner">
-        <span class="tag reveal">Nossa história</span>
-        <h2 class="reveal delay-1">
-          Parceria para o<br /><span class="gold italic">seu sucesso.</span>
-        </h2>
-
-        <div class="about-layout">
-          <!-- Espaço para a imagem (coluna da esquerda) -->
-          <div class="about-image-placeholder reveal delay-2">
-            <img src="assets/eu.png" alt="Patrick e Gerre - Fundadores" />
+      <div class="nfce-stage">
+        <figure class="nfce" aria-label="Exemplo de NFC-e autorizada pela SEFAZ">
+          <span class="ex-tag">exemplo</span>
+          <div class="nfce-head">
+            <strong>PADARIA BOA VISTA LTDA</strong>
+            <span>CNPJ <span class="nw">12.345.678/0001-95</span></span>
+            <span>DANFE <span class="nw">NFC-e</span> · Documento Auxiliar da Nota Fiscal de Consumidor Eletrônica</span>
           </div>
-          <!-- Conteúdo de texto (coluna da direita) -->
-          <div class="about-text reveal delay-3">
-            <p>
-              A Gold Tech Sistemas nasceu com o propósito de
-              <strong>simplificar a gestão empresarial</strong>, oferecendo um
-              sistema de gestão completo para o varejo, com automação fiscal e
-              comercial eficiente e confiável.
-            </p>
-            <p>
-              Desde o início, nosso foco sempre foi resolver problemas reais do
-              dia a dia das empresas, eliminando processos manuais, reduzindo
-              erros e trazendo mais controle para a operação. Com nossas
-              soluções, é possível centralizar a emissão de documentos fiscais
-              (NF-e, NFC-e, CT-e e MDF-e), o controle de estoque e a gestão de
-              vendas em um único sistema, de forma simples e segura.
-            </p>
-            <p>
-              Mais do que tecnologia, acreditamos em
-              <strong>proximidade</strong>. Trabalhamos ao lado dos nossos
-              clientes, oferecendo suporte ágil, implantação eficiente e
-              acompanhamento contínuo, garantindo que cada empresa utilize o
-              sistema com o máximo de aproveitamento.
-            </p>
-            <p>
-              Hoje, atendemos empresas em todo o Brasil e seguimos evoluindo
-              constantemente, com o compromisso de entregar
-              <strong>organização, segurança e inteligência</strong> para quem
-              busca crescer com consistência.
-            </p>
+          <hr>
+          <table class="nfce-items">
+            <tr><td>Pão francês kg<br><span class="q">0,850 kg × 18,90</span></td><td>16,07</td></tr>
+            <tr><td>Café torrado 500 g<br><span class="q">1 un × 21,50</span></td><td>21,50</td></tr>
+            <tr><td>Leite integral 1 L<br><span class="q">2 un × 5,49</span></td><td>10,98</td></tr>
+          </table>
+          <hr>
+          <div class="nfce-line"><span>Qtd. total de itens</span><span>3</span></div>
+          <div class="nfce-line nfce-total"><span>Valor a pagar R$</span><span>48,55</span></div>
+          <div class="nfce-line"><span>PIX</span><span>48,55</span></div>
+          <hr>
+          <div class="nfce-key">Consulte pela chave de acesso
+            <code>3126 1012 3456 7800 0195 6500 1000 0012 3410 0012 3459</code>
           </div>
+          <div class="nfce-key">Protocolo 131260000123456 · 27/10/2026 10:42</div>
+          <div class="stamp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Autorizado o uso da <span class="nw">NFC-e</span></span></div>
+        </figure>
+        <div class="chip chip-a"><i></i><span><span class="nw">SEFAZ-MG</span> ·</span><code>cStat 100</code></div>
+        <div class="chip chip-b">Certificado A1 em dia</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="logos" aria-label="Clientes">
+    <div class="wrap">
+      <p class="logos-label"><strong>Mais de 230 empresas</strong>já emitem suas notas com a Gold Tech</p>
+      <div class="marquee">
+        <div class="marquee-track">
+          <img src="img/cli1.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli2.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli3.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli4.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli5.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli6.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli7.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli8.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli9.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli10.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli11.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli12.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli13.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli14.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli15.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><span aria-hidden="true" style="display:contents"><img src="img/cli1.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli2.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli3.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli4.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli5.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli6.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli7.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli8.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli9.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli10.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli11.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli12.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli13.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli14.webp" width="64" height="64" alt="" loading="lazy" decoding="async"><img src="img/cli15.webp" width="64" height="64" alt="" loading="lazy" decoding="async"></span>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <div class="section-divider"></div>
-    <!-- Linha de separação -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Se você tem loja, já passou por isso</span>
+        <h2>Problema com nota fiscal custa caro: venda perdida, retrabalho e risco de multa.</h2>
+        <p>Se pelo menos uma destas situações já aconteceu com você, seu sistema atual está custando mais do que deveria.</p>
+      </div>
+      <div class="pains">
+        <article class="pain">
+          <span class="tag-bad">O problema</span>
+          <h3>A nota volta rejeitada e o cliente fica esperando</h3>
+          <p>Imposto calculado na mão e cadastro errado viram rejeição na SEFAZ, retrabalho e risco de multa.</p>
+          <span class="tag-good">Com a Gold Tech</span>
+          <p class="fix">O sistema calcula os impostos sozinho e transmite em tempo real. A nota sai certa e o cliente vai embora satisfeito.</p>
+        </article>
+        <article class="pain">
+          <span class="tag-bad">O problema</span>
+          <h3>O caixa trava justo na hora do movimento</h3>
+          <p>Cada minuto de fila é um cliente pensando em desistir da compra e ir para o concorrente.</p>
+          <span class="tag-good">Com a Gold Tech</span>
+          <p class="fix">Frente de caixa ágil, com a <span class="nw">NFC-e</span> integrada ao estoque e ao financeiro. Feita para atender rápido no balcão cheio.</p>
+        </article>
+        <article class="pain">
+          <span class="tag-bad">O problema</span>
+          <h3>O certificado vence e a loja para de emitir</h3>
+          <p>Sem certificado digital válido, nenhuma nota é autorizada. E resolver costuma virar burocracia na pior hora.</p>
+          <span class="tag-good">Com a Gold Tech</span>
+          <p class="fix">A gente emite seu certificado digital A1 ou A3, sem burocracia, para sua loja não parar.</p>
+        </article>
+        <article class="pain">
+          <span class="tag-bad">O problema</span>
+          <h3>O suporte some quando você mais precisa</h3>
+          <p>Robô, fila, número de protocolo… e a sua loja parada esperando alguém resolver.</p>
+          <span class="tag-good">Com a Gold Tech</span>
+          <p class="fix">Suporte humano e rápido, com especialistas da nossa equipe. É um dos pontos que nossos clientes mais elogiam.</p>
+        </article>
+      </div>
+      <div class="mid-cta">
+        <p>Reconheceu algum desses problemas?<span>A gente mostra como resolver, numa demonstração gratuita.</span></p>
+        <a class="btn btn-gold" href="#demonstracao">Quero resolver isso</a>
+      </div>
+    </div>
+  </section>
 
-    <!-- NICHOS SECTION (CAROUSEL) -->
-    <section id="nichos">
-      <div class="inner">
-        <span class="tag reveal">Nossos segmentos</span>
-        <h2 class="reveal delay-1">
-          Tecnologia que
-          <span class="gold italic">impulsiona seu negócio.</span>
-        </h2>
+  <section class="sec" id="recursos" style="padding-top:0">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Recursos</span>
+        <h2>Tudo o que sua loja precisa para vender e ficar em dia, <em class="au">em um sistema só.</em></h2>
+        <p>Chega de planilha, caderninho e um programa diferente para cada coisa.</p>
+      </div>
+      <div class="pillars">
+        <div class="pillar"><span class="pillar-tag">Fiscal</span><h3>Notas certas, sem retrabalho</h3>
+          <ul><li><span class="nw">NF-e</span>, <span class="nw">NFC-e</span>, <span class="nw">CT-e</span> e <span class="nw">MDF-e</span><small>e <span class="nw">NFS-e</span>, conforme a prefeitura</small></li><li>Cálculo automático de impostos</li><li>Transmissão em tempo real para a SEFAZ</li></ul></div>
+        <div class="pillar"><span class="pillar-tag">Vendas</span><h3>Caixa rápido, cliente satisfeito</h3>
+          <ul><li>Frente de caixa integrada à balança e à maquininha</li><li><span class="nw">NFC-e</span> emitida na hora<small>a nota que substituiu o antigo cupom fiscal</small></li><li>Orçamentos enviados pelo WhatsApp, em PDF ou por <span class="nw">e-mail</span></li></ul></div>
+        <div class="pillar"><span class="pillar-tag">Estoque</span><h3>Saiba o que vende e o que falta</h3>
+          <ul><li>Entradas, saídas e inventário</li><li>Vários depósitos</li><li>Alertas de reposição</li></ul></div>
+        <div class="pillar"><span class="pillar-tag">Financeiro</span><h3>O lucro da loja à vista</h3>
+          <ul><li>Contas a pagar e a receber</li><li>Boletos e lembretes de cobrança pelo WhatsApp</li><li>Fluxo de caixa, conciliação bancária e DRE</li></ul></div>
+      </div>
+      <div class="included"><span>Você ainda conta com</span><span class="pill">Suporte humano especializado</span><span class="pill">Treinamento da sua equipe</span><span class="pill">Backup automático</span><span class="pill">Certificado digital A1 e A3</span></div>
+    </div>
+  </section>
 
-        <div class="carousel-container reveal delay-2">
-          <div class="carousel-track">
-            <!-- Nicho 1: Padarias -->
-            <div class="carousel-item">
-              <img src="assets/padaria.png" alt="Padarias" />
-            </div>
-            <!-- Nicho 2: Restaurantes -->
-            <div class="carousel-item">
-              <img src="assets/restaurante.png" alt="Restaurantes" />
-            </div>
-            <!-- Nicho 3: Loja de Roupa -->
-            <div class="carousel-item">
-              <img src="assets/roupa.png" alt="Loja de Roupas" />
-            </div>
-            <!-- Nicho 4: Açougues -->
-            <div class="carousel-item">
-              <img src="assets/acougues.png" alt="Açougues" />
-            </div>
-            <!-- Nicho 5: Óticas -->
-            <div class="carousel-item">
-              <img src="assets/oticas.png" alt="Óticas" />
-            </div>
-            <!-- Nicho 6: Loja de Material de Construção -->
-            <div class="carousel-item">
-              <img src="assets/material.png" alt="Material de Construção" />
-            </div>
-            <!-- Nicho 7: Hortifrúti -->
-            <div class="carousel-item">
-              <img src="assets/hortifruti.png" alt="Hortifrúti" />
-            </div>
-            <!-- Nicho 7: Hortifrúti -->
-            <div class="carousel-item">
-              <img src="assets/transportadora.png" alt="Transportadora" />
-            </div>
+  <section class="sec alt" id="telas">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">O sistema por dentro</span>
+        <h2>Simples desde o primeiro dia.</h2>
+        <p>Telas reais do sistema, pensadas para o balcão: sua equipe aprende rápido e você enxerga a loja inteira em poucos cliques.</p>
+      </div>
+      <div class="window">
+        <div class="window-bar"><b id="tela-title">Painel</b><span class="tela-count" aria-hidden="true"><span id="tela-n">1</span> / 12</span></div>
+        <div class="shots-box">
+          <div class="shots" id="shots" tabindex="0" role="region" aria-roledescription="carrossel" aria-label="Telas do sistema">
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="1 de 12: Painel"><button class="shot" type="button" aria-label="Ampliar a tela: Painel"><img src="img/p_painel.webp" srcset="img/p_painel-960.webp 960w, img/p_painel-1280.webp 1280w, img/p_painel.webp 1918w" sizes="(max-width: 720px) calc(100vw - 32px), (max-width: 1224px) calc(100vw - 64px), 1160px" data-full="img/p_painel.webp" width="1918" height="1005" alt="Painel com saldo geral, vendas do dia e do mês, contas a pagar e a receber e gráfico de vendas" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="2 de 12: Contas a receber"><button class="shot" type="button" aria-label="Ampliar a tela: Contas a receber"><img src="img/p_receber.webp" width="836" height="658" alt="Contas a receber com vendas no cartão e no PIX, botões de boleto e conciliação" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="3 de 12: Contas a pagar"><button class="shot" type="button" aria-label="Ampliar a tela: Contas a pagar"><img src="img/p_pagar.webp" width="908" height="588" alt="Contas a pagar atrasadas em vermelho, com documento, nota de referência, emissão e vencimento" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="4 de 12: Frente de caixa"><button class="shot" type="button" aria-label="Ampliar a tela: Frente de caixa"><img src="img/p_caixa.webp" width="1919" height="1079" alt="Frente de caixa com a mensagem Caixa Livre, pronta para abrir uma nova venda com F2" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="5 de 12: Orçamentos"><button class="shot" type="button" aria-label="Ampliar a tela: Orçamentos"><img src="img/p_orcamento.webp" width="837" height="773" alt="Tela de orçamento com dados do cliente, produtos e botões para enviar por WhatsApp, PDF e e-mail" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="6 de 12: Resumo de vendas"><button class="shot" type="button" aria-label="Ampliar a tela: Resumo de vendas"><img src="img/p_vendas.webp" width="787" height="599" alt="Resumo das vendas do mês com quantidade, custo, valor vendido, lucro bruto e margem de cada produto" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="7 de 12: Estoque"><button class="shot" type="button" aria-label="Ampliar a tela: Estoque"><img src="img/p_estoque.webp" width="1402" height="707" alt="Cadastro de produto com preço, custo, quantidade em estoque, código de barras e tributação" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="8 de 12: Clientes"><button class="shot" type="button" aria-label="Ampliar a tela: Clientes"><img src="img/p_clientes.webp" width="688" height="634" alt="Cadastro de clientes com CNPJ ou CPF, endereço, telefones, WhatsApp e e-mails" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="9 de 12: Fornecedores"><button class="shot" type="button" aria-label="Ampliar a tela: Fornecedores"><img src="img/p_fornecedores.webp" width="660" height="627" alt="Cadastro de fornecedores com razão social, inscrição estadual, contatos, e-mail para notas e limite de crédito" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="10 de 12: Relatório de NFC-e"><button class="shot" type="button" aria-label="Ampliar a tela: Relatório de NFC-e"><img src="img/p_relatorio.webp" width="788" height="428" alt="Relatório de vendas NFC-e do período com número, série, valor e total" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="11 de 12: MDF-e"><button class="shot" type="button" aria-label="Ampliar a tela: MDF-e"><img src="img/p_mdfe.webp" width="757" height="718" alt="Emissão de MDF-e com motorista, veículos, documentos vinculados, carga e percurso" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="12 de 12: CT-e"><button class="shot" type="button" aria-label="Ampliar a tela: CT-e"><img src="img/p_cte.webp" width="847" height="748" alt="Emissão de CT-e com remetente, destinatário, expedidor, recebedor e dados da carga" loading="lazy" decoding="async"><span class="zoom"><svg aria-hidden="true"><use href="#i-zoom"/></svg>Ampliar</span></button></div>
           </div>
+          <button class="shots-nav prev" type="button" aria-label="Tela anterior" aria-controls="shots" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <button class="shots-nav next" type="button" aria-label="Próxima tela" aria-controls="shots"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
         </div>
       </div>
-    </section>
+      <div class="caps" aria-live="polite">
+        <p class="screen-cap on" data-title="Painel">Saldo, vendas do dia e do mês e contas a pagar e a receber logo na primeira tela. E ainda dá para ativar o diagnóstico financeiro com IA.</p>
+        <p class="screen-cap" data-title="Contas a receber">Vendas no cartão e no PIX organizadas em contas a receber, com boleto e conciliação na mesma tela.</p>
+        <p class="screen-cap" data-title="Contas a pagar">Cada conta mostra a nota de compra de origem. As atrasadas ficam em vermelho e a baixa sai ali mesmo, no botão Pagar. Os nomes dos fornecedores estão desfocados.</p>
+        <p class="screen-cap" data-title="Frente de caixa">Caixa livre, pronto para a próxima venda: é só teclar F2 e emitir a <span class="nw">NFC-e.</span></p>
+        <p class="screen-cap" data-title="Orçamentos">Monte o orçamento e envie na hora pelo WhatsApp, em PDF ou por <span class="nw">e-mail.</span></p>
+        <p class="screen-cap" data-title="Resumo de vendas">Quanto cada produto vendeu no mês, quanto custou e quanto deu de lucro, com a margem item por item e o ticket médio da loja. Os valores estão desfocados.</p>
+        <p class="screen-cap" data-title="Estoque">Produto com preço, custo, estoque mínimo e código de barras. A tributação pode ser preenchida automaticamente, e o cadastro já tem a aba da Reforma Tributária.</p>
+        <p class="screen-cap" data-title="Clientes">Ficha completa do cliente, com consulta de CNPJ, CEP e SPC a um clique, e WhatsApp e <span class="nw">e-mail</span> direto do cadastro.</p>
+        <p class="screen-cap" data-title="Fornecedores">Fornecedor com inscrição estadual, <span class="nw">e-mail</span> para receber as notas, limite de crédito e as datas da primeira e da última compra.</p>
+        <p class="screen-cap" data-title="Relatório de NFC-e">Todas as <span class="nw">NFC-e</span> do período com chave de acesso, protocolo e valor, prontas para conferir. As chaves estão desfocadas para proteger os dados do cliente.</p>
+        <p class="screen-cap" data-title="MDF-e">Para quem entrega com veículo próprio: motorista, placas, notas da carga e percurso no <span class="nw">MDF-e</span>, com seguro, CIOT e <span class="nw">vale-pedágio</span> na mesma tela.</p>
+        <p class="screen-cap" data-title="CT-e">Para transportadoras: o <span class="nw">CT-e</span> importa os dados da <span class="nw">NF-e</span> e reúne remetente, destinatário, frete e carga numa tela só.</p>
+      </div>
+      <p class="screen-more">Essas são as telas principais. <a href="#demonstracao">Na demonstração grátis você vê o sistema completo.</a></p>
+    </div>
+  </section>
 
-    <div class="section-divider"></div>
-    <!-- Linha de separação -->
+  <section class="sec" id="segmentos">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Segmentos</span>
+        <h2>Feito para quem vende no balcão.</h2>
+        <p>Cada segmento tem sua rotina. Escolha o seu e veja o sistema funcionando com exemplos parecidos com a sua loja.</p>
+      </div>
+      <div class="segs">
+        <a class="seg-tile" href="#demonstracao" data-seg="Padaria" aria-label="Padarias: agendar demonstração"><img src="img/padaria.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para padarias</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="seg-tile" href="#demonstracao" data-seg="Restaurante" aria-label="Restaurantes: agendar demonstração"><img src="img/restaurante.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para restaurantes</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="seg-tile" href="#demonstracao" data-seg="Loja de roupas" aria-label="Lojas de roupas: agendar demonstração"><img src="img/roupa.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para lojas de roupas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="seg-tile" href="#demonstracao" data-seg="Açougue" aria-label="Açougues: agendar demonstração"><img src="img/acougues.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para açougues</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="seg-tile" href="#demonstracao" data-seg="Ótica" aria-label="Óticas: agendar demonstração"><img src="img/oticas.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para óticas</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="seg-tile" href="#demonstracao" data-seg="Material de construção" aria-label="Material de construção: agendar demonstração"><img src="img/material.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para construção</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="seg-tile" href="#demonstracao" data-seg="Hortifrúti" aria-label="Hortifrúti: agendar demonstração"><img src="img/hortifruti.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para hortifrúti</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <a class="seg-tile" href="#demonstracao" data-seg="Transportadora" aria-label="Transportadoras: agendar demonstração"><img src="img/transportadora.webp" width="360" height="450" alt="" loading="lazy" decoding="async"><span class="seg-go"><span>Ver para transportadoras</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      </div>
+      <p class="segs-note">Também atendemos autopeças, agropecuárias, bicicletarias, revendas de gás, lojas de bebidas e muito mais. <a href="#demonstracao">Fale com a gente</a></p>
+    </div>
+  </section>
 
-    <!-- FEATURES SECTION -->
-    <section id="recursos">
-      <div class="inner">
-        <div class="features-header">
-          <span class="tag reveal">O que oferecemos</span>
-          <h2 class="reveal delay-1">
-            Tudo que você precisa<br />em
-            <span class="gold italic">um único sistema.</span>
-          </h2>
-        </div>
+  <section class="sec alt" id="clientes">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Clientes</span>
+        <h2>Não acredite só na gente. <em class="au">Ouça quem usa todo dia.</em></h2>
+        <p>Mais de 230 empresas já trocaram a dor de cabeça fiscal por uma rotina tranquila.</p>
+      </div>
+      <div class="quotes">
+        <figure class="quote">
+          <span class="stars" aria-label="5 estrelas">★★★★★</span>
+          <p class="q-title">“Resolveu tudo em um dia”</p>
+          <blockquote>Quando o contador disse que eu precisava de um sistema com urgência, fiquei desesperado. A Gold Tech resolveu tudo em um dia e sem aquela burocracia toda.</blockquote>
+          <figcaption class="who"><img src="img/depo6.webp" width="44" height="44" alt="" loading="lazy" decoding="async"><div><b>Vitor Malverde</b><span>Pediu Bebeu</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <span class="stars" aria-label="5 estrelas">★★★★★</span>
+          <p class="q-title">“Menos preocupação com multas”</p>
+          <blockquote>A parte fiscal sempre foi um ponto crítico. Hoje temos menos preocupação com multas, o suporte responde na hora e a rotina da loja ficou muito mais fluida.</blockquote>
+          <figcaption class="who"><img src="img/depo3.webp" width="44" height="44" alt="" loading="lazy" decoding="async"><div><b>Thiago Menegazzo</b><span>Verde Sete</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <span class="stars" aria-label="5 estrelas">★★★★★</span>
+          <p class="q-title">“São nota 1000!”</p>
+          <blockquote>Antes eu não conseguia tirar notas fiscais para meus clientes, era bem complicado. Hoje o sistema é fácil de mexer e todas as minhas dúvidas e dificuldades eles me ajudam na hora.</blockquote>
+          <figcaption class="who"><img src="img/depo1.webp" width="44" height="44" alt="" loading="lazy" decoding="async"><div><b>Fernanda</b><span>Primos Gás</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <span class="stars" aria-label="5 estrelas">★★★★★</span>
+          <p class="q-title">“Facilitou demais o nosso dia a dia”</p>
+          <blockquote>Hoje a emissão de notas é muito mais simples, o controle ficou mais organizado e o atendimento deles sempre ajuda quando precisamos.</blockquote>
+          <figcaption class="who"><img src="img/depo2.webp" width="44" height="44" alt="" loading="lazy" decoding="async"><div><b>Sulivam</b><span>Agro RS</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <span class="stars" aria-label="5 estrelas">★★★★★</span>
+          <p class="q-title">“Menos erro e menos preocupação”</p>
+          <blockquote>Rapidez e organização fazem muita diferença no balcão. Hoje a gente consegue atender melhor os clientes, com menos erro e menos preocupação com a parte fiscal.</blockquote>
+          <figcaption class="who"><img src="img/depo4.webp" width="44" height="44" alt="" loading="lazy" decoding="async"><div><b>Marcelo</b><span>MS Peças e Serviços</span></div></figcaption>
+        </figure>
+        <figure class="quote">
+          <span class="stars" aria-label="5 estrelas">★★★★★</span>
+          <p class="q-title">“O sistema está cuidando da parte chata pra mim”</p>
+          <blockquote>A emissão de notas no balcão ficou rápida e o caixa ficou mais organizado. Hoje consigo focar mais em atender bem o ciclista.</blockquote>
+          <figcaption class="who"><img src="img/depo5.webp" width="44" height="44" alt="" loading="lazy" decoding="async"><div><b>Gregue</b><span>Sete Trilhas Bike</span></div></figcaption>
+        </figure>
+      </div>
+      <div class="q-dots" aria-hidden="true"></div>
+      <p class="swipe-hint">Arraste para o lado para ver mais depoimentos →</p>
+      <div class="mid-cta">
+        <p>Sua loja pode ser a próxima.<span>Veja o sistema funcionando antes de decidir. É grátis.</span></p>
+        <a class="btn btn-gold" href="#demonstracao"><span class="t-full">Quero uma demonstração grátis</span><span class="t-short">Quero uma demonstração</span></a>
+      </div>
+    </div>
+  </section>
 
-        <div class="features-grid">
-          <article class="feature-card reveal">
-            <span class="feature-num">01</span>
-            <span class="feature-icon">🧾</span>
-            <h3>Emissão de Documentos Fiscais</h3>
-            <p>
-              Emita todos os principais documentos fiscais obrigatórios — NF-e,
-              NFC-e e MDF-e — com cálculo automático de impostos e transmissão
-              em tempo real à SEFAZ. Zero retrabalho, zero multas.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-1">
-            <span class="feature-num">02</span>
-            <span class="feature-icon">📦</span>
-            <h3>Controle Total de Estoque</h3>
-            <p>
-              Gerencie entradas, saídas, transferências e inventários com
-              controle fiscal e financeiro integrado. Múltiplos depósitos,
-              alertas de reposição e rastreabilidade completa de cada item.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-2">
-            <span class="feature-num">03</span>
-            <span class="feature-icon">📊</span>
-            <h3>Gestão Financeira Completa</h3>
-            <p>
-              Contas a pagar e receber, fluxo de caixa, conciliação bancária e
-              DRE. Tenha uma visão clara e atualizada da saúde financeira do seu
-              negócio a qualquer momento.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-3">
-            <span class="feature-num">04</span>
-            <span class="feature-icon">🤝</span>
-            <h3>Clientes e Fornecedores</h3>
-            <p>
-              Cadastro completo com histórico de compras, limites de crédito,
-              condições de pagamento e gestão de relacionamento. Tudo
-              centralizado para decisões mais rápidas e seguras.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-4">
-            <span class="feature-num">05</span>
-            <span class="feature-icon">🛒</span>
-            <h3>Gestão de Vendas e PDV</h3>
-            <p>
-              Ponto de venda ágil, controle de pedidos, orçamentos e cupons
-              fiscais via NFC-e. Acompanhe cada venda em tempo real e reduza
-              filas com um checkout eficiente.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-5">
-            <span class="feature-num">06</span>
-            <span class="feature-icon">📈</span>
-            <h3>Painel Intuitivo e Relatórios</h3>
-            <p>
-              Dashboard com os indicadores mais importantes do negócio na tela
-              inicial. Relatórios completos de vendas, estoque, financeiro e
-              fiscal — exportáveis e personalizáveis.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-1">
-            <span class="feature-num">07</span>
-            <span class="feature-icon">🔑</span>
-            <h3>Certificado Digital</h3>
-            <p>
-              Emitimos o seu certificado digital A1 e A3 diretamente, sem
-              burocracia. Indispensável para assinar documentos fiscais
-              eletrônicos com validade jurídica.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-2">
-            <span class="feature-num">08</span>
-            <span class="feature-icon">🔒</span>
-            <h3>Segurança e Confiabilidade</h3>
-            <p>
-              Seus dados protegidos com tecnologia avançada de criptografia e
-              backup automático. Estrutura estável para que sua operação nunca
-              pare — mesmo nos períodos de maior movimento.
-            </p>
-          </article>
-          <article class="feature-card reveal delay-3">
-            <span class="feature-num">09</span>
-            <span class="feature-icon">🛠️</span>
-            <h3>Suporte Especializado Local</h3>
-            <p>
-              Atendimento humanizado por especialistas em Sete Lagoas e região.
-              Da implantação ao dia a dia, nossa equipe está ao seu lado para
-              garantir que o sistema funcione perfeitamente.
-            </p>
-          </article>
+  <section class="sec" id="equipe">
+    <div class="wrap about">
+      <div>
+        <span class="kicker">Quem cuida da sua loja</span>
+        <h2>Uma equipe para cada etapa. Você não fica sozinho com a parte fiscal.</h2>
+        <p class="body">A Gold Tech nasceu em Sete Lagoas com um propósito: tirar o peso fiscal das costas de quem vende. Por isso cada etapa tem gente dedicada, do primeiro contato ao suporte do dia a dia.</p>
+      </div>
+      <ol class="steps" aria-label="Como funciona">
+        <li><b>Consultoria comercial</b><span>Entende a rotina da sua loja e indica só o que você realmente precisa.</span></li>
+        <li><b>Implantação e treinamento</b><span>Configura o sistema, deixa as notas prontas para sair e treina sua equipe.</span></li>
+        <li><b>Suporte especializado</b><span>Acompanha sua loja no dia a dia, com atendimento humano e rápido.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="sec paper" id="demonstracao">
+    <div class="wrap">
+      <div class="intro">
+        <span class="kicker">Demonstração gratuita</span>
+        <h2>Veja o sistema funcionando <em class="au">na rotina da sua loja.</em></h2>
+        <p>Deixe seu WhatsApp e escolha o segmento. Numa conversa rápida você vê o sistema com exemplos do seu negócio e recebe um orçamento sob medida. Sem custo e sem compromisso.</p>
+        <ul class="gets">
+          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Demonstração com exemplos do seu segmento</span></li>
+          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Orçamento sob medida, sem compromisso</span></li>
+          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Suas dúvidas sobre <span class="nw">NF-e</span>, <span class="nw">NFC-e</span> e certificado respondidas</span></li>
+          <li><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg><span>Sem fidelidade: você fica porque o sistema funciona</span></li>
+        </ul>
+        <div class="direct">
+          <span>Prefere conversar agora?</span>
+          <a href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg><span class="nw">(31) 9 9554-4328</span></a>
+          <span>Seg a sex, 8h às 18h · Rua República Guiana, 40, Nova Cidade, Sete <span class="nw">Lagoas-MG</span></span>
         </div>
       </div>
-    </section>
-
-    <div class="section-divider"></div>
-    <!-- Linha de separação -->
-
-    <!-- NOVA SEÇÃO DE CLIENTES (CARROSSEL) -->
-    <section id="clientes">
-      <div class="inner">
-        <h2 class="reveal delay-1">
-          Há mais de 15 anos evoluindo </br>
-          <span class="gold italic">empresas com automação.</span>
-        </h2>
-
-        <div class="clients-carousel-container reveal delay-2">
-          <div class="clients-carousel-track">
-            <!-- LOGOMARCAS DOS CLIENTES 1-12 -->
-            <div class="clients-carousel-item">
-              <img src="assets/1.svg" alt="Cliente 1" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/2.svg" alt="Cliente 2" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/3.svg" alt="Cliente 3" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/4.svg" alt="Cliente 4" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/5.svg" alt="Cliente 5" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/6.svg" alt="Cliente 6" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/7.svg" alt="Cliente 7" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/8.svg" alt="Cliente 8" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/9.svg" alt="Cliente 9" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/10.svg" alt="Cliente 10" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/11.svg" alt="Cliente 11" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/12.svg" alt="Cliente 12" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/13.svg" alt="Cliente 13" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/14.svg" alt="Cliente 14" />
-            </div>
-            <div class="clients-carousel-item">
-              <img src="assets/15.svg" alt="Cliente 15" />
-            </div>
+      <div class="form-card">
+        <form id="lead" action="https://formspree.io/f/maqkenaz" method="POST" novalidate>
+          <h3>Agende sua demonstração grátis</h3>
+          <p>Leva menos de 30 segundos.</p>
+          <input type="hidden" name="_subject" value="Novo pedido de demonstração pelo site">
+          <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">
+          <div class="field"><label for="f-nome">Seu nome</label><input id="f-nome" name="nome" autocomplete="name" required placeholder="Como podemos te chamar?"></div>
+          <div class="field"><label for="f-wa">WhatsApp</label><input id="f-wa" name="whatsapp" type="tel" inputmode="numeric" autocomplete="tel" required placeholder="(31) 9 9999-9999" maxlength="16"></div>
+          <div class="field"><label for="f-seg">Segmento</label>
+            <select id="f-seg" name="segmento" required>
+              <option value="">Selecione</option>
+              <option>Padaria</option><option>Restaurante</option><option>Loja de roupas</option><option>Açougue</option>
+              <option>Ótica</option><option>Material de construção</option><option>Hortifrúti</option><option>Transportadora</option>
+              <option>Autopeças</option><option>Agropecuária</option><option>Revenda de gás</option><option>Bebidas e conveniência</option><option>Outro</option>
+            </select>
           </div>
+          <button class="btn btn-gold" type="submit"><span class="t-full">Quero minha demonstração grátis</span><span class="t-short">Quero minha demonstração</span></button>
+          <p class="form-err" id="lead-err" role="alert" hidden>Não deu para enviar agora. Tente de novo ou <a href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener">chame no WhatsApp</a>.</p>
+          <p class="privacy">Seus dados ficam só com a gente e servem apenas para agendar a demonstração.</p>
+        </form>
+        <div class="done" id="lead-done" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7.5 12.5l3 3 6-6.5"/></svg>
+          <h3>Pedido recebido!</h3>
+          <p>Nossa equipe vai chamar você no WhatsApp em horário comercial.</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <div class="section-divider"></div>
-    <!-- Linha de separação -->
+  <section class="sec" id="duvidas">
+    <div class="wrap faq-layout">
+      <div class="faq-aside">
+        <span class="kicker">Dúvidas</span>
+        <h2>As perguntas que todo lojista faz antes de trocar de sistema.</h2>
+        <p>Respostas diretas, sem letra miúda.</p>
+        <div class="faq-help desk">
+          <b>Não achou a sua?</b>
+          <span>Pergunte direto para quem entende do assunto.</span>
+          <a class="btn btn-line btn-sm" href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg>Perguntar no WhatsApp</a>
+        </div>      </div>
+      <div class="faq">
+        <details><summary><span>Quanto custa o sistema?</span></summary><p>Depende do tamanho da sua loja, do número de usuários e dos módulos que você precisa, então você não paga por recurso que não usa. Na demonstração gratuita você recebe o valor exato, sem compromisso.</p></details>
+        <details><summary><span>Tem fidelidade ou multa para cancelar?</span></summary><p>Não. Aqui não tem fidelidade: você fica com a Gold Tech porque o sistema funciona e o suporte resolve, não por causa de contrato. E o valor vem por escrito na proposta, sem letra miúda.</p></details>
+        <details><summary><span>Em quanto tempo começo a emitir notas?</span></summary><p>Depende do tamanho da loja e da quantidade de produtos, e o prazo fica combinado na proposta. Quando é urgente, a gente corre junto: na Pediu Bebeu, tudo foi resolvido em um dia.</p></details>
+        <details><summary><span>Já uso outro sistema. Vou ter que cadastrar tudo de novo?</span></summary><p>Você não começa do zero. Os produtos entram pelo XML das notas dos seus fornecedores, os clientes são cadastrados só com o CNPJ e o código de barras ajuda a completar o resto. Na implantação, nossa equipe organiza tudo com você.</p></details>
+        <details><summary><span>E se a internet cair no meio do movimento?</span></summary><p>O caixa continua vendendo. Se a internet ou a SEFAZ cair, o PDV entra em modo de contingência com um atalho no teclado: a <span class="nw">NFC-e</span> sai na hora e é transmitida para a SEFAZ quando a conexão voltar.</p></details>
+        <details><summary><span>Ainda uso cupom fiscal. Preciso mudar para <span class="nw">NFC-e</span>?</span></summary><p>Em Minas Gerais, sim: a SEF/MG determina a <span class="nw">NFC-e</span> no lugar do cupom fiscal da antiga impressora fiscal (ECF). A boa notícia é que ela sai em impressora térmica comum, sem lacre e sem a manutenção da ECF, e a gente configura tudo na implantação. Se a sua loja for de outro estado, o sistema também emite SAT e <span class="nw">MF-e.</span></p></details>
+        <details><summary><span>Funciona com balança e maquininha de cartão?</span></summary><p>Funciona. O caixa se integra com balança e com TEF (PayGo, Sitef, GetCard e outros), para o valor da venda ir direto para a maquininha, sem digitar duas vezes.</p></details>
+        <details><summary><span>Meu contador recebe os arquivos das notas?</span></summary><p>Recebe, sem você ficar juntando arquivo. O sistema envia os XML das notas de entrada e saída, o SPED Fiscal e o Sintegra para o <span class="nw">e-mail</span> da contabilidade, e o contador ainda pode usar o Portal do Contador.</p></details>
+        <details><summary><span>Preciso de certificado digital? Vocês fazem?</span></summary><p>Precisa: é ele que assina as suas notas. E você não precisa correr atrás de ninguém, porque a Gold Tech emite o seu certificado A1 ou A3 sem burocracia.</p></details>
+        <details><summary><span>Minha equipe vai conseguir usar?</span></summary><p>Vai. As telas são simples, pensadas para o balcão, e treinamos sua equipe na implantação. Mesmo quem nunca usou um sistema aprende rápido.</p></details>
+        <details><summary><span>Como funciona o suporte?</span></summary><p>Atendimento humano e rápido, direto com especialistas da nossa equipe, de segunda a sexta, das 8h às 18h. Você fala com gente que conhece o sistema e a rotina do varejo.</p></details>
+        <details><summary><span>Vocês atendem fora de Sete Lagoas?</span></summary><p>Sim. Nossa sede é em Sete <span class="nw">Lagoas-MG</span> e atendemos empresas de todo o Brasil, com implantação e suporte a distância.</p></details>
+        <details><summary><span>Quais notas o sistema emite?</span></summary><p><span class="nw">NF-e</span>, <span class="nw">NFC-e</span> (a nota que substituiu o antigo cupom fiscal), <span class="nw">CT-e</span> e <span class="nw">MDF-e</span>, além de <span class="nw">NFS-e</span> nas prefeituras atendidas. Tudo com cálculo automático de impostos e transmissão em tempo real para a SEFAZ.</p></details>
+        <details><summary><span>Meus dados ficam seguros?</span></summary><p>Sim. Seus dados ficam protegidos com criptografia e backup automático, para a operação não parar nem nos dias de maior movimento.</p></details>
+      </div>
+      <div class="faq-help mob">
+        <b>Não achou a sua?</b>
+        <span>Pergunte direto para quem entende do assunto.</span>
+        <a class="btn btn-line btn-sm" href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg>Perguntar no WhatsApp</a>
+      </div>
+    </div>
+  </section>
 
-    <!-- INTERFACES SECTION -->
-    <section id="interfaces">
-      <div class="inner">
-        <span class="tag reveal">INTERFACES INTUITIVAS</span>
-        <h2 class="reveal delay-1">
-          Telas intuitivas para uma<br /><span class="gold italic"
-            >gestão sem complicação.</span
-          >
-        </h2>
+  <section class="final">
+    <div class="wrap">
+      <h2>Pronto para vender sem dor de cabeça <em class="au">com nota fiscal?</em></h2>
+      <p>Agende sua demonstração gratuita e veja como o sistema funciona na rotina da sua loja. Se não fizer sentido para você, tudo bem: não custa nada.</p>
+      <div class="cta-row">
+        <a class="btn btn-gold" href="#demonstracao">Quero uma demonstração grátis</a>
+        <a class="btn btn-line" href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg>Falar no WhatsApp</a>
+      </div>
+      <div class="checks">
+        <span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Gratuita</span>
+        <span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Sem fidelidade</span>
+        <span><svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Suporte humano</span>
+      </div>
+    </div>
+  </section>
 
-        <div class="interfaces-grid">
-          <div class="interface-card reveal delay-1">
-            <img
-              src="assets/Frame 1.svg"
-              alt="Tela do Dashboard"
-              loading="lazy"
-            />
-            <h3>Dashboard</h3>
-          </div>
-          <div class="interface-card reveal delay-2">
-            <img
-              src="assets/Frame 4.svg"
-              alt="Tela de Relatório de Vendas"
-              loading="lazy"
-            />
-            <h3>Relatório de Vendas</h3>
-          </div>
-          <div class="diagnostic-card reveal delay-3">
-            <h3>Diagnóstico Inteligente</h3>
-            <ul>
-              <li>Emita NFC-e e NF-e em poucos cliques</li>
-              <li>Evite perder vendas por falha</li>
-              <li>Reduza riscos de erros e multas fiscais</li>
-              <li>Tenha suporte rápido, direto e claro</li>
-            </ul>
-          </div>
-          <div class="interface-card reveal delay-3">
-            <img
-              src="assets/Frame 3.svg"
-              alt="Tela de Frente de Caixa"
-              loading="lazy"
-            />
-            <h3>Frente de Caixa</h3>
-          </div>
-          <div class="interface-card reveal delay-1">
-            <img
-              src="assets/Frame 2.svg"
-              alt="Tela de Configurações"
-              loading="lazy"
-            />
-            <h3>Configurações</h3>
-          </div>
+  <footer class="site">
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <img src="img/logo.webp" width="231" height="58" alt="Gold Tech Sistemas" loading="lazy" decoding="async">
+          <p>Emissor fiscal e ERP para o varejo. De Sete Lagoas para todo o Brasil, há mais de 15 anos.</p>
+          <a class="btn btn-gold btn-sm" href="#demonstracao">Agendar demonstração grátis</a>
+        </div>
+        <div class="foot-col">
+          <h4>Fale com a gente</h4>
+          <ul>
+            <li><a href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg><span class="nw">(31) 9 9554-4328</span></a></li>
+            <li><a href="mailto:goldtechsistemas@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>goldtechsistemas@gmail.com</a></li>
+            <li><a href="https://instagram.com/gold_tech_sistemas" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.6" fill="currentColor"/></svg>@gold_tech_sistemas</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Onde estamos</h4>
+          <ul>
+            <li>Rua República Guiana,&nbsp;40<br>Nova Cidade, Sete&nbsp;Lagoas&#8209;MG</li>
+            <li>Segunda a sexta<br>8h às 18h</li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Navegue</h4>
+          <ul>
+            <li><a href="#recursos">Recursos</a></li>
+            <li><a href="#telas">O sistema</a></li>
+            <li><a href="#segmentos">Segmentos</a></li>
+            <li><a href="#clientes">Clientes</a></li>
+            <li><a href="#duvidas">Dúvidas</a></li>
+          </ul>
         </div>
       </div>
-    </section>
-
-    <div class="section-divider"></div>
-    <!-- Linha de separação -->
-
-    <!-- TESTIMONIALS SECTION -->
-    <section id="depoimentos">
-      <div class="inner">
-        <span class="tag reveal">Quem já usa aprova</span>
-        <h2 class="reveal delay-1">
-          O que nossos clientes<br /><span class="gold italic"
-            >dizem sobre nós.</span
-          >
-        </h2>
-
-        <div class="testimonials-grid">
-          <article class="testimonial-card reveal delay-1">
-            <span class="quote-mark">"</span>
-            <div class="stars">★★★★★</div>
-            <p>
-              Minha experiência com a Gold Tech Sistemas é a melhor possível, aí
-              de mim se não fosse o excelente trabalho deles. Antes eu não
-              conseguia tirar notas fiscais para meus clientes fazerem
-              orçamentos, era bem complicado. Hoje, depois que me apresentaram o
-              trabalho deles, tudo ficou muito mais fácil aqui na loja: o
-              sistema é fácil de mexer e todas as minhas dúvidas e dificuldades
-              eles me ajudam na hora. São nota 1000!
-            </p>
-            <div class="testimonial-author">
-              <img
-                src="assets/Depo1.jpeg"
-                alt="Foto de Fernanda"
-                class="avatar"
-              />
-              <div class="author-info">
-                <strong>Fernanda</strong>
-                <span>Primos Gás</span>
-              </div>
-            </div>
-          </article>
-          <article class="testimonial-card reveal delay-2">
-            <span class="quote-mark">"</span>
-            <div class="stars">★★★★★</div>
-            <p>
-              Depois que começamos a usar as soluções da Gold Tech Sistemas, o
-              sistema ajudou muito na rotina aqui da loja. Hoje a emissão de
-              notas é muito mais simples, o controle ficou mais organizado e o
-              atendimento deles sempre ajuda quando precisamos. Facilitou demais
-              o nosso dia a dia.
-            </p>
-            <div class="testimonial-author">
-              <img
-                src="assets/Depo2.jpeg"
-                alt="Foto de Sulivam"
-                class="avatar"
-              />
-              <div class="author-info">
-                <strong>Sulivam</strong>
-                <span>AGRO RS LTDA</span>
-              </div>
-            </div>
-          </article>
-          <article class="testimonial-card reveal delay-3">
-            <span class="quote-mark">"</span>
-            <div class="stars">★★★★★</div>
-            <p>
-              Lidamos com um volume grande de vendas de equipamentos e produtos
-              de jardinagem, e a parte fiscal sempre foi um ponto crítico. Desde
-              que adotamos a solução da Gold Tech Sistemas, a emissão de notas
-              ficou muito mais rápida e o controle das vendas ficou muito mais
-              claro. Hoje temos menos preocupação com multas, o suporte responde
-              na hora e a rotina da loja ficou muito mais fluida. O sistema
-              realmente ajudou a gente a vender mais e a se preocupar menos.
-            </p>
-            <div class="testimonial-author">
-              <img
-                src="assets/Depo3.jpeg"
-                alt="Foto de Thiago Menegazzo"
-                class="avatar"
-              />
-              <div class="author-info">
-                <strong>Thiago Menegazzo</strong>
-                <span>Verde Sete</span>
-              </div>
-            </div>
-          </article>
-          <article class="testimonial-card reveal delay-1">
-            <span class="quote-mark">"</span>
-            <div class="stars">★★★★★</div>
-            <p>
-              A gente trabalha o dia todo com venda de peças e serviços para
-              caminhões, então rapidez e organização fazem muita diferença no
-              balcão. Hoje a gente consegue atender melhor os clientes, com
-              menos erro e menos preocupação com a parte fiscal. O sistema
-              realmente ajudou muito na nossa rotina.
-            </p>
-            <div class="testimonial-author">
-              <img
-                src="assets/Depo4.jpeg"
-                alt="Foto de Marcelo"
-                class="avatar"
-              />
-              <div class="author-info">
-                <strong>Marcelo</strong>
-                <span>MS PECAS E SERVICOS</span>
-              </div>
-            </div>
-          </article>
-          <article class="testimonial-card reveal delay-2">
-            <span class="quote-mark">"</span>
-            <div class="stars">★★★★★</div>
-            <p>
-              Na nossa loja trabalhamos com venda de bicicletas e todo tipo de
-              equipamento de ciclismo, com cliente entrando e saindo o dia
-              inteiro. Antes era difícil manter o controle das vendas e ainda
-              dar conta da parte fiscal. Depois que passamos a usar o sistema da
-              Gold Tech Sistemas, ficou muito mais tranquilo: a emissão de notas
-              no balcão ficou rápida, o caixa ficou mais organizado e a gente
-              consegue acompanhar melhor o que está saindo em bikes, peças e
-              acessórios. Hoje consigo focar mais em atender bem o ciclista,
-              porque sei que o sistema está cuidando da parte chata pra mim.
-            </p>
-            <div class="testimonial-author">
-              <img
-                src="assets/Depo5.jpeg"
-                alt="Foto de Gregue"
-                class="avatar"
-              />
-              <div class="author-info">
-                <strong>Gregue</strong>
-                <span>SETE TRILHAS BIKE</span>
-              </div>
-            </div>
-          </article>
-          <article class="testimonial-card reveal delay-3">
-            <span class="quote-mark">"</span>
-            <div class="stars">★★★★★</div>
-            <p>
-              Quando o contador disse que eu precisava de um sistema com
-              urgência, fiquei desesperado. A Gold Tech resolveu tudo em um dia
-              e sem aquela burocracia toda.
-            </p>
-            <div class="testimonial-author">
-              <img
-                src="assets/Depo6.jpeg"
-                alt="Foto de Vitor Malverde"
-                class="avatar"
-              />
-              <div class="author-info">
-                <strong>VITOR MALVERDE</strong>
-                <span>PEDIU BEBEU</span>
-              </div>
-            </div>
-          </article>
-        </div>
+      <div class="foot-bottom">
+        <p class="legal"><span>© 2026 Gold Tech Sistemas</span><span>CNPJ <span class="nw">50.073.146/0001-35</span></span><span>Todos os direitos reservados.</span></p>
+        <span>Sete Lagoas, Minas Gerais</span>
       </div>
-    </section>
+    </div>
+  </footer>
+</main>
 
-    <div class="section-divider"></div>
-    <!-- Linha de separação -->
+<a class="fab" id="fab" href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener" aria-label="Falar no WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg></a>
+<div class="mbar" id="mbar">
+  <a class="btn btn-line" href="https://wa.me/5531995544328?text=Ol%C3%A1%2C%20vim%20do%20site%20e%20queria%20saber%20mais%20sobre%20o%20sistema%20fiscal." target="_blank" rel="noopener"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><use href="#i-wa"/></svg>WhatsApp</a>
+  <a class="btn btn-gold" href="#demonstracao"><span class="t-full">Demonstração grátis</span><span class="t-short">Demo grátis</span></a>
+</div>
 
-    <!-- CONTACT SECTION -->
-    <section id="contato">
-      <div class="inner">
-        <span class="tag reveal">Fale conosco</span>
-        <h2 class="reveal delay-1">
-          Pronto para <span class="gold italic">começar?</span>
-        </h2>
-        <p class="sub reveal delay-2">
-          Preencha o formulário ou use nossos contatos diretos.
-        </p>
+<dialog class="lightbox" id="lightbox" aria-label="Tela ampliada">
+  <button class="lb-close" id="lb-close" type="button" aria-label="Fechar">×</button>
+  <figure class="lb-fig"><img id="lb-img" alt=""><figcaption id="lb-cap"></figcaption><p class="lb-hint">Dica: gire o celular para ver a tela maior.</p></figure>
+</dialog>
 
-        <div class="contact-layout">
-          <div class="contact-form-wrap reveal delay-2">
-            <form id="contactForm" action="https://formspree.io/f/maqkenaz" method="POST">
-              <div id="formMessage" class="form-message"></div>
-              <div class="form-group">
-                <label for="name">Nome Completo</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  placeholder="Seu nome"
-                />
-              </div>
-              <div class="form-group">
-                <label for="email">E-mail</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  placeholder="seu@email.com"
-                />
-              </div>
-              <div class="form-group">
-                <label for="company">Empresa</label>
-                <input
-                  type="text"
-                  id="company"
-                  name="company"
-                  placeholder="Nome da empresa"
-                />
-              </div>
-              <div class="form-group">
-                <label for="phone">WhatsApp</label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  placeholder="(99) 9 9999-9999"
-                  maxlength="16"
-                  oninput="mascaraTelefone(this)"
-                />
-              </div>
-              <div class="form-group">
-                <label for="message">Mensagem</label>
-                <textarea
-                  id="message"
-                  name="message"
-                  placeholder="Descreva suas necessidades..."
-                ></textarea>
-              </div>
-              <button type="submit" class="btn-submit" id="submitBtn">
-                Solicitar demonstração gratuita →
-              </button>
-            </form>
-          </div>
-
-          <div class="contact-sidebar reveal delay-3">
-            <div class="contact-block">
-              <p class="contact-block-label">WhatsApp</p>
-              <!-- Emoji antes do contato -->
-              <a href="https://wa.me/message/TIT6GVWVLQEBC1" target="_blank"
-                >📞 (31) 99955-4328</a
-              >
-            </div>
-            <div class="contact-block">
-              <p class="contact-block-label">E-mail</p>
-              <!-- Emoji antes do contato -->
-              <a href="mailto:goldtechsistemas@gmail.com"
-                >📧 goldtechsistemas@gmail.com</a
-              >
-            </div>
-            <div class="contact-block">
-              <p class="contact-block-label">Endereço</p>
-              <!-- Emoji antes do contato -->
-              <p>📍 Rua Republica Guiana, 40 - Nova Cidade - Sete Lagoas MG</p>
-            </div>
-            <div class="contact-block">
-              <p class="contact-block-label">Horário de Atendimento</p>
-              <!-- Emoji antes do contato -->
-              <p>⏰ Seg – Sex · 08h às 18h</p>
-            </div>
-
-            <div class="social-row">
-              <a
-                href="https://wa.me/message/TIT6GVWVLQEBC1"
-                target="_blank"
-                class="social-btn"
-                aria-label="WhatsApp"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="18"
-                  height="18"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
-                  />
-                </svg>
-              </a>
-              <a
-                href="mailto:goldtechsistemas@outlook.com"
-                class="social-btn"
-                aria-label="E-mail"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  width="18"
-                  height="18"
-                  fill="currentColor"
-                >
-                  <path
-                    d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  />
-                  <path
-                    d="M22 6l-10 7L2 6"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    fill="none"
-                  />
-                </svg>
-              </a>
-              <a
-                href="https://instagram.com/Gold_Tech_Sistemas"
-                target="_blank"
-                class="social-btn"
-                aria-label="Instagram"
-              >
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M12 7.5C11.11 7.5 10.24 7.76392 9.49993 8.25839C8.75991 8.75285 8.18314 9.45566 7.84254 10.2779C7.50195 11.1002 7.41283 12.005 7.58647 12.8779C7.7601 13.7508 8.18868 14.5526 8.81802 15.182C9.44736 15.8113 10.2492 16.2399 11.1221 16.4135C11.995 16.5872 12.8998 16.4981 13.7221 16.1575C14.5443 15.8169 15.2471 15.2401 15.7416 14.5001C16.2361 13.76 16.5 12.89 16.5 12C16.4988 10.8069 16.0243 9.66303 15.1806 8.81939C14.337 7.97575 13.1931 7.50124 12 7.5ZM12 15C11.4067 15 10.8266 14.8241 10.3333 14.4944C9.83994 14.1648 9.45542 13.6962 9.22836 13.148C9.0013 12.5999 8.94189 11.9967 9.05764 11.4147C9.1734 10.8328 9.45912 10.2982 9.87868 9.87868C10.2982 9.45912 10.8328 9.1734 11.4147 9.05764C11.9967 8.94189 12.5999 9.0013 13.148 9.22836C13.6962 9.45542 14.1648 9.83994 14.4944 10.3333C14.8241 10.8266 15 11.4067 15 12C15 12.7956 14.6839 13.5587 14.1213 14.1213C13.5587 14.6839 12.7956 15 12 15ZM16.5 2.25H7.5C6.10807 2.25149 4.77358 2.80509 3.78933 3.78933C2.80509 4.77358 2.25149 6.10807 2.25 7.5V16.5C2.25149 17.8919 2.80509 19.2264 3.78933 20.2107C4.77358 21.1949 6.10807 21.7485 7.5 21.75H16.5C17.8919 21.7485 19.2264 21.1949 20.2107 20.2107C21.1949 19.2264 21.7485 17.8919 21.75 16.5V7.5C21.7485 6.10807 21.1949 4.77358 20.2107 3.78933C19.2264 2.80509 17.8919 2.25149 16.5 2.25ZM20.25 16.5C20.25 17.4946 19.8549 18.4484 19.1517 19.1517C18.4484 19.8549 17.4946 20.25 16.5 20.25H7.5C6.50544 20.25 5.55161 19.8549 4.84835 19.1517C4.14509 18.4484 3.75 17.4946 3.75 16.5V7.5C3.75 6.50544 4.14509 5.55161 4.84835 4.84835C5.55161 4.14509 6.50544 3.75 7.5 3.75H16.5C17.4946 3.75 18.4484 4.14509 19.1517 4.84835C19.8549 5.55161 20.25 6.50544 20.25 7.5V16.5ZM18 7.125C18 7.3475 17.934 7.56501 17.8104 7.75002C17.6868 7.93502 17.5111 8.07922 17.3055 8.16436C17.1 8.24951 16.8738 8.27179 16.6555 8.22838C16.4373 8.18498 16.2368 8.07783 16.0795 7.9205C15.9222 7.76316 15.815 7.56271 15.7716 7.34448C15.7282 7.12625 15.7505 6.90005 15.8356 6.69448C15.9208 6.48891 16.065 6.31321 16.25 6.1896C16.435 6.06598 16.6525 6 16.875 6C17.1734 6 17.4595 6.11853 17.6705 6.3295C17.8815 6.54048 18 6.82663 18 7.125Z" fill="currentColor"/>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M16.5 16.5L21 21M11 8v6M8 11h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.42.25-.69.25-1.29.18-1.41-.08-.13-.27-.2-.57-.35M12.05 21.79h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88M20.46 3.49A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.17-3.48-8.42"/></symbol>
 </svg>
 
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+<script>
+(function () {
+  var mbar = document.getElementById('mbar'), fab = document.getElementById('fab');
+  setTimeout(initReveal, 0);
 
-    <!-- NOVA SEÇÃO DE PERGUNTAS FREQUENTES (FAQ) -->
-    <section id="faq">
-      <div class="inner">
-        <h2>Perguntas Frequentes:</h2>
+  // Telas do sistema: carrossel com setas; no celular também dá para arrastar com o dedo.
+  var track = document.getElementById('shots'), slides = track.querySelectorAll('.slide');
+  var caps = document.querySelectorAll('.caps > p'), prev = document.querySelector('.shots-nav.prev'), next = document.querySelector('.shots-nav.next');
+  var current = -1;
+  function setSlide(i) {
+    if (i === current || !slides[i]) return;
+    current = i;
+    caps.forEach(function (c, k) { c.classList.toggle('on', k === i); });
+    slides.forEach(function (sl, k) { sl.setAttribute('aria-hidden', String(k !== i)); sl.querySelector('.shot').tabIndex = k === i ? 0 : -1; });
+    document.getElementById('tela-title').textContent = caps[i].dataset.title;
+    document.getElementById('tela-n').textContent = i + 1;
+    var had = document.activeElement;
+    prev.disabled = i === 0;
+    next.disabled = i === slides.length - 1;
+    if (had && had.disabled) (had === prev ? next : prev).focus({ preventScroll: true });  // a seta da ponta some: o foco passa para a outra
+  }
+  // Na seta, título, contador e legenda mudam na hora; a rolagem só confirma quando a imagem chega.
+  var target = null, settle;
+  function go(i) {
+    i = Math.max(0, Math.min(i, slides.length - 1));
+    target = i;
+    setSlide(i);
+    track.scrollTo({ left: i * track.clientWidth, behavior: 'smooth' });
+    clearTimeout(settle);
+    reconcile();
+  }
+  // Garantia: quando a rolagem para numa tela, o estado segue a posição real da faixa.
+  function reconcile() {
+    var x = track.scrollLeft;
+    settle = setTimeout(function () {
+      var now = track.scrollLeft, w = track.clientWidth;
+      if (now !== x || Math.abs(now - Math.round(now / w) * w) > 2) return reconcile();
+      target = null;
+      setSlide(Math.round(now / w));
+    }, 250);
+  }
+  prev.addEventListener('click', function () { go(current - 1); });
+  next.addEventListener('click', function () { go(current + 1); });
+  track.addEventListener('scroll', function () {
+    var i = Math.round(track.scrollLeft / track.clientWidth);
+    if (target !== null) { if (i === target) target = null; return; }
+    setSlide(i);
+  }, { passive: true });
+  ['pointerdown', 'wheel', 'touchstart'].forEach(function (ev) { track.addEventListener(ev, function () { target = null; }, { passive: true }); });
+  track.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); go(current + (e.key === 'ArrowRight' ? 1 : -1)); }
+  });
+  setSlide(0);
 
-        <div class="faq-container">
-          <div class="faq-item reveal delay-1">
-            <div class="faq-question">
-              O sistema atende quais tipos de empresas?
-              <span class="arrow-icon">></span>
-            </div>
-            <div class="faq-answer">
-              <p>
-                Nosso sistema ERP é flexível e atende a uma ampla gama de
-                empresas, desde pequenos negócios até grandes corporações, em
-                diversos setores como varejo, serviços, indústria e e-commerce.
-                Ele pode ser adaptado às necessidades específicas de cada tipo
-                de empresa.
-              </p>
-            </div>
-          </div>
+  var lb = document.getElementById('lightbox'), lbImg = document.getElementById('lb-img'), lbCap = document.getElementById('lb-cap');
+  function closeLb() { if (lb.open) { if (lb.close) lb.close(); else lb.removeAttribute('open'); } }
+  document.querySelectorAll('.shot').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var img = b.querySelector('img');
+      lbImg.src = img.dataset.full || img.currentSrc || img.src;
+      lbImg.alt = img.alt;
+      lbCap.textContent = document.getElementById('tela-title').textContent;
+      if (lb.showModal) lb.showModal(); else lb.setAttribute('open', '');
+    });
+  });
+  document.getElementById('lb-close').addEventListener('click', closeLb);
+  lb.addEventListener('click', function (e) { if (e.target === lb || e.target.classList.contains('lb-fig')) closeLb(); });
 
-          <div class="faq-item reveal delay-2">
-            <div class="faq-question">
-              O ERP emite quais tipos de notas fiscais?
-              <span class="arrow-icon">></span>
-            </div>
-            <div class="faq-answer">
-              <p>
-                O Gold Tech Sistemas permite a emissão de diversos tipos de
-                documentos fiscais eletrônicos, incluindo NF-e (Nota Fiscal
-                Eletrônica de Produtos), NFC-e (Nota Fiscal de Consumidor
-                Eletrônica), NFS-e (Nota Fiscal de Serviços Eletrônica) e CT-e
-                (Conhecimento de Transporte Eletrônico), garantindo a
-                conformidade fiscal do seu negócio.
-              </p>
-            </div>
-          </div>
+  var quotes = document.querySelector('.quotes'), qDots = document.querySelector('.q-dots');
+  if (quotes && qDots) {
+    var cards = quotes.querySelectorAll('.quote');
+    cards.forEach(function () { qDots.appendChild(document.createElement('i')); });
+    var markDot = function () {
+      var step = cards[0].getBoundingClientRect().width + parseFloat(getComputedStyle(quotes).columnGap || 0);
+      var idx = step ? Math.round(quotes.scrollLeft / step) : 0;
+      qDots.querySelectorAll('i').forEach(function (d, k) { d.classList.toggle('on', k === idx); });
+    };
+    quotes.addEventListener('scroll', markDot, { passive: true });
+    markDot();
+  }
 
-          <div class="faq-item reveal delay-3">
-            <div class="faq-question">
-              O sistema funciona offline ou só com internet?
-              <span class="arrow-icon">></span>
-            </div>
-            <div class="faq-answer">
-              <p>
-                Nosso sistema é predominantemente online, o que garante acesso
-                de qualquer lugar e a qualquer momento, além de atualizações
-                automáticas e backups seguros na nuvem. No entanto, para algumas
-                funcionalidades específicas de frente de caixa, pode haver modos
-                de operação que permitem o registro de vendas offline e
-                posterior sincronização.
-              </p>
-            </div>
-          </div>
+  if ('IntersectionObserver' in window) {
+    // Sobre o rodapé o botão flutuante sai da frente: ali o WhatsApp já está à vista.
+    new IntersectionObserver(function (es) { fab.classList.toggle('away', es[0].isIntersecting); })
+      .observe(document.querySelector('footer.site'));
+    // Logos e fotos do carrossel de depoimentos: baixa tudo quando a seção se aproxima, sem pipocar depois.
+    var near = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        near.unobserve(e.target);
+        e.target.querySelectorAll('img[loading="lazy"]').forEach(function (img) { img.loading = 'eager'; });
+      });
+    }, { rootMargin: '600px 0px' });
+    near.observe(document.querySelector('#v-previa .logos'));
+    near.observe(document.getElementById('clientes'));
+  }
+  // As outras 11 telas só baixam quando a pessoa mostra interesse: passa o mouse, toca, usa as setas ou arrasta.
+  var shotsBox = document.querySelector('.shots-box');
+  function loadShots() {
+    ['pointerover', 'focusin'].forEach(function (ev) { shotsBox.removeEventListener(ev, loadShots); });
+    track.removeEventListener('scroll', loadShots);
+    track.querySelectorAll('img').forEach(function (img) { img.loading = 'eager'; });
+  }
+  ['pointerover', 'focusin'].forEach(function (ev) { shotsBox.addEventListener(ev, loadShots, { passive: true }); });
+  track.addEventListener('scroll', loadShots, { passive: true });
 
-          <div class="faq-item reveal delay-4">
-            <div class="faq-question">
-              O ERP tem controle de estoque?
-              <span class="arrow-icon">></span>
-            </div>
-            <div class="faq-answer">
-              <p>
-                Sim, o Gold Tech Sistemas oferece um módulo completo de controle
-                de estoque, que inclui gestão de entradas e saídas, inventário,
-                controle de lotes, grade de produtos (tamanho, cor, etc.), e
-                relatórios para otimização de compras e prevenção de perdas.
-              </p>
-            </div>
-          </div>
+  // Surgimento ao rolar: nada fica escondido antes; cada bloco só anima quando chega na tela.
+  function initReveal() {
+    if (!('IntersectionObserver' in window) || !Element.prototype.animate) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var targets = [
+      '#v-previa .logos .wrap', '#v-previa .sec-head', '.pain', '.mid-cta', '.pillar', '.included',
+      '.window', '.seg-tile', '.segs-note', '.quotes',
+      '.about > div > .kicker', '.about > div > h2', '.about .body', '.steps',
+      '.paper .intro', '.form-card', '.faq-aside', '.faq details', '.faq-help.mob',
+      '.final .wrap > *', '.foot-grid > *'
+    ].join(',');
+    var rise = [{ opacity: 0, transform: 'translateY(28px)' }, { opacity: 1, transform: 'none' }];
+    var pop = [{ opacity: 0, transform: 'translateY(22px) scale(.96)' }, { opacity: 1, transform: 'none' }];
+    var io = new IntersectionObserver(function (entries) {
+      var batch = entries.filter(function (e) { return e.isIntersecting; }).map(function (e) { return e.target; });
+      batch.sort(function (a, b) {
+        var ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+        return (ra.top - rb.top) || (ra.left - rb.left);
+      });
+      batch.forEach(function (el, i) {
+        io.unobserve(el);
+        el.animate(el.matches('.seg-tile, .steps, .window, .form-card') ? pop : rise, {
+          duration: 750, delay: Math.min(i, 5) * 90, easing: 'cubic-bezier(.2, .7, .2, 1)', fill: 'backwards'
+        });
+      });
+    });
+    var fold = window.innerHeight;
+    document.querySelectorAll(targets).forEach(function (el) {
+      if (el.getBoundingClientRect().top < fold) return;  // já aparece ao abrir: fica parado
+      io.observe(el);
+    });
+  }
 
-          <div class="faq-item reveal delay-5">
-            <div class="faq-question">
-              A Gold Tech Sistemas presta suporte e treinamento?
-              <span class="arrow-icon">></span>
-            </div>
-            <div class="faq-answer">
-              <p>
-                Sim, oferecemos suporte especializado e treinamento completo
-                para toda a sua equipe, desde a implantação do sistema até o uso
-                diário. Nossa equipe está sempre pronta para ajudar a garantir
-                que você aproveite ao máximo todas as funcionalidades do ERP.
-              </p>
-            </div>
-          </div>
+  var segSelect = document.getElementById('f-seg');
+  document.querySelectorAll('[data-seg]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      segSelect.value = a.dataset.seg;
+      segSelect.classList.remove('flash');
+      void segSelect.offsetWidth;
+      segSelect.classList.add('flash');
+    });
+  });
 
-          <div class="faq-item reveal delay-6">
-            <div class="faq-question">
-              O sistema é fácil de usar?
-              <span class="arrow-icon">></span>
-            </div>
-            <div class="faq-answer">
-              <p>
-                Desenvolvemos o Gold Tech Sistemas com foco na usabilidade e
-                intuitividade. A interface é limpa e organizada, facilitando o
-                aprendizado e o uso diário, mesmo para usuários sem experiência
-                prévia com sistemas ERP. Além disso, oferecemos treinamento para
-                garantir uma adaptação tranquila.
-              </p>
-            </div>
-          </div>
+  var wa = document.getElementById('f-wa');
+  wa.addEventListener('input', function () {
+    var d = wa.value.replace(/\D/g, '').slice(0, 11), out = '';
+    if (d.length > 0) out = '(' + d.slice(0, 2);
+    if (d.length > 2) out += ') ' + d.slice(2, 3);
+    if (d.length > 3) out += ' ' + d.slice(3, 7);
+    if (d.length > 7) out += '-' + d.slice(7);
+    wa.value = out;
+  });
+  var form = document.getElementById('lead');
+  // Com o teclado aberto, a barra fixa do celular sai da frente dos campos.
+  form.addEventListener('focusin', function () { mbar.classList.add('away'); });
+  form.addEventListener('focusout', function () { mbar.classList.remove('away'); });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    var btn = form.querySelector('button[type="submit"]'), err = document.getElementById('lead-err');
+    err.hidden = true;
+    btn.disabled = true;
+    fetch(form.action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
+      .then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        form.hidden = true;
+        document.getElementById('lead-done').hidden = false;
+        if (window.fbq) fbq('track', 'Lead');
+      })
+      .catch(function () { err.hidden = false; })
+      .then(function () { btn.disabled = false; });
+  });
 
-          <div class="faq-item reveal delay-1">
-            <div class="faq-question">
-              Quais são os custos para contratar?
-              <span class="arrow-icon">></span>
-            </div>
-            <div class="faq-answer">
-              <p>
-                Os custos para contratar o Gold Tech Sistemas variam de acordo
-                com o tamanho da sua empresa, o número de usuários e os módulos
-                que você precisa. Oferecemos planos flexíveis e personalizados.
-                Entre em contato conosco para solicitar uma demonstração
-                gratuita e um orçamento sem compromisso, adaptado às suas
-                necessidades.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  // Pixel da Meta: cada clique no WhatsApp conta como contato.
+  document.querySelectorAll('a[href^="https://wa.me/"]').forEach(function (a) {
+    a.addEventListener('click', function () { if (window.fbq) fbq('track', 'Contact'); });
+  });
 
-    <!-- FOOTER -->
-    <footer>
-      <div class="footer-logo-wrap">
-        <a href="#" class="logo">
-          <img
-            src="assets/logo.png"
-            alt="Imagem da equipe Gold Tech"
-            loading="lazy"
-          />
-        </a>
-      </div>
-      <p class="footer-copy">
-        © 2026 <span>Gold Tech Sistemas</span> - CNPJ: 50.073.146/0001-35 · Sete Lagoas, MG · Todos os
-        direitos reservados.
-      </p>
-    </footer>
-
-    <!-- FLOATING WHATSAPP BUTTON -->
-    <a
-      href="https://wa.me/message/TIT6GVWVLQEBC1"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="whatsapp-float"
-      aria-label="Contato via WhatsApp"
-      title="Fale conosco no WhatsApp"
-    >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
-          fill="currentColor"
-        />
-      </svg>
-    </a>
-
-    <script src="js/script.js"></script>
-  </body>
+  document.querySelectorAll('.copy').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var code = b.closest('.snippet').querySelector('code');
+      function selectIt() {
+        var r = document.createRange(); r.selectNodeContents(code);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        b.textContent = 'Selecionado, use Ctrl+C';
+      }
+      try {
+        navigator.clipboard.writeText(code.innerText).then(function () {
+          b.textContent = 'Copiado';
+          setTimeout(function () { b.textContent = 'Copiar'; }, 1600);
+        }, selectIt);
+      } catch (e) { selectIt(); }
+    });
+  });
+})();
+</script>
+</body>
 </html>
