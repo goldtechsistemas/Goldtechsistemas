@@ -19,6 +19,12 @@ O site publicado é o `index.html` da raiz do repositório. Ele é montado a par
 - O repositório é público. Desfoque sempre nomes de clientes e fornecedores, chaves de nota, valores e contatos antes de subir um print.
 - Ao trocar uma imagem, prefira um nome novo. Com o mesmo nome, quem já visitou o site pode ver a antiga por até 7 dias, por causa da regra de cache do `.htaccess`.
 
+## Área de downloads da implantação
+
+- No rodapé, o link discreto "Downloads" abre um campo de senha. Com a senha certa aparecem os links (Clipp Pro, atualização, acesso remoto e scripts).
+- Os links ficam cifrados dentro de `fonte/pagina.html`: sem a senha, ninguém os encontra no código nem no GitHub. A senha não fica guardada em lugar nenhum do repositório.
+- Para trocar links ou senha: crie um arquivo de texto fora do repositório, com uma linha por link no formato `Nome | https://...`, e rode `python fonte/downloads.py caminho/da/lista.txt` (precisa do pacote `cryptography`). Ele pede a senha nova. Depois rode `python fonte/montar.py` e publique.
+
 ## Onde fica cada coisa
 
 - WhatsApp, segmentos e logos de clientes: no começo de `fonte/montar.py` (constante `WA` e lista `SEGMENTOS`).

@@ -1,2 +1,5 @@
 .DS_Store
 node_modules/
+
+# listas e senhas da area de downloads nunca vao para o repositorio publico
+fonte/*.txt

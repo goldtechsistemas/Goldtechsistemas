@@ -471,6 +471,33 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
 .legal { display: flex; flex-wrap: wrap; }
 .legal span:not(:last-child)::after { content: "·"; margin-inline: 8px; }
 
+/* área de downloads da implantação (rodapé): link discreto, links só com senha */
+.foot-end { display: inline-flex; align-items: center; flex-wrap: wrap; }
+.dl-open {
+  font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 8px 0; margin-block: -8px;
+  text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 3px;
+}
+.dl-open::before { content: "·"; margin-inline: 8px; display: inline-block; color: var(--faint); }
+.dl-open:hover, .dl-open[aria-expanded="true"] { color: var(--gold-hi); text-decoration-color: currentColor; }
+.dl { margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--ink-3); }
+.dl-lock { display: grid; gap: 10px; max-width: 440px; }
+.dl-lock label { font-size: var(--t-xs); color: var(--muted); }
+.dl-row { display: flex; gap: 8px; }
+.dl-row input {
+  flex: 1; min-width: 0; font: 400 16px/1.2 var(--f-sans); color: var(--text); background: var(--ink);
+  border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 12px;
+}
+.dl-row input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.dl-err { font-size: var(--t-xs); color: var(--crit); }
+.dl-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.dl-link {
+  --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v11M7 10l5 5 5-5M5 20h14'/%3E%3C/svg%3E");
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--ink-2); color: var(--text); text-decoration: none; font-size: var(--t-sm); font-weight: 600;
+}
+.dl-link::before { content: ""; width: 18px; height: 18px; flex-shrink: 0; background: var(--gold); -webkit-mask: var(--ico) center / contain no-repeat; mask: var(--ico) center / contain no-repeat; }
+.dl-link:hover { border-color: var(--gold); color: var(--gold-hi); }
+
 .fab {
   position: fixed; right: calc(20px + env(safe-area-inset-right, 0px)); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); z-index: 40;
   width: 58px; height: 58px; border-radius: 50%; background: var(--wa); color: #fff; display: grid; place-items: center;
@@ -1002,7 +1029,15 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
       </div>
       <div class="foot-bottom">
         <p class="legal"><span>© 2026 Gold Tech Sistemas</span><span>CNPJ 50.073.146/0001-35</span><span>Todos os direitos reservados.</span></p>
-        <span>Sete Lagoas, Minas Gerais</span>
+        <span class="foot-end">Sete Lagoas, Minas Gerais<button class="dl-open" type="button" aria-expanded="false" aria-controls="dl">Downloads</button></span>
+      </div>
+      <div class="dl" id="dl" hidden>
+        <form class="dl-lock" id="dl-lock">
+          <label for="dl-senha">Área de implantação. Digite a senha para ver os downloads.</label>
+          <div class="dl-row"><input id="dl-senha" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required><button class="btn btn-gold btn-sm" type="submit">Abrir</button></div>
+          <p class="dl-err" id="dl-err" role="alert" hidden>Senha incorreta.</p>
+        </form>
+        <ul class="dl-list" id="dl-list" hidden></ul>
       </div>
     </div>
   </footer>
@@ -1206,6 +1241,42 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
   // Pixel da Meta: cada clique no WhatsApp conta como contato.
   document.querySelectorAll('a[href^="https://wa.me/"]').forEach(function (a) {
     a.addEventListener('click', function () { if (window.fbq) fbq('track', 'Contact'); });
+  });
+
+  // Downloads da implantação: os links ficam cifrados (AES-GCM) e só aparecem com a senha.
+  // Para trocar links ou senha: python fonte/downloads.py lista.txt
+  var DL = /*downloads:inicio*/{"s":"KE6obHxXnSUMKAgn5sCp4A==","i":"V/kXAz9YnsvYtYZN","c":"CCJJMSS7HGTT5BmarDSDWUIpzLzqVvyMAyUQUhTREfu8WOGL3EwV/tQYY2enE0tg2Y48ImXzk7/8dfdZfU5aP2kT2phHQ2wpuzY0ciTlRi37gMZNDOhAynXrkeHonv5WFNUip6Swmm9HYvwLDS9AIds+FBWBHxkWA+4voUnaA/czR5BhqTRNZvHC4Zj93GWNKP8B/vCR+XApXfKxFIojFXQuZ1YlTu6Lf93wqlfLYnvDTl1qP+yf/XvkmT+oy4xb1dy/vqnn23Ble/wQ8E9UdJuTWoFMgEXGUJFvAbMuP1NVddj8G4vZDj7plnLvRSsEgeesMY+lpZarzrmH/lRbAqlNSyQYWsmN59RZ3dfRayS75oyAjP41+if/Hz+vBBFJnhFwXjw8RDYVJoeMOMwW4NdWXT1DOhK0DiC2yBsx+RU/yS7lHDmNlqBDkllijgcRctgfeOKWtibWtBssG3ioa/LNZlGm5jqP0+CwfTxrn2Y8vRlkSJz9df1vp2dJWPGTvv0tML4W70CQ5gaMXW+trdu7RoZPX0zXd1I8YMJDKMRs4qmTo7NGpKMiUboCasRiShc7A1P6BPLM"}/*downloads:fim*/;
+  var dlBtn = document.querySelector('.dl-open'), dlBox = document.getElementById('dl'), dlLock = document.getElementById('dl-lock');
+  dlBtn.addEventListener('click', function () {
+    var abrir = dlBox.hidden;
+    dlBox.hidden = !abrir;
+    dlBtn.setAttribute('aria-expanded', String(abrir));
+    if (abrir && !dlLock.hidden) document.getElementById('dl-senha').focus();
+  });
+  function bytes(b64) { return Uint8Array.from(atob(b64), function (c) { return c.charCodeAt(0); }); }
+  dlLock.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var err = document.getElementById('dl-err'), senha = document.getElementById('dl-senha').value;
+    err.hidden = true;
+    crypto.subtle.importKey('raw', new TextEncoder().encode(senha), 'PBKDF2', false, ['deriveKey'])
+      .then(function (base) {
+        return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: bytes(DL.s), iterations: 600000, hash: 'SHA-256' },
+          base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      })
+      .then(function (chave) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: bytes(DL.i) }, chave, bytes(DL.c)); })
+      .then(function (dados) {
+        var lista = document.getElementById('dl-list');
+        JSON.parse(new TextDecoder().decode(dados)).forEach(function (item) {
+          if (!/^https:\/\//.test(item.url)) return;
+          var li = document.createElement('li'), a = document.createElement('a');
+          a.className = 'dl-link'; a.href = item.url; a.target = '_blank'; a.rel = 'noopener noreferrer nofollow';
+          a.textContent = item.nome;
+          li.appendChild(a); lista.appendChild(li);
+        });
+        dlLock.hidden = true;
+        lista.hidden = false;
+      })
+      .catch(function () { err.hidden = false; });
   });
 
   document.querySelectorAll('.copy').forEach(function (b) {
