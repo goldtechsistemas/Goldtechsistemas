@@ -1,0 +1,11 @@
+# Cache do site Gold Tech Sistemas
+# Pagina (HTML) e arquivos de texto: o navegador sempre confere se mudou antes de usar a copia guardada.
+# Imagens e icones: o navegador guarda por 7 dias.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html?|xml|txt)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(webp|jpe?g|png|gif|svg|ico)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
