@@ -20,26 +20,36 @@
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Gold Tech Sistemas","url":"https://goldtechsistemas.com/","logo":"https://goldtechsistemas.com/img/logo.webp","image":"https://goldtechsistemas.com/img/og.jpg","telephone":"+55-31-99554-4328","email":"goldtechsistemas@gmail.com","taxID":"50.073.146/0001-35","address":{"@type":"PostalAddress","streetAddress":"Rua República Guiana, 40 - Nova Cidade","addressLocality":"Sete Lagoas","addressRegion":"MG","addressCountry":"BR"},"openingHours":"Mo-Fr 08:00-18:00","sameAs":["https://instagram.com/gold_tech_sistemas"]}</script>
-<!-- Meta Pixel Code -->
+<!-- Meta Pixel Code: os eventos entram na fila na hora; o script (115 KB) só baixa depois que a página abriu
+     ou no primeiro toque/rolagem, para não atrasar a abertura no celular. -->
 <script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+!function(f,b,e,v,n){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];
+function carregar(){if(carregar.ok)return;carregar.ok=1;var t=b.createElement(e);t.async=!0;t.src=v;b.head.appendChild(t);}
+f.addEventListener('load',function(){f.requestIdleCallback?f.requestIdleCallback(carregar,{timeout:3000}):setTimeout(carregar,1500);});
+['pointerdown','keydown','scroll'].forEach(function(ev){f.addEventListener(ev,carregar,{once:!0,passive:!0});});
+}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init', '1438303835161320');
 fbq('track', 'PageView');
 </script>
 <noscript><img height="1" width="1" style="display:none" alt=""
 src="https://www.facebook.com/tr?id=1438303835161320&ev=PageView&noscript=1"></noscript>
 <!-- End Meta Pixel Code -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,700&display=swap">
+<link rel="preload" href="fonts/onest.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/playfair-italic.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Fontes servidas pelo próprio site (antes vinham do Google): sem esperar outros servidores para mostrar o texto. */
+@font-face {
+  font-family: "Onest"; font-style: normal; font-weight: 100 900; font-display: swap;
+  src: url("fonts/onest.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Playfair Display"; font-style: italic; font-weight: 700; font-display: swap;
+  src: url("fonts/playfair-italic.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 /* Layout: "do balcão à SEFAZ" — headline ao lado de uma NFC-e autorizada; marca preto+dourado,
    uma única faixa clara (papel de cupom) para o formulário. Visual escuro único, por escolha da marca. */
 :root {
@@ -118,18 +128,8 @@ em.au { font-family: var(--f-accent); font-style: italic; font-weight: 700; colo
 .wrap { max-width: 1224px; margin-inline: auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
 section[id] { scroll-margin-top: calc(var(--top-h) + var(--nav-h) + 12px); }
 
-/* ---------- topo: faixa da prévia + navegação ---------- */
+/* ---------- topo: navegação ---------- */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50; }
-.ribbon { background: var(--gold); color: var(--on-gold); height: var(--top-h); }
-.ribbon .wrap { height: 100%; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.ribbon-label { font-size: var(--t-xs); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.ribbon-label b { font-weight: 800; }
-.seg { display: flex; background: rgba(23, 19, 10, 0.14); border-radius: 999px; padding: 3px; flex-shrink: 0; }
-.seg button {
-  font: 600 var(--t-xs) / 1 var(--f-sans); color: var(--on-gold); background: transparent; border: 0;
-  padding: 8px 14px; border-radius: 999px; cursor: pointer;
-}
-.seg button[aria-pressed="true"] { background: var(--on-gold); color: var(--gold-hi); }
 
 .sitenav { background: rgba(13, 12, 10, 0.88); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line-2); }
 .sitenav .wrap { height: var(--nav-h); display: flex; align-items: center; gap: 28px; }
@@ -538,13 +538,10 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
   .paper .wrap { grid-template-columns: minmax(0, 1fr); }
   .faq-layout { grid-template-columns: minmax(0, 1fr); }
   .faq-aside { position: static; }
-  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .order, .plan { grid-template-columns: minmax(0, 1fr); }
   .logos .wrap { flex-direction: column; align-items: stretch; gap: 16px; }
   .logos-label { max-width: none; }
 }
 @media (max-width: 720px) {
-  .ribbon-label .long { display: none; }
   .pillars { grid-template-columns: minmax(0, 1fr); }
   :root { --nav-h: 58px; }
   .proof { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 16px; }
@@ -580,14 +577,9 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
   .shots-nav.next { right: 8px; }
   .legal { flex-direction: column; gap: 2px; }
   .legal span:not(:last-child)::after { display: none; }
-  .wtable { min-width: 0; }
-  .wtable .bar { display: none; }
   .foot-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 20px; }
   .foot-grid > .foot-brand, .foot-grid > .foot-col:nth-child(2) { grid-column: 1 / -1; }
   footer.site { padding-bottom: calc(32px + 76px + env(safe-area-inset-bottom, 0px)); }
-  .item { grid-template-columns: minmax(0, 1fr); }
-  .sev { grid-row: auto; justify-self: start; padding: 7px 12px; }
-  .snippet { grid-column: 1; }
   .sitenav .brand img { height: 32px; }
 }
 @media (max-width: 720px) and (orientation: portrait) {
@@ -605,10 +597,8 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
   .nfce-key code { font-size: 10.5px; }
 }
 @media (max-width: 420px) {
-  .kpis { grid-template-columns: minmax(0, 1fr); }
   .chip-a { top: -14px; left: 4px; }
   .chip-b { bottom: -10px; right: 4px; }
-  .seg button { padding: 8px 11px; }
 }
 </style>
 </head>
@@ -617,7 +607,7 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
 <header class="top">
   <nav class="sitenav" id="sitenav" aria-label="Navegação do site">
     <div class="wrap">
-      <a class="brand" href="#inicio"><img src="img/logo.webp" width="151" height="38" alt="Gold Tech Sistemas"></a>
+      <a class="brand" href="#inicio"><img src="img/logo-76.webp" srcset="img/logo-76.webp 2x, img/logo.webp 3x" width="151" height="38" alt="Gold Tech Sistemas"></a>
       <ul>
         <li><a href="#recursos">Recursos</a></li>
         <li><a href="#telas">O sistema</a></li>
@@ -1159,8 +1149,11 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
         e.target.querySelectorAll('img[loading="lazy"]').forEach(function (img) { img.loading = 'eager'; });
       });
     }, { rootMargin: '600px 0px' });
-    near.observe(document.querySelector('#v-previa .logos'));
-    near.observe(document.getElementById('clientes'));
+    // Só depois que a página abriu: assim os logos não disputam a internet com o topo.
+    window.addEventListener('load', function () {
+      near.observe(document.querySelector('#v-previa .logos'));
+      near.observe(document.getElementById('clientes'));
+    });
   }
   // As outras 11 telas só baixam quando a pessoa mostra interesse: passa o mouse, toca, usa as setas ou arrasta.
   var shotsBox = document.querySelector('.shots-box');
@@ -1286,22 +1279,6 @@ footer.site { background: var(--ink-2); border-top: 1px solid var(--line-2); pad
       .catch(function () { err.hidden = false; });
   });
 
-  document.querySelectorAll('.copy').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var code = b.closest('.snippet').querySelector('code');
-      function selectIt() {
-        var r = document.createRange(); r.selectNodeContents(code);
-        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-        b.textContent = 'Selecionado, use Ctrl+C';
-      }
-      try {
-        navigator.clipboard.writeText(code.innerText).then(function () {
-          b.textContent = 'Copiado';
-          setTimeout(function () { b.textContent = 'Copiar'; }, 1600);
-        }, selectIt);
-      } catch (e) { selectIt(); }
-    });
-  });
 })();
 </script>
 </body>
