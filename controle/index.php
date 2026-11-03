@@ -28,6 +28,7 @@ $DADOS = pasta_dados();
 $ARQ_SENHA = $DADOS . '/senha.json';
 $ARQ_CLIENTES = $DADOS . '/clientes.json';
 $ARQ_TENTATIVAS = $DADOS . '/tentativas.json';
+$ARQ_CHAVE = $DADOS . '/chave-api.json';
 
 function ler_json(string $arq, $padrao) {
     if (!is_file($arq)) return $padrao;
@@ -47,6 +48,77 @@ function gravar_json(string $arq, $valor): void {
     }
 }
 
+// Uma gravação de cada vez na lista de clientes (tela e integração podem gravar juntas).
+function travar(string $pasta) {
+    $f = @fopen($pasta . '/trava.lock', 'c');
+    if ($f) flock($f, LOCK_EX);
+    return $f; // solta sozinho quando o PHP termina
+}
+function cnpj_valido(string $c): bool {
+    if (strlen($c) !== 14 || preg_match('/^(\d)\1+$/', $c)) return false;
+    foreach ([12, 13] as $n) {
+        $soma = 0; $pos = $n - 7;
+        for ($i = $n; $i >= 1; $i--) { $soma += (int) $c[$n - $i] * $pos--; if ($pos < 2) $pos = 9; }
+        $r = $soma % 11;
+        if ((int) $c[$n] !== ($r < 2 ? 0 : 11 - $r)) return false;
+    }
+    return true;
+}
+function data_valida($d): bool {
+    return is_string($d) && preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $d, $m) && checkdate((int) $m[2], (int) $m[3], (int) $m[1]);
+}
+function mes_valido($m): bool {
+    return is_string($m) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $m) === 1;
+}
+// Aplica um registro vindo do outro sistema na lista. Confere tudo antes de mudar qualquer coisa.
+function aplicar_externo(array &$clientes, array $it): array {
+    $cnpj = preg_replace('/\D/', '', (string) ($it['cnpj'] ?? ''));
+    if (!cnpj_valido($cnpj)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'CNPJ inválido.'];
+    $idx = null;
+    foreach ($clientes as $i => $c) { if ($c['cnpj'] === $cnpj) { $idx = $i; break; } }
+    $nome = isset($it['nome']) ? mb_substr(trim((string) $it['nome']), 0, 120) : null;
+    if ($idx === null && !$nome) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'Cliente novo: informe o nome.'];
+
+    $gerado = $it['gerado_em'] ?? null; $mes = null;
+    if ($gerado !== null) {
+        if (!data_valida($gerado)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'gerado_em deve ser AAAA-MM-DD.'];
+        if (isset($it['mes'])) {
+            if (!mes_valido($it['mes'])) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'mes deve ser AAAA-MM.'];
+            $mes = $it['mes'];
+        } elseif (isset($it['competencia'])) {
+            if (!mes_valido($it['competencia'])) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'competencia deve ser AAAA-MM.'];
+            // A entrega é no mês seguinte ao da competência.
+            $mes = date('Y-m', strtotime($it['competencia'] . '-01 +1 month'));
+        } else {
+            $mes = substr($gerado, 0, 7);
+        }
+    }
+    if (isset($it['prazo_dia']) && ((int) $it['prazo_dia'] < 1 || (int) $it['prazo_dia'] > 28)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'prazo_dia deve ser de 1 a 28.'];
+    if (isset($it['dia_envio']) && ((int) $it['dia_envio'] < 1 || (int) $it['dia_envio'] > 28)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'dia_envio deve ser de 1 a 28.'];
+
+    $novo = $idx === null;
+    $c = $novo
+        ? ['id' => bin2hex(random_bytes(6)), 'nome' => $nome, 'cnpj' => $cnpj, 'origem' => '', 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => []]
+        : $clientes[$idx];
+    if (isset($it['automatico']) && $it['automatico'] && !($it['dia_envio'] ?? $c['envioDia'] ?? 0)) {
+        return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'Para envio automático, informe dia_envio.'];
+    }
+    if ($nome) $c['nome'] = $nome;
+    if (isset($it['chamamos'])) $c['origem'] = mb_substr(trim((string) $it['chamamos']), 0, 80);
+    if (isset($it['prazo_dia'])) $c['prazoDia'] = (int) $it['prazo_dia'];
+    if (isset($it['dia_envio'])) $c['envioDia'] = (int) $it['dia_envio'];
+    if (isset($it['automatico'])) {
+        $auto = (bool) $it['automatico'];
+        if ($auto && empty($c['automatico'])) $c['autoProximo'] = date('Y-m');
+        $c['automatico'] = $auto;
+    }
+    if ($gerado !== null) { $c['gerados'] = (array) ($c['gerados'] ?? []); $c['gerados'][$mes] = $gerado; }
+    if ($novo) $clientes[] = $c; else $clientes[$idx] = $c;
+    $r = ['ok' => true, 'cnpj' => $cnpj, 'acao' => $novo ? 'criado' : 'atualizado'];
+    if ($mes) $r['mes'] = $mes;
+    return $r;
+}
+
 session_name('gtcontrole');
 session_set_cookie_params(['lifetime' => 0, 'path' => '/controle/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
 session_start();
@@ -60,6 +132,42 @@ if (isset($_GET['api'])) {
     $logado = !empty($_SESSION['ok']);
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') $responder(405, ['erro' => 'Use POST']);
+
+    // Integração: outro sistema grava aqui usando a chave gerada na tela (botão "Integração").
+    if ($api === 'externo') {
+        // A chave é longa e aleatória (impossível de adivinhar), então não há bloqueio por tentativas:
+        // assim ninguém consegue travar a integração mandando chaves erradas.
+        $chave = ler_json($ARQ_CHAVE, []);
+        $enviada = trim((string) ($_SERVER['HTTP_X_CHAVE'] ?? ''));
+        $auth = (string) ($_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '');
+        if ($enviada === '' && stripos($auth, 'Bearer ') === 0) $enviada = trim(substr($auth, 7));
+        if (empty($chave['hash']) || $enviada === '' || !hash_equals((string) $chave['hash'], hash('sha256', $enviada))) {
+            usleep(300000);
+            $responder(401, ['erro' => 'Chave de integração inválida.']);
+        }
+        if (!is_array($corpo) || !$corpo) $responder(400, ['erro' => 'Envie um JSON com os dados do cliente.']);
+        $lote = array_is_list($corpo) ? $corpo : (isset($corpo['clientes']) ? (array) $corpo['clientes'] : null);
+        $itens = $lote ?? [$corpo];
+        if (count($itens) > 500) $responder(400, ['erro' => 'Envie no máximo 500 clientes por vez.']);
+
+        $trava = travar($DADOS);
+        $atual = ler_json($ARQ_CLIENTES, ['rev' => 0, 'clientes' => []]);
+        $resultados = []; $mudou = false;
+        foreach ($itens as $it) {
+            $r = is_array($it) ? aplicar_externo($atual['clientes'], $it) : ['ok' => false, 'erro' => 'Registro inválido.'];
+            $resultados[] = $r;
+            if ($r['ok']) $mudou = true;
+        }
+        if ($mudou) {
+            $atual['rev'] = (int) $atual['rev'] + 1; $atual['alterado'] = date('c');
+            gravar_json($ARQ_CLIENTES, $atual);
+        }
+        $chave['ultimoUso'] = date('c');
+        gravar_json($ARQ_CHAVE, $chave);
+        if ($lote === null) $responder($resultados[0]['ok'] ? 200 : 400, $resultados[0]);
+        $ok = count(array_filter($resultados, function ($r) { return $r['ok']; }));
+        $responder(200, ['gravados' => $ok, 'com_erro' => count($resultados) - $ok, 'resultados' => $resultados]);
+    }
     // Só aceita chamadas da própria tela (cabeçalho que outro site não consegue mandar).
     if (($_SERVER['HTTP_X_CONTROLE'] ?? '') !== '1') $responder(403, ['erro' => 'Origem inválida']);
 
@@ -114,8 +222,23 @@ if (isset($_GET['api'])) {
         gravar_json($ARQ_SENHA, ['hash' => password_hash($nova, PASSWORD_DEFAULT), 'criada' => date('c')]);
         $responder(200, ['ok' => true]);
     }
+    if ($api === 'chave-estado') {
+        $chave = ler_json($ARQ_CHAVE, []);
+        $responder(200, ['existe' => !empty($chave['hash']), 'criada' => $chave['criada'] ?? null, 'ultimoUso' => $chave['ultimoUso'] ?? null]);
+    }
+    if ($api === 'chave-gerar') {
+        // A chave só aparece agora; no servidor fica só o resumo (hash) dela.
+        $nova = 'gts_' . bin2hex(random_bytes(24));
+        gravar_json($ARQ_CHAVE, ['hash' => hash('sha256', $nova), 'criada' => date('c'), 'ultimoUso' => null]);
+        $responder(200, ['chave' => $nova]);
+    }
+    if ($api === 'chave-apagar') {
+        if (is_file($ARQ_CHAVE) && !@unlink($ARQ_CHAVE)) $responder(500, ['erro' => 'Não foi possível desligar a integração.']);
+        $responder(200, ['ok' => true]);
+    }
     if ($api === 'dados') $responder(200, ler_json($ARQ_CLIENTES, ['rev' => 0, 'clientes' => []]));
     if ($api === 'salvar') {
+        $trava = travar($DADOS);
         $atual = ler_json($ARQ_CLIENTES, ['rev' => 0, 'clientes' => []]);
         // Se a lista mudou em outra aba ou aparelho, não sobrescreve: a tela recarrega.
         if ((int) ($corpo['rev'] ?? -1) !== (int) $atual['rev']) $responder(409, ['erro' => 'A lista foi alterada em outro lugar. Recarregando.']);
@@ -223,6 +346,8 @@ tr:last-child td { border-bottom: 0; }
 .vazio { text-align: center; color: var(--muted); padding: 40px 16px; }
 .aviso button { margin-left: 10px; background: none; border: 0; color: var(--gold); font-weight: 700; cursor: pointer; padding: 0; }
 .origem { color: var(--faint); font-size: 12px; }
+.nota { margin: 0; color: var(--muted); font-size: 13px; }
+#i-url, #i-chave { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
 .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink-3); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; font-size: 14px; z-index: 20; }
 
 dialog { background: var(--ink-2); color: var(--text); border: 1px solid var(--line); border-radius: 18px; padding: 0; width: min(440px, calc(100% - 32px)); }
@@ -262,6 +387,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     <div class="wrap">
       <h1><span class="marca">GOLD TECH</span> · Controle do Sintegra</h1>
       <button class="btn btn-sm btn-ghost" type="button" id="b-csv">Exportar planilha</button>
+      <button class="btn btn-sm btn-ghost" type="button" id="b-integra">Integração</button>
       <button class="btn btn-sm btn-ghost" type="button" id="b-senha">Trocar senha</button>
       <button class="btn btn-sm btn-ghost" type="button" id="b-sair">Sair</button>
     </div>
@@ -331,6 +457,24 @@ dialog h3 { margin: 0; font-size: 18px; }
     <div class="linha">
       <button class="btn" type="button" id="cf-nao">Cancelar</button>
       <button class="btn btn-gold" type="button" id="cf-sim"></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="d-integra">
+  <form method="dialog">
+    <h3>Integração com outro sistema</h3>
+    <p class="nota">Outro sistema pode cadastrar clientes e informar a data em que o Sintegra foi gerado. Ele precisa deste endereço e de uma chave.</p>
+    <label>Endereço (POST)<input type="text" id="i-url" readonly></label>
+    <p class="nota" id="i-estado"></p>
+    <div id="i-nova" hidden>
+      <label>Chave nova: copie e guarde agora, ela não aparece de novo<input type="text" id="i-chave" readonly></label>
+      <div class="linha" style="justify-content:flex-start;margin-top:8px"><button class="btn btn-sm" type="button" id="i-copiar">Copiar chave</button></div>
+    </div>
+    <div class="linha">
+      <button class="btn btn-ghost" type="button" id="i-apagar">Desligar integração</button>
+      <button class="btn" type="button" id="i-gerar">Gerar chave</button>
+      <button class="btn btn-gold" type="button" id="i-fechar">Fechar</button>
     </div>
   </form>
 </dialog>
@@ -563,6 +707,50 @@ dialog h3 { margin: 0; font-size: 18px; }
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     a.download = 'sintegra-' + mesAtual + '.csv'; a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
   });
+  // ---------- integração ----------
+  function dataHora(iso) { return new Date(iso).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }); }
+  function estadoIntegra() {
+    return api('chave-estado').then(function (e) {
+      $('i-estado').textContent = e.existe
+        ? 'Integração ligada. Chave criada em ' + dataHora(e.criada) + (e.ultimoUso ? '. Último uso: ' + dataHora(e.ultimoUso) + '.' : '. Ainda não foi usada.')
+        : 'Integração desligada: nenhuma chave criada.';
+      $('i-gerar').textContent = e.existe ? 'Gerar chave nova' : 'Gerar chave';
+      $('i-apagar').hidden = !e.existe;
+      return e;
+    });
+  }
+  $('b-integra').addEventListener('click', function () {
+    $('i-url').value = location.origin + location.pathname.replace(/[^/]*$/, '') + '?api=externo';
+    $('i-nova').hidden = true; $('i-chave').value = '';
+    estadoIntegra().then(function () { $('d-integra').showModal(); }).catch(function (e) { aviso(e.message); });
+  });
+  $('i-fechar').addEventListener('click', function () { $('d-integra').close(); });
+  $('i-gerar').addEventListener('click', function () {
+    var existe = !$('i-apagar').hidden;
+    (existe ? confirmar('Gerar chave nova?', 'A chave atual para de funcionar na hora. O outro sistema vai precisar da chave nova.', 'Sim, gerar nova') : Promise.resolve(true))
+      .then(function (sim) {
+        if (!sim) return;
+        return api('chave-gerar').then(function (r) {
+          $('i-chave').value = r.chave; $('i-nova').hidden = false; $('i-chave').select();
+          return estadoIntegra();
+        });
+      }).catch(function (e) { aviso(e.message); });
+  });
+  $('i-copiar').addEventListener('click', function () {
+    var ch = $('i-chave'); ch.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(ch.value) : Promise.reject()).then(function () { aviso('Chave copiada'); }, function () { document.execCommand('copy'); aviso('Chave copiada'); });
+  });
+  $('i-apagar').addEventListener('click', function () {
+    confirmar('Desligar integração?', 'A chave atual para de funcionar e o outro sistema não consegue mais gravar aqui.', 'Sim, desligar')
+      .then(function (sim) { if (!sim) return; return api('chave-apagar').then(function () { $('i-nova').hidden = true; aviso('Integração desligada'); return estadoIntegra(); }); })
+      .catch(function (e) { aviso(e.message); });
+  });
+  // O outro sistema pode gravar a qualquer hora: confere a cada minuto se a lista mudou.
+  setInterval(function () {
+    if ($('tela-painel').hidden || document.hidden || document.querySelector('dialog[open]')) return;
+    api('dados').then(function (d) { if ((d.rev || 0) !== estado.rev) carregar(); }).catch(function () {});
+  }, 60000);
+
   $('b-senha').addEventListener('click', function () { $('f-senha').reset(); $('s-msg').textContent = ''; $('d-senha').showModal(); });
   $('s-cancelar').addEventListener('click', function () { $('d-senha').close(); });
   $('f-senha').addEventListener('submit', function (e) {
