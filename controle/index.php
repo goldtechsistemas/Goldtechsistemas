@@ -157,13 +157,16 @@ function aplicar_externo(array &$clientes, array $it): array {
 function sincronizar_crm(string $pasta, string $arq_clientes, array $crm): array {
     $ch = curl_init((string) $crm['url']);
     curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 25, CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4, CURLOPT_USERAGENT => 'ControleSintegra/1.0 (goldtechsistemas.com)',
         CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $crm['token'], 'Accept: application/json']]);
     $corpo = curl_exec($ch);
     $codigo = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    $falha = curl_errno($ch) ? curl_error($ch) : '';
     curl_close($ch);
     $dados = is_string($corpo) ? json_decode($corpo, true) : null;
     if ($codigo !== 200 || !is_array($dados) || !isset($dados['empresas'])) {
-        return ['ok' => false, 'erro' => 'O CRM não respondeu (código ' . $codigo . ').'];
+        $msg = $codigo ? 'O CRM respondeu com o código ' . $codigo . '.' : 'Não foi possível acessar o CRM' . ($falha ? ': ' . $falha : '') . '.';
+        return ['ok' => false, 'erro' => $msg];
     }
 
     $trava = travar($pasta);
@@ -308,7 +311,7 @@ if (isset($_GET['api'])) {
     }
     if ($api === 'crm-estado') {
         $crm = ler_json($ARQ_CRM, []);
-        $responder(200, ['configurado' => !empty($crm['url']) && !empty($crm['token']), 'ultima' => $crm['ultima'] ?? null]);
+        $responder(200, ['configurado' => !empty($crm['url']) && !empty($crm['token']), 'ultima' => $crm['ultima'] ?? null, 'falha' => $crm['falha'] ?? null]);
     }
     if ($api === 'crm-gerar') {
         // O token só aparece agora, para ser colado na Vercel (variável CONTROLE_SINTEGRA_TOKEN do CRM).
@@ -320,7 +323,9 @@ if (isset($_GET['api'])) {
         $crm = ler_json($ARQ_CRM, []);
         if (empty($crm['url']) || empty($crm['token'])) $responder(400, ['erro' => 'A ligação com o CRM ainda não foi configurada.']);
         $r = sincronizar_crm($DADOS, $ARQ_CLIENTES, $crm);
-        if ($r['ok']) { $crm['ultima'] = $r; gravar_json($ARQ_CRM, $crm); }
+        // Guarda também a última falha, para aparecer na tela de Integração.
+        if ($r['ok']) { $crm['ultima'] = $r; unset($crm['falha']); } else { $crm['falha'] = ['quando' => date('c'), 'erro' => $r['erro']]; }
+        gravar_json($ARQ_CRM, $crm);
         $responder($r['ok'] ? 200 : 502, $r);
     }
     if ($api === 'chave-estado') {
@@ -988,6 +993,7 @@ dialog h3 { margin: 0; font-size: 18px; }
       $('crm-estado').textContent = !e.configurado ? 'Ligação com o CRM desligada: gere o token e coloque na Vercel.'
         : u ? 'Ligado. Última busca: ' + dataHora(u.quando) + ' · ' + u.noCrm + ' empresa(s) do CRM aqui' + (u.cpf ? ' · ' + u.cpf + ' com CPF ficam de fora' : '') + (u.invalidos && u.invalidos.length ? ' · ' + u.invalidos.length + ' com CNPJ inválido no CRM: ' + u.invalidos.join(', ') : '') + '.'
         : 'Token gerado. Falta colocar na Vercel e publicar o CRM; depois disso a busca começa sozinha.';
+      if (e.configurado && e.falha) $('crm-estado').textContent += ' Última tentativa com erro (' + dataHora(e.falha.quando) + '): ' + e.falha.erro;
       $('crm-gerar').textContent = e.configurado ? 'Gerar token novo' : 'Gerar token do CRM';
     });
   }
