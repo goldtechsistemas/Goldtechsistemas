@@ -99,7 +99,7 @@ function aplicar_externo(array &$clientes, array $it): array {
 
     $novo = $idx === null;
     $c = $novo
-        ? ['id' => bin2hex(random_bytes(6)), 'nome' => $nome, 'cnpj' => $cnpj, 'origem' => '', 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => []]
+        ? ['id' => bin2hex(random_bytes(6)), 'nome' => $nome, 'cnpj' => $cnpj, 'origem' => '', 'enviarArquivos' => false, 'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => []]
         : $clientes[$idx];
     if (isset($it['automatico']) && $it['automatico'] && !($it['dia_envio'] ?? $c['envioDia'] ?? 0)) {
         return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'Para envio automático, informe dia_envio.'];
@@ -108,6 +108,8 @@ function aplicar_externo(array &$clientes, array $it): array {
     if (isset($it['chamamos'])) $c['origem'] = mb_substr(trim((string) $it['chamamos']), 0, 80);
     if (isset($it['prazo_dia'])) $c['prazoDia'] = (int) $it['prazo_dia'];
     if (isset($it['dia_envio'])) $c['envioDia'] = (int) $it['dia_envio'];
+    if (isset($it['enviar_arquivos'])) $c['enviarArquivos'] = (bool) $it['enviar_arquivos'];
+    if (isset($it['master_remote'])) $c['masterRemote'] = (bool) $it['master_remote'];
     if (isset($it['automatico'])) {
         $auto = (bool) $it['automatico'];
         if ($auto && empty($c['automatico'])) $c['autoProximo'] = date('Y-m');
@@ -261,6 +263,9 @@ if (isset($_GET['api'])) {
                 'cnpj' => $cnpj,
                 'origem' => mb_substr(trim((string) ($c['origem'] ?? '')), 0, 80),
                 'automatico' => !empty($c['automatico']),
+                // Programas instalados no cliente.
+                'enviarArquivos' => !empty($c['enviarArquivos']),
+                'masterRemote' => !empty($c['masterRemote']),
                 'prazoDia' => max(1, min(28, (int) ($c['prazoDia'] ?? 10))),
                 // Envio automático: dia do mês em que o envio acontece e o próximo mês a preencher sozinho.
                 'envioDia' => max(0, min(28, (int) ($c['envioDia'] ?? 0))),
@@ -296,7 +301,7 @@ if (isset($_GET['api'])) {
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--ink); color: var(--text); font: 15px/1.5 "Onest", "Segoe UI", system-ui, sans-serif; }
 button, input, select { font: inherit; color: inherit; }
-.wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+.wrap { max-width: 1320px; margin: 0 auto; padding: 0 16px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line-2); background: var(--ink-3); color: var(--text);
   border-radius: 10px; padding: 10px 14px; font-weight: 600; cursor: pointer; }
 .btn:hover { border-color: var(--gold); }
@@ -316,6 +321,11 @@ label { font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
 .gate-card p { margin: 0; color: var(--muted); font-size: 14px; }
 .msg { font-size: 13px; color: var(--crit); min-height: 1em; }
 .marca { color: var(--gold); font-weight: 800; letter-spacing: .02em; }
+.logo { display: block; height: auto; }
+.gate-card .logo { width: 192px; }
+header.bar .logo { width: 128px; }
+header.bar h1 { display: flex; align-items: center; gap: 12px; }
+header.bar h1 span { color: var(--muted); font-weight: 600; font-size: 15px; }
 
 /* painel */
 header.bar { position: sticky; top: 0; z-index: 5; background: rgba(13, 12, 10, .96); border-bottom: 1px solid var(--line-2); }
@@ -324,13 +334,21 @@ header.bar h1 { margin: 0; font-size: 17px; margin-right: auto; }
 .mes { display: flex; align-items: center; gap: 10px; margin: 22px 0 4px; flex-wrap: wrap; }
 .mes h2 { margin: 0; font-size: 24px; }
 .mes small { color: var(--muted); display: block; font-size: 13px; }
-.resumo { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
+.resumo { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
+.card { text-align: left; cursor: pointer; font: inherit; color: inherit; }
+.card:hover { border-color: var(--line); }
+.card.ativo { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
 .card { background: var(--ink-2); border: 1px solid var(--line-2); border-radius: 14px; padding: 12px 14px; }
 .card b { display: block; font-size: 24px; line-height: 1.2; }
 .card span { font-size: 12px; color: var(--muted); }
 .card.crit b { color: var(--crit); } .card.ok b { color: var(--ok); } .card.warn b { color: var(--warn); } .card.auto b { color: var(--auto); }
 .ferramentas { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .ferramentas input { flex: 1; min-width: 200px; }
+.filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; }
+.filtros label { min-width: 170px; }
+.filtros select { background: var(--ink); border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 10px; font-size: 14px; }
+.filtros select.usado { border-color: var(--gold); }
+.contagem { color: var(--muted); font-size: 13px; margin-left: auto; padding-bottom: 10px; }
 table { width: 100%; border-collapse: collapse; background: var(--ink-2); border: 1px solid var(--line-2); border-radius: 14px; overflow: hidden; }
 th { text-align: left; font-size: 12px; font-weight: 600; color: var(--faint); text-transform: uppercase; letter-spacing: .05em; padding: 12px; border-bottom: 1px solid var(--line-2); }
 td { padding: 12px; border-bottom: 1px solid var(--line-2); vertical-align: middle; }
@@ -361,6 +379,8 @@ dialog h3 { margin: 0; font-size: 18px; }
 
 @media (max-width: 760px) {
   .resumo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filtros label { min-width: calc(50% - 5px); flex: 1; }
+  .contagem { margin-left: 0; }
   table, thead, tbody, tr, td { display: block; }
   thead { display: none; }
   table { background: none; border: 0; }
@@ -375,7 +395,7 @@ dialog h3 { margin: 0; font-size: 18px; }
 
 <section class="gate" id="tela-entrada" hidden>
   <form class="gate-card" id="form-entrada" autocomplete="off">
-    <div class="marca">GOLD TECH SISTEMAS</div>
+    <img class="logo" src="/img/logo.webp" width="478" height="120" alt="Gold Tech Sistemas">
     <h1 id="entrada-titulo">Controle do Sintegra</h1>
     <p id="entrada-texto">Digite a senha para entrar.</p>
     <label>Senha<input type="password" id="senha1" autocomplete="current-password" required></label>
@@ -388,7 +408,7 @@ dialog h3 { margin: 0; font-size: 18px; }
 <section id="tela-painel" hidden>
   <header class="bar">
     <div class="wrap">
-      <h1><span class="marca">GOLD TECH</span> · Controle do Sintegra</h1>
+      <h1><img class="logo" src="/img/logo-76.webp" width="304" height="76" alt="Gold Tech Sistemas"><span>Controle do Sintegra</span></h1>
       <button class="btn btn-sm btn-ghost" type="button" id="b-csv">Exportar planilha</button>
       <button class="btn btn-sm btn-ghost" type="button" id="b-integra">Integração</button>
       <button class="btn btn-sm btn-ghost" type="button" id="b-senha">Trocar senha</button>
@@ -403,18 +423,31 @@ dialog h3 { margin: 0; font-size: 18px; }
       <button class="btn btn-sm btn-ghost" type="button" id="mes-hoje">Mês atual</button>
     </div>
     <div class="resumo">
-      <div class="card"><b id="n-total">0</b><span>clientes</span></div>
-      <div class="card ok"><b id="n-ok">0</b><span>gerados</span></div>
-      <div class="card warn"><b id="n-pend">0</b><span>pendentes</span></div>
-      <div class="card crit"><b id="n-atraso">0</b><span>atrasados</span></div>
-      <div class="card auto"><b id="n-auto">0</b><span>envio automático</span></div>
+      <button type="button" class="card" data-f="todos"><b id="n-total">0</b><span>clientes</span></button>
+      <button type="button" class="card ok" data-f="sit:ok"><b id="n-ok">0</b><span>gerados</span></button>
+      <button type="button" class="card warn" data-f="sit:warn"><b id="n-pend">0</b><span>pendentes</span></button>
+      <button type="button" class="card crit" data-f="sit:crit"><b id="n-atraso">0</b><span>atrasados</span></button>
+      <button type="button" class="card auto" data-f="auto:sim"><b id="n-auto">0</b><span>envio automático</span></button>
+      <button type="button" class="card" data-f="ea:sim"><b id="n-ea">0</b><span>EnviarArquivos instalado</span></button>
+      <button type="button" class="card" data-f="mr:sim"><b id="n-mr">0</b><span>Master Remote instalado</span></button>
     </div>
     <div class="ferramentas">
       <input type="search" id="busca" placeholder="Buscar por empresa, CNPJ ou como chamamos o cliente">
       <button class="btn btn-gold" type="button" id="b-novo">+ Novo cliente</button>
     </div>
+    <div class="filtros">
+      <label>Situação no mês<select id="f-sit">
+        <option value="">Todos</option><option value="ok">Gerados</option><option value="warn">Pendentes</option>
+        <option value="crit">Atrasados</option><option value="auto">Aguardando envio automático</option><option value="falta">Ainda não gerados (pendentes + atrasados)</option>
+      </select></label>
+      <label>Envio automático<select id="f-auto"><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
+      <label>EnviarArquivos<select id="f-ea"><option value="">Todos</option><option value="sim">Instalado</option><option value="nao">Não instalado</option></select></label>
+      <label>Master Remote<select id="f-mr"><option value="">Todos</option><option value="sim">Instalado</option><option value="nao">Não instalado</option></select></label>
+      <button class="btn btn-sm btn-ghost" type="button" id="f-limpar" hidden>Limpar filtros</button>
+      <span class="contagem" id="contagem"></span>
+    </div>
     <table>
-      <thead><tr><th>Empresa / CNPJ</th><th>Prazo</th><th>Situação</th><th>Gerado em</th><th>Envio automático</th><th></th></tr></thead>
+      <thead><tr><th>Empresa / CNPJ</th><th>Prazo</th><th>Situação</th><th>Gerado em</th><th>Envio automático</th><th>EnviarArquivos</th><th>Master Remote</th><th></th></tr></thead>
       <tbody id="linhas"></tbody>
     </table>
     <p class="vazio" id="vazio" hidden>Nenhum cliente ainda. Clique em “Novo cliente”.</p>
@@ -429,6 +462,8 @@ dialog h3 { margin: 0; font-size: 18px; }
     <label>CNPJ<input type="text" id="c-cnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" required></label>
     <label>Como chamamos o cliente? (opcional)<input type="text" id="c-origem" maxlength="80" placeholder="Ex.: Padaria do João"></label>
     <label>Prazo para gerar (dia de cada mês)<input type="number" id="c-prazo" min="1" max="28" value="10" required></label>
+    <label class="switch"><input type="checkbox" id="c-ea"> EnviarArquivos instalado</label>
+    <label class="switch"><input type="checkbox" id="c-mr"> Master Remote instalado</label>
     <label class="switch"><input type="checkbox" id="c-auto"> O envio do Sintegra deste cliente é automático</label>
     <label id="c-envio-campo" hidden>Dia do envio automático (todo mês)<input type="number" id="c-envio" min="1" max="28"></label>
     <div class="msg" id="c-msg" role="alert"></div>
@@ -567,12 +602,28 @@ dialog h3 { margin: 0; font-size: 18px; }
     var lista = estado.clientes.map(function (c) { return { c: c, s: situacao(c, m) }; });
     var n = { ok: 0, warn: 0, crit: 0, auto: 0 };
     lista.forEach(function (x) { n[x.s.cls]++; });
+    var conta = function (campo) { return estado.clientes.filter(function (c) { return c[campo]; }).length; };
     $('n-total').textContent = lista.length; $('n-ok').textContent = n.ok; $('n-pend').textContent = n.warn;
-    $('n-atraso').textContent = n.crit; $('n-auto').textContent = estado.clientes.filter(function (c) { return c.automatico; }).length;
+    $('n-atraso').textContent = n.crit; $('n-auto').textContent = conta('automatico');
+    $('n-ea').textContent = conta('enviarArquivos'); $('n-mr').textContent = conta('masterRemote');
+    // Filtros: todos juntos (situação + automático + programas + busca).
+    var f = { sit: $('f-sit').value, auto: $('f-auto').value, ea: $('f-ea').value, mr: $('f-mr').value };
+    var simNao = function (v, marcado) { return !v || (v === 'sim') === !!marcado; };
+    lista = lista.filter(function (x) {
+      var okSit = !f.sit || (f.sit === 'falta' ? (x.s.cls === 'warn' || x.s.cls === 'crit') : x.s.cls === f.sit);
+      return okSit && simNao(f.auto, x.c.automatico) && simNao(f.ea, x.c.enviarArquivos) && simNao(f.mr, x.c.masterRemote);
+    });
+    ['f-sit', 'f-auto', 'f-ea', 'f-mr'].forEach(function (id) { $(id).classList.toggle('usado', !!$(id).value); });
+    var algum = f.sit || f.auto || f.ea || f.mr;
+    $('f-limpar').hidden = !algum && !busca;
+    var chave = !f.auto && !f.ea && !f.mr ? (f.sit ? 'sit:' + f.sit : (busca ? '' : 'todos'))
+      : (!f.sit && !f.ea && !f.mr && f.auto === 'sim' ? 'auto:sim' : (!f.sit && !f.auto && !f.mr && f.ea === 'sim' ? 'ea:sim' : (!f.sit && !f.auto && !f.ea && f.mr === 'sim' ? 'mr:sim' : '')));
+    document.querySelectorAll('.resumo .card').forEach(function (b) { b.classList.toggle('ativo', b.dataset.f === chave); });
     if (busca) lista = lista.filter(function (x) {
       return semAcento(x.c.nome).indexOf(busca) >= 0 || semAcento(x.c.origem).indexOf(busca) >= 0 || (buscaNum && x.c.cnpj.indexOf(buscaNum) >= 0);
     });
     lista.sort(function (a, b) { return a.s.ordem - b.s.ordem || a.c.nome.localeCompare(b.c.nome, 'pt-BR'); });
+    $('contagem').textContent = 'Mostrando ' + lista.length + ' de ' + estado.clientes.length;
     var tb = $('linhas'); tb.textContent = '';
     lista.forEach(function (x) {
       var c = x.c, s = x.s, tr = document.createElement('tr');
@@ -582,6 +633,8 @@ dialog h3 { margin: 0; font-size: 18px; }
         '<td data-rot="Situação"><span class="tag ' + s.cls + '"></span></td>' +
         '<td data-rot="Gerado em"><div class="gerado"><input type="date" aria-label="Data em que o Sintegra foi gerado"><button class="btn btn-sm" type="button" data-a="hoje">Gerado hoje</button><button class="btn btn-sm btn-ghost" type="button" data-a="limpar">Desmarcar</button></div></td>' +
         '<td data-rot="Envio automático"><label class="switch"><input type="checkbox" data-a="auto"> Automático</label></td>' +
+        '<td data-rot="EnviarArquivos"><label class="switch"><input type="checkbox" data-a="ea"> Instalado</label></td>' +
+        '<td data-rot="Master Remote"><label class="switch"><input type="checkbox" data-a="mr"> Instalado</label></td>' +
         '<td><div class="acoes"><button class="btn btn-sm" type="button" data-a="editar">Editar</button><button class="btn btn-sm" type="button" data-a="excluir">Excluir</button></div></td>';
       tr.querySelector('.nome').textContent = c.nome;
       tr.querySelector('.cnpj').textContent = fmtCnpj(c.cnpj);
@@ -593,6 +646,10 @@ dialog h3 { margin: 0; font-size: 18px; }
       var hoje = tr.querySelector('[data-a=hoje]'); hoje.hidden = !!s.gerado;
       var limpar = tr.querySelector('[data-a=limpar]'); limpar.hidden = !s.gerado;
       tr.querySelector('[data-a=auto]').checked = !!c.automatico;
+      [['ea', 'enviarArquivos', 'EnviarArquivos'], ['mr', 'masterRemote', 'Master Remote']].forEach(function (p) {
+        var cx = tr.querySelector('[data-a=' + p[0] + ']'); cx.checked = !!c[p[1]];
+        cx.addEventListener('change', function () { c[p[1]] = cx.checked; salvar(p[2] + (cx.checked ? ' marcado como instalado' : ' marcado como não instalado')); });
+      });
       data.addEventListener('change', function () { if (data.value) marcar(c, data.value); else desmarcar(c, data); });
       limpar.addEventListener('click', function () { desmarcar(c); });
       hoje.addEventListener('click', function () { marcar(c, hojeISO()); });
@@ -608,8 +665,21 @@ dialog h3 { margin: 0; font-size: 18px; }
       });
       tb.appendChild(tr);
     });
-    $('vazio').hidden = estado.clientes.length > 0;
+    $('vazio').textContent = estado.clientes.length ? 'Nenhum cliente com esses filtros.' : 'Nenhum cliente ainda. Clique em “Novo cliente”.';
+    $('vazio').hidden = lista.length > 0;
   }
+  ['f-sit', 'f-auto', 'f-ea', 'f-mr'].forEach(function (id) { $(id).addEventListener('change', desenhar); });
+  function limparFiltros() { ['f-sit', 'f-auto', 'f-ea', 'f-mr'].forEach(function (id) { $(id).value = ''; }); }
+  $('f-limpar').addEventListener('click', function () { limparFiltros(); $('busca').value = ''; desenhar(); });
+  // Clicar num cartão do resumo filtra por ele.
+  document.querySelectorAll('.resumo .card').forEach(function (b) {
+    b.addEventListener('click', function () {
+      limparFiltros();
+      var p = b.dataset.f.split(':');
+      if (p[0] !== 'todos') $('f-' + p[0]).value = p[1];
+      desenhar();
+    });
+  });
   function marcar(c, iso) {
     c.gerados = c.gerados || {};
     var m = mesAtual, antes = c.gerados[m];
@@ -667,6 +737,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     $('d-cliente-titulo').textContent = c ? 'Editar cliente' : 'Novo cliente';
     $('c-nome').value = c ? c.nome : ''; $('c-cnpj').value = c ? fmtCnpj(c.cnpj) : '';
     $('c-prazo').value = c ? c.prazoDia : 10; $('c-auto').checked = ligarAuto || (c ? !!c.automatico : false); $('c-msg').textContent = '';
+    $('c-ea').checked = !!(c && c.enviarArquivos); $('c-mr').checked = !!(c && c.masterRemote);
     $('c-envio').value = c && c.envioDia ? c.envioDia : ''; $('c-origem').value = c && c.origem ? c.origem : '';
     mostrarEnvio();
     $('d-cliente').showModal(); (ligarAuto ? $('c-envio') : $('c-nome')).focus();
@@ -688,6 +759,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     // Ao ligar o automático, começa a preencher a partir deste mês.
     if (auto && !c.automatico) c.autoProximo = mesDe(new Date());
     c.nome = nome; c.cnpj = cnpj; c.prazoDia = prazo; c.automatico = auto; c.origem = $('c-origem').value.trim();
+    c.enviarArquivos = $('c-ea').checked; c.masterRemote = $('c-mr').checked;
     if (auto) c.envioDia = envio;
     if (!editando) estado.clientes.push(c);
     $('d-cliente').close();
@@ -702,10 +774,12 @@ dialog h3 { margin: 0; font-size: 18px; }
   $('mes-hoje').addEventListener('click', function () { mesAtual = mesDe(new Date()); desenhar(); });
   $('b-sair').addEventListener('click', function () { api('sair').then(mostrarEntrada); });
   $('b-csv').addEventListener('click', function () {
-    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como chamamos']];
-    estado.clientes.forEach(function (c) {
+    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como chamamos', 'EnviarArquivos', 'Master Remote']];
+    // Exporta só o que está aparecendo (respeita filtros e busca).
+    var visiveis = [].map.call(document.querySelectorAll('#linhas .cnpj'), function (e) { return soNum(e.textContent); });
+    estado.clientes.filter(function (c) { return visiveis.indexOf(c.cnpj) >= 0; }).forEach(function (c) {
       var s = situacao(c, mesAtual);
-      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '']);
+      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '', c.enviarArquivos ? 'Instalado' : 'Não instalado', c.masterRemote ? 'Instalado' : 'Não instalado']);
     });
     var csv = '﻿' + linhas.map(function (l) { return l.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
     var a = document.createElement('a');

@@ -27,6 +27,8 @@ Também funciona mandar a chave como `Authorization: Bearer <chave>`. Se o servi
 | `prazo_dia` | não | Dia do prazo para gerar, de 1 a 28 (padrão 10). |
 | `automatico` | não | `true` ou `false`: envio automático. |
 | `dia_envio` | com `automatico: true` | Dia do envio automático, de 1 a 28. |
+| `enviar_arquivos` | não | `true` ou `false`: o EnviarArquivos está instalado no cliente. |
+| `master_remote` | não | `true` ou `false`: o Master Remote está instalado no cliente. |
 
 Sem `mes` nem `competencia`, a data vai para o mês do próprio `gerado_em`.
 
