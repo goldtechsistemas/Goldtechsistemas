@@ -131,6 +131,9 @@ if (isset($_GET['api'])) {
                 'cnpj' => preg_replace('/\D/', '', (string) ($c['cnpj'] ?? '')),
                 'automatico' => !empty($c['automatico']),
                 'prazoDia' => max(1, min(28, (int) ($c['prazoDia'] ?? 10))),
+                // Envio automático: dia do mês em que o envio acontece e o próximo mês a preencher sozinho.
+                'envioDia' => max(0, min(28, (int) ($c['envioDia'] ?? 0))),
+                'autoProximo' => preg_match('/^\d{4}-\d{2}$/', (string) ($c['autoProximo'] ?? '')) ? (string) $c['autoProximo'] : '',
                 'gerados' => $gerados,
             ];
         }
@@ -290,6 +293,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     <label>CNPJ<input type="text" id="c-cnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" required></label>
     <label>Prazo para gerar (dia de cada mês)<input type="number" id="c-prazo" min="1" max="28" value="10" required></label>
     <label class="switch"><input type="checkbox" id="c-auto"> O envio do Sintegra deste cliente é automático</label>
+    <label id="c-envio-campo" hidden>Dia do envio automático (todo mês)<input type="number" id="c-envio" min="1" max="28"></label>
     <div class="msg" id="c-msg" role="alert"></div>
     <div class="linha">
       <button class="btn" type="button" id="c-cancelar">Cancelar</button>
@@ -356,12 +360,13 @@ dialog h3 { margin: 0; font-size: 18px; }
   function situacao(c, m) {
     var gerado = (c.gerados || {})[m], prazo = prazoISO(m, c.prazoDia || 10), hoje = hojeISO();
     if (gerado) return { cls: 'ok', txt: 'Gerado', ordem: 3, prazo: prazo, gerado: gerado };
-    if (c.automatico) return { cls: 'auto', txt: 'Automático', ordem: 2, prazo: prazo };
+    if (c.automatico) return { cls: 'auto', txt: 'Automático', ordem: 2, prazo: prazo, envio: c.envioDia ? prazoISO(m, c.envioDia) : '' };
     if (hoje > prazo) return { cls: 'crit', txt: 'Atrasado', ordem: 0, prazo: prazo };
     return { cls: 'warn', txt: 'Pendente', ordem: 1, prazo: prazo };
   }
   function textoPrazo(s) {
     if (s.gerado) return s.gerado <= s.prazo ? 'no prazo' : 'gerado ' + diasEntre(s.prazo, s.gerado) + ' dia(s) depois do prazo';
+    if (s.cls === 'auto') return s.envio ? 'envio automático em ' + br(s.envio) : 'informe o dia do envio automático';
     var d = diasEntre(hojeISO(), s.prazo);
     if (d > 1) return 'faltam ' + d + ' dias'; if (d === 1) return 'vence amanhã'; if (d === 0) return 'vence hoje';
     return 'venceu há ' + (-d) + ' dia(s)';
@@ -401,7 +406,11 @@ dialog h3 { margin: 0; font-size: 18px; }
       tr.querySelector('[data-a=auto]').checked = !!c.automatico;
       data.addEventListener('change', function () { marcar(c, data.value); });
       hoje.addEventListener('click', function () { marcar(c, hojeISO()); });
-      tr.querySelector('[data-a=auto]').addEventListener('change', function (e) { c.automatico = e.target.checked; salvar(c.automatico ? 'Envio automático ligado' : 'Envio automático desligado'); });
+      tr.querySelector('[data-a=auto]').addEventListener('change', function (e) {
+        // Ligar pede o dia do envio; o cliente só fica automático depois de salvar.
+        if (e.target.checked) { e.target.checked = false; abrirCliente(c, true); return; }
+        c.automatico = false; salvar('Envio automático desligado');
+      });
       tr.querySelector('[data-a=editar]').addEventListener('click', function () { abrirCliente(c); });
       tr.querySelector('[data-a=excluir]').addEventListener('click', function () {
         if (!confirm('Excluir ' + c.nome + ' da lista? O histórico dele também some.')) return;
@@ -416,24 +425,47 @@ dialog h3 { margin: 0; font-size: 18px; }
     if (iso) c.gerados[mesAtual] = iso; else delete c.gerados[mesAtual];
     salvar(iso ? 'Gerado em ' + br(iso) : 'Data apagada');
   }
+  // Clientes automáticos: quando chega o dia do envio, a data "gerado em" é preenchida sozinha.
+  // autoProximo guarda o próximo mês a preencher, então uma data apagada à mão não volta.
+  function preencherAutomaticos() {
+    var hoje = hojeISO(), mudou = false;
+    estado.clientes.forEach(function (c) {
+      if (!c.automatico || !c.envioDia) return;
+      if (!c.autoProximo) { c.autoProximo = mesDe(new Date()); mudou = true; }
+      while (c.autoProximo <= mesDe(new Date()) && prazoISO(c.autoProximo, c.envioDia) <= hoje) {
+        c.gerados = c.gerados || {};
+        if (!c.gerados[c.autoProximo]) c.gerados[c.autoProximo] = prazoISO(c.autoProximo, c.envioDia);
+        c.autoProximo = somaMes(c.autoProximo, 1); mudou = true;
+      }
+    });
+    return mudou;
+  }
   function salvar(msg) {
+    preencherAutomaticos();
     desenhar();
     return api('salvar', { rev: estado.rev, clientes: estado.clientes })
       .then(function (r) { estado.rev = r.rev; if (msg) aviso(msg + ' · salvo'); })
       .catch(function (e) { aviso(e.message); if (e.status === 409) carregar(); });
   }
   function carregar() {
-    return api('dados').then(function (d) { estado = { rev: d.rev || 0, clientes: d.clientes || [] }; desenhar(); });
+    return api('dados').then(function (d) {
+      estado = { rev: d.rev || 0, clientes: d.clientes || [] };
+      if (preencherAutomaticos()) salvar('Datas do envio automático atualizadas'); else desenhar();
+    });
   }
 
   // ---------- cliente (novo / editar) ----------
-  function abrirCliente(c) {
+  function abrirCliente(c, ligarAuto) {
     editando = c || null;
     $('d-cliente-titulo').textContent = c ? 'Editar cliente' : 'Novo cliente';
     $('c-nome').value = c ? c.nome : ''; $('c-cnpj').value = c ? fmtCnpj(c.cnpj) : '';
-    $('c-prazo').value = c ? c.prazoDia : 10; $('c-auto').checked = c ? !!c.automatico : false; $('c-msg').textContent = '';
-    $('d-cliente').showModal(); $('c-nome').focus();
+    $('c-prazo').value = c ? c.prazoDia : 10; $('c-auto').checked = ligarAuto || (c ? !!c.automatico : false); $('c-msg').textContent = '';
+    $('c-envio').value = c && c.envioDia ? c.envioDia : '';
+    mostrarEnvio();
+    $('d-cliente').showModal(); (ligarAuto ? $('c-envio') : $('c-nome')).focus();
   }
+  function mostrarEnvio() { var on = $('c-auto').checked; $('c-envio-campo').hidden = !on; $('c-envio').required = on; }
+  $('c-auto').addEventListener('change', function () { mostrarEnvio(); if ($('c-auto').checked) $('c-envio').focus(); });
   $('c-cnpj').addEventListener('input', function (e) { e.target.value = fmtCnpj(e.target.value); });
   $('c-cancelar').addEventListener('click', function () { $('d-cliente').close(); });
   $('f-cliente').addEventListener('submit', function (e) {
@@ -443,8 +475,14 @@ dialog h3 { margin: 0; font-size: 18px; }
     if (!cnpjValido(cnpj)) { $('c-msg').textContent = 'CNPJ inválido. Confira os números.'; return; }
     var repetido = estado.clientes.some(function (o) { return o.cnpj === cnpj && o !== editando; });
     if (repetido) { $('c-msg').textContent = 'Já existe um cliente com esse CNPJ.'; return; }
-    if (editando) { editando.nome = nome; editando.cnpj = cnpj; editando.prazoDia = prazo; editando.automatico = $('c-auto').checked; }
-    else estado.clientes.push({ id: Math.random().toString(36).slice(2, 12), nome: nome, cnpj: cnpj, prazoDia: prazo, automatico: $('c-auto').checked, gerados: {} });
+    var auto = $('c-auto').checked, envio = +$('c-envio').value;
+    if (auto && !(envio >= 1 && envio <= 28)) { $('c-msg').textContent = 'Informe o dia do envio automático (1 a 28).'; return; }
+    var c = editando || { id: Math.random().toString(36).slice(2, 12), gerados: {} };
+    // Ao ligar o automático, começa a preencher a partir deste mês.
+    if (auto && !c.automatico) c.autoProximo = mesDe(new Date());
+    c.nome = nome; c.cnpj = cnpj; c.prazoDia = prazo; c.automatico = auto;
+    if (auto) c.envioDia = envio;
+    if (!editando) estado.clientes.push(c);
     $('d-cliente').close();
     salvar(editando ? 'Cliente atualizado' : 'Cliente adicionado');
   });
@@ -457,10 +495,10 @@ dialog h3 { margin: 0; font-size: 18px; }
   $('mes-hoje').addEventListener('click', function () { mesAtual = mesDe(new Date()); desenhar(); });
   $('b-sair').addEventListener('click', function () { api('sair').then(mostrarEntrada); });
   $('b-csv').addEventListener('click', function () {
-    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático']];
+    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio']];
     estado.clientes.forEach(function (c) {
       var s = situacao(c, mesAtual);
-      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não']);
+      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '']);
     });
     var csv = '﻿' + linhas.map(function (l) { return l.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
     var a = document.createElement('a');
