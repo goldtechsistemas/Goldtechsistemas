@@ -29,6 +29,8 @@ Também funciona mandar a chave como `Authorization: Bearer <chave>`. Se o servi
 | `dia_envio` | com `automatico: true` | Dia do envio automático, de 1 a 28. |
 | `enviar_arquivos` | não | `true` ou `false`: o EnviarArquivos está instalado no cliente. |
 | `master_remote` | não | `true` ou `false`: o Master Remote está instalado no cliente. |
+| `nome_se_novo` | não | Nome usado só se o cliente ainda não existir. Não troca o nome de quem já está cadastrado. |
+| `envio` | não (precisa de `gerado_em`) | Dados do e-mail do envio: `{"arquivos": ["Setembro2026_EMPRESA.zip"], "link": "https://mail.google.com/...", "assunto": "..."}`. Aparece na tela e no Histórico. O link precisa começar com `https://mail.google.com/`. |
 
 Sem `mes` nem `competencia`, a data vai para o mês do próprio `gerado_em`.
 
@@ -83,3 +85,7 @@ Resposta (HTTP 200), com o resultado de cada um na mesma ordem. Os que tiverem e
 | 500 | O servidor não conseguiu gravar. Tente de novo. |
 
 A tela do controle confere a cada minuto se algo mudou e mostra o que o outro sistema gravou.
+
+## Leitura automática do Gmail
+
+O arquivo [gmail-apps-script.js](gmail-apps-script.js) é um script do Google (Apps Script) que usa esta integração. Ele lê os e-mails "Arquivos Empresa ... - CNPJ: ..." enviados pela conta e dá baixa sozinho. As instruções para ligar estão no começo do arquivo.

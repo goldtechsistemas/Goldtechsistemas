@@ -71,6 +71,27 @@ function data_valida($d): bool {
 function mes_valido($m): bool {
     return is_string($m) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', $m) === 1;
 }
+// Dados do e-mail em que o Sintegra foi enviado: arquivos, link para abrir no Gmail e assunto.
+function limpar_envio($e): ?array {
+    if (!is_array($e)) return null;
+    $link = (string) ($e['link'] ?? '');
+    if ($link !== '' && strpos($link, 'https://mail.google.com/') !== 0) $link = '';
+    $arquivos = [];
+    foreach (array_slice((array) ($e['arquivos'] ?? []), 0, 20) as $a) {
+        $a = mb_substr(trim((string) $a), 0, 200);
+        if ($a !== '') $arquivos[] = $a;
+    }
+    $data = (string) ($e['data'] ?? '');
+    return ['data' => data_valida($data) ? $data : '', 'arquivos' => $arquivos, 'link' => $link, 'assunto' => mb_substr(trim((string) ($e['assunto'] ?? '')), 0, 300)];
+}
+function limpar_envios($lista): object {
+    $saida = [];
+    foreach ((array) $lista as $mes => $e) {
+        $e = limpar_envio($e);
+        if (mes_valido((string) $mes) && $e) $saida[$mes] = $e;
+    }
+    return (object) $saida;
+}
 // Aplica um registro vindo do outro sistema na lista. Confere tudo antes de mudar qualquer coisa.
 function aplicar_externo(array &$clientes, array $it): array {
     $cnpj = preg_replace('/\D/', '', (string) ($it['cnpj'] ?? ''));
@@ -78,6 +99,9 @@ function aplicar_externo(array &$clientes, array $it): array {
     $idx = null;
     foreach ($clientes as $i => $c) { if ($c['cnpj'] === $cnpj) { $idx = $i; break; } }
     $nome = isset($it['nome']) ? mb_substr(trim((string) $it['nome']), 0, 120) : null;
+    // nome_se_novo: só usado para criar o cliente; não troca o nome de quem já está cadastrado.
+    $nome_novo = $idx === null && !$nome && isset($it['nome_se_novo']) ? mb_substr(trim((string) $it['nome_se_novo']), 0, 120) : '';
+    if ($nome_novo !== '') $nome = $nome_novo;
     if ($idx === null && !$nome) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'Cliente novo: informe o nome.'];
 
     $gerado = $it['gerado_em'] ?? null; $mes = null;
@@ -94,12 +118,13 @@ function aplicar_externo(array &$clientes, array $it): array {
             $mes = substr($gerado, 0, 7);
         }
     }
+    if (isset($it['envio']) && $gerado === null) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'envio precisa de gerado_em.'];
     if (isset($it['prazo_dia']) && ((int) $it['prazo_dia'] < 1 || (int) $it['prazo_dia'] > 28)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'prazo_dia deve ser de 1 a 28.'];
     if (isset($it['dia_envio']) && ((int) $it['dia_envio'] < 1 || (int) $it['dia_envio'] > 28)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'dia_envio deve ser de 1 a 28.'];
 
     $novo = $idx === null;
     $c = $novo
-        ? ['id' => bin2hex(random_bytes(6)), 'nome' => $nome, 'cnpj' => $cnpj, 'origem' => '', 'enviarArquivos' => false, 'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => []]
+        ? ['id' => bin2hex(random_bytes(6)), 'nome' => $nome, 'cnpj' => $cnpj, 'origem' => '', 'enviarArquivos' => false, 'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => [], 'envios' => []]
         : $clientes[$idx];
     if (isset($it['automatico']) && $it['automatico'] && !($it['dia_envio'] ?? $c['envioDia'] ?? 0)) {
         return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'Para envio automático, informe dia_envio.'];
@@ -116,6 +141,10 @@ function aplicar_externo(array &$clientes, array $it): array {
         $c['automatico'] = $auto;
     }
     if ($gerado !== null) { $c['gerados'] = (array) ($c['gerados'] ?? []); $c['gerados'][$mes] = $gerado; }
+    if (isset($it['envio'])) {
+        $c['envios'] = (array) ($c['envios'] ?? []);
+        $c['envios'][$mes] = limpar_envio(array_merge((array) $it['envio'], ['data' => $gerado]));
+    }
     if ($novo) $clientes[] = $c; else $clientes[$idx] = $c;
     $r = ['ok' => true, 'cnpj' => $cnpj, 'acao' => $novo ? 'criado' : 'atualizado'];
     if ($mes) $r['mes'] = $mes;
@@ -162,7 +191,7 @@ if (isset($_GET['api'])) {
             if ($r['ok']) $mudou = true;
         }
         if ($mudou) {
-            foreach ($atual['clientes'] as &$c) $c['gerados'] = (object) (array) ($c['gerados'] ?? []);
+            foreach ($atual['clientes'] as &$c) { $c['gerados'] = (object) (array) ($c['gerados'] ?? []); $c['envios'] = limpar_envios($c['envios'] ?? []); }
             unset($c);
             $atual['rev'] = (int) $atual['rev'] + 1; $atual['alterado'] = date('c');
             gravar_json($ARQ_CLIENTES, $atual);
@@ -271,6 +300,7 @@ if (isset($_GET['api'])) {
                 'envioDia' => max(0, min(28, (int) ($c['envioDia'] ?? 0))),
                 'autoProximo' => preg_match('/^\d{4}-\d{2}$/', (string) ($c['autoProximo'] ?? '')) ? (string) $c['autoProximo'] : '',
                 'gerados' => (object) $gerados, // sempre objeto {"AAAA-MM": data}, mesmo vazio
+                'envios' => limpar_envios($c['envios'] ?? []),
             ];
         }
         $novo = ['rev' => (int) $atual['rev'] + 1, 'clientes' => $limpos, 'alterado' => date('c')];
@@ -367,6 +397,12 @@ tr:last-child td { border-bottom: 0; }
 .vazio { text-align: center; color: var(--muted); padding: 40px 16px; }
 .aviso button { margin-left: 10px; background: none; border: 0; color: var(--gold); font-weight: 700; cursor: pointer; padding: 0; }
 .origem { color: var(--faint); font-size: 12px; }
+.email { display: block; font-size: 12px; color: var(--gold); margin-top: 4px; text-decoration: none; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.email:hover { text-decoration: underline; }
+.hist { display: grid; gap: 8px; max-height: 60vh; overflow: auto; }
+.hist div { background: var(--ink); border: 1px solid var(--line-2); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.hist small { display: block; color: var(--muted); font-size: 12px; }
+.hist a { color: var(--gold); font-size: 13px; }
 .nota { margin: 0; color: var(--muted); font-size: 13px; }
 #i-url, #i-chave { font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
 .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink-3); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; font-size: 14px; z-index: 20; }
@@ -438,7 +474,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     <div class="filtros">
       <label>Situação no mês<select id="f-sit">
         <option value="">Todos</option><option value="ok">Gerados</option><option value="warn">Pendentes</option>
-        <option value="crit">Atrasados</option><option value="auto">Aguardando envio automático</option><option value="falta">Ainda não gerados (pendentes + atrasados)</option>
+        <option value="crit">Atrasados</option><option value="auto">Aguardando envio automático</option><option value="falta">Ainda não gerados (pendentes + atrasados)</option><option value="email">Enviados por e-mail</option>
       </select></label>
       <label>Envio automático<select id="f-auto"><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
       <label>EnviarArquivos<select id="f-ea"><option value="">Todos</option><option value="sim">Instalado</option><option value="nao">Não instalado</option></select></label>
@@ -496,6 +532,14 @@ dialog h3 { margin: 0; font-size: 18px; }
       <button class="btn" type="button" id="cf-nao">Cancelar</button>
       <button class="btn btn-gold" type="button" id="cf-sim"></button>
     </div>
+  </form>
+</dialog>
+
+<dialog id="d-hist">
+  <form method="dialog">
+    <h3 id="h-titulo">Histórico</h3>
+    <div class="hist" id="h-lista"></div>
+    <div class="linha"><button class="btn btn-gold" type="button" id="h-fechar">Fechar</button></div>
   </form>
 </dialog>
 
@@ -610,7 +654,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     var f = { sit: $('f-sit').value, auto: $('f-auto').value, ea: $('f-ea').value, mr: $('f-mr').value };
     var simNao = function (v, marcado) { return !v || (v === 'sim') === !!marcado; };
     lista = lista.filter(function (x) {
-      var okSit = !f.sit || (f.sit === 'falta' ? (x.s.cls === 'warn' || x.s.cls === 'crit') : x.s.cls === f.sit);
+      var okSit = !f.sit || (f.sit === 'falta' ? (x.s.cls === 'warn' || x.s.cls === 'crit') : f.sit === 'email' ? !!(x.c.envios || {})[m] : x.s.cls === f.sit);
       return okSit && simNao(f.auto, x.c.automatico) && simNao(f.ea, x.c.enviarArquivos) && simNao(f.mr, x.c.masterRemote);
     });
     ['f-sit', 'f-auto', 'f-ea', 'f-mr'].forEach(function (id) { $(id).classList.toggle('usado', !!$(id).value); });
@@ -631,11 +675,11 @@ dialog h3 { margin: 0; font-size: 18px; }
         '<td data-rot="Empresa / CNPJ"><div class="nome"></div><div class="cnpj"></div><div class="origem"></div></td>' +
         '<td data-rot="Prazo" class="prazo"><span></span><small></small></td>' +
         '<td data-rot="Situação"><span class="tag ' + s.cls + '"></span></td>' +
-        '<td data-rot="Gerado em"><div class="gerado"><input type="date" aria-label="Data em que o Sintegra foi gerado"><button class="btn btn-sm" type="button" data-a="hoje">Gerado hoje</button><button class="btn btn-sm btn-ghost" type="button" data-a="limpar">Desmarcar</button></div></td>' +
+        '<td data-rot="Gerado em"><div class="gerado"><input type="date" aria-label="Data em que o Sintegra foi gerado"><button class="btn btn-sm" type="button" data-a="hoje">Gerado hoje</button><button class="btn btn-sm btn-ghost" type="button" data-a="limpar">Desmarcar</button></div><a class="email" target="_blank" rel="noopener" hidden></a></td>' +
         '<td data-rot="Envio automático"><label class="switch"><input type="checkbox" data-a="auto"> Automático</label></td>' +
         '<td data-rot="EnviarArquivos"><label class="switch"><input type="checkbox" data-a="ea"> Instalado</label></td>' +
         '<td data-rot="Master Remote"><label class="switch"><input type="checkbox" data-a="mr"> Instalado</label></td>' +
-        '<td><div class="acoes"><button class="btn btn-sm" type="button" data-a="editar">Editar</button><button class="btn btn-sm" type="button" data-a="excluir">Excluir</button></div></td>';
+        '<td><div class="acoes"><button class="btn btn-sm" type="button" data-a="hist">Histórico</button><button class="btn btn-sm" type="button" data-a="editar">Editar</button><button class="btn btn-sm" type="button" data-a="excluir">Excluir</button></div></td>';
       tr.querySelector('.nome').textContent = c.nome;
       tr.querySelector('.cnpj').textContent = fmtCnpj(c.cnpj);
       var origem = tr.querySelector('.origem'); origem.textContent = c.origem ? 'Chamamos de: ' + c.origem : ''; origem.hidden = !c.origem;
@@ -645,6 +689,13 @@ dialog h3 { margin: 0; font-size: 18px; }
       var data = tr.querySelector('input[type=date]'); data.value = s.gerado || '';
       var hoje = tr.querySelector('[data-a=hoje]'); hoje.hidden = !!s.gerado;
       var limpar = tr.querySelector('[data-a=limpar]'); limpar.hidden = !s.gerado;
+      var envio = (c.envios || {})[m], link = tr.querySelector('.email');
+      if (envio && envio.link) {
+        link.href = envio.link; link.hidden = false;
+        link.textContent = 'E-mail: ' + (envio.arquivos && envio.arquivos.length ? envio.arquivos.join(', ') : 'ver no Gmail');
+        link.title = envio.assunto || 'Abrir o e-mail no Gmail';
+      }
+      tr.querySelector('[data-a=hist]').addEventListener('click', function () { abrirHistorico(c); });
       tr.querySelector('[data-a=auto]').checked = !!c.automatico;
       [['ea', 'enviarArquivos', 'EnviarArquivos'], ['mr', 'masterRemote', 'Master Remote']].forEach(function (p) {
         var cx = tr.querySelector('[data-a=' + p[0] + ']'); cx.checked = !!c[p[1]];
@@ -680,6 +731,25 @@ dialog h3 { margin: 0; font-size: 18px; }
       desenhar();
     });
   });
+  // Histórico do cliente: todos os meses com data de gerado e o e-mail do envio, do mais novo para o mais antigo.
+  function abrirHistorico(c) {
+    $('h-titulo').textContent = 'Histórico · ' + c.nome;
+    var lista = $('h-lista'); lista.textContent = '';
+    var meses = Object.keys(Object.assign({}, c.gerados || {}, c.envios || {})).sort().reverse();
+    if (!meses.length) { var v = document.createElement('div'); v.textContent = 'Nenhum envio registrado ainda.'; lista.appendChild(v); }
+    meses.forEach(function (m) {
+      var g = (c.gerados || {})[m], e = (c.envios || {})[m], d = document.createElement('div');
+      var t = document.createElement('b'), mesTxt = nomeMes(m); t.textContent = mesTxt.charAt(0).toUpperCase() + mesTxt.slice(1); d.appendChild(t);
+      var sub = document.createElement('small'); sub.textContent = 'Competência ' + nomeMes(somaMes(m, -1)) + ' · ' + (g ? 'gerado em ' + br(g) : 'sem data de gerado'); d.appendChild(sub);
+      if (e) {
+        if (e.arquivos && e.arquivos.length) { var a = document.createElement('small'); a.textContent = 'Arquivos: ' + e.arquivos.join(', '); d.appendChild(a); }
+        if (e.link) { var l = document.createElement('a'); l.href = e.link; l.target = '_blank'; l.rel = 'noopener'; l.textContent = 'Abrir o e-mail no Gmail'; d.appendChild(l); }
+      }
+      lista.appendChild(d);
+    });
+    $('d-hist').showModal();
+  }
+  $('h-fechar').addEventListener('click', function () { $('d-hist').close(); });
   function marcar(c, iso) {
     c.gerados = c.gerados || {};
     var m = mesAtual, antes = c.gerados[m];
@@ -726,7 +796,10 @@ dialog h3 { margin: 0; font-size: 18px; }
     return api('dados').then(function (d) {
       estado = { rev: d.rev || 0, clientes: d.clientes || [] };
       // Lista vazia vinda do servidor vira objeto, senão as datas novas não seriam gravadas.
-      estado.clientes.forEach(function (c) { if (!c.gerados || Array.isArray(c.gerados)) c.gerados = {}; });
+      estado.clientes.forEach(function (c) {
+        if (!c.gerados || Array.isArray(c.gerados)) c.gerados = {};
+        if (!c.envios || Array.isArray(c.envios)) c.envios = {};
+      });
       if (preencherAutomaticos()) salvar('Datas do envio automático atualizadas'); else desenhar();
     });
   }
