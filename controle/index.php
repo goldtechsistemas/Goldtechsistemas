@@ -36,8 +36,15 @@ function ler_json(string $arq, $padrao) {
 }
 function gravar_json(string $arq, $valor): void {
     $tmp = $arq . '.' . bin2hex(random_bytes(4)) . '.tmp';
-    file_put_contents($tmp, json_encode($valor, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT), LOCK_EX);
-    rename($tmp, $arq);
+    $ok = file_put_contents($tmp, json_encode($valor, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT), LOCK_EX) !== false && rename($tmp, $arq);
+    if (!$ok) {
+        // Nunca finge que salvou: a tela mostra o erro em vez de "salvo".
+        @unlink($tmp);
+        http_response_code(500);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(['erro' => 'Não foi possível gravar no servidor.'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
 }
 
 session_name('gtcontrole');
@@ -57,6 +64,15 @@ if (isset($_GET['api'])) {
     if (($_SERVER['HTTP_X_CONTROLE'] ?? '') !== '1') $responder(403, ['erro' => 'Origem inválida']);
 
     if ($api === 'estado') $responder(200, ['temSenha' => $tem_senha, 'logado' => $logado]);
+    if ($api === 'diag') {
+        // Teste de gravação: cria e apaga um arquivo vazio; não mostra caminho nem dados.
+        $t = $DADOS . '/teste-' . bin2hex(random_bytes(3));
+        $escreveu = @file_put_contents($t, '') !== false;
+        $erro = $escreveu ? '' : (string) (error_get_last()['message'] ?? '');
+        @unlink($t);
+        $responder(200, ['php' => PHP_VERSION, 'pasta' => basename($DADOS), 'gravavel' => is_writable($DADOS), 'teste' => $escreveu,
+            'erro' => preg_replace('#/home/[^\s:]+#', '[caminho]', $erro), 'mb' => function_exists('mb_strlen')]);
+    }
 
     // Limite de tentativas de senha: 8 erros em 15 minutos bloqueiam por 15 minutos.
     $tentativas = array_values(array_filter(ler_json($ARQ_TENTATIVAS, []), function ($t) { return $t > time() - 900; }));
