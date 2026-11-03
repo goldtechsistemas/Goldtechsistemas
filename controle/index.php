@@ -119,8 +119,12 @@ if (isset($_GET['api'])) {
         $atual = ler_json($ARQ_CLIENTES, ['rev' => 0, 'clientes' => []]);
         // Se a lista mudou em outra aba ou aparelho, não sobrescreve: a tela recarrega.
         if ((int) ($corpo['rev'] ?? -1) !== (int) $atual['rev']) $responder(409, ['erro' => 'A lista foi alterada em outro lugar. Recarregando.']);
-        $limpos = [];
+        $limpos = []; $vistos = [];
         foreach ((array) ($corpo['clientes'] ?? []) as $c) {
+            $cnpj = preg_replace('/\D/', '', (string) ($c['cnpj'] ?? ''));
+            // O mesmo CNPJ nunca entra duas vezes, mesmo que a tela deixe passar.
+            if (isset($vistos[$cnpj])) $responder(400, ['erro' => 'Esse CNPJ já está cadastrado.']);
+            $vistos[$cnpj] = true;
             $gerados = [];
             foreach ((array) ($c['gerados'] ?? []) as $mes => $dia) {
                 if (preg_match('/^\d{4}-\d{2}$/', (string) $mes) && preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $dia)) $gerados[$mes] = $dia;
@@ -128,7 +132,8 @@ if (isset($_GET['api'])) {
             $limpos[] = [
                 'id' => preg_replace('/[^a-z0-9]/', '', (string) ($c['id'] ?? '')) ?: bin2hex(random_bytes(6)),
                 'nome' => mb_substr(trim((string) ($c['nome'] ?? '')), 0, 120),
-                'cnpj' => preg_replace('/\D/', '', (string) ($c['cnpj'] ?? '')),
+                'cnpj' => $cnpj,
+                'origem' => mb_substr(trim((string) ($c['origem'] ?? '')), 0, 80),
                 'automatico' => !empty($c['automatico']),
                 'prazoDia' => max(1, min(28, (int) ($c['prazoDia'] ?? 10))),
                 // Envio automático: dia do mês em que o envio acontece e o próximo mês a preencher sozinho.
@@ -216,6 +221,8 @@ tr:last-child td { border-bottom: 0; }
 .switch input { width: 18px; height: 18px; accent-color: var(--gold); }
 .acoes { display: flex; gap: 6px; justify-content: flex-end; }
 .vazio { text-align: center; color: var(--muted); padding: 40px 16px; }
+.aviso button { margin-left: 10px; background: none; border: 0; color: var(--gold); font-weight: 700; cursor: pointer; padding: 0; }
+.origem { color: var(--faint); font-size: 12px; }
 .aviso { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--ink-3); border: 1px solid var(--line); border-radius: 12px; padding: 10px 16px; font-size: 14px; z-index: 20; }
 
 dialog { background: var(--ink-2); color: var(--text); border: 1px solid var(--line); border-radius: 18px; padding: 0; width: min(440px, calc(100% - 32px)); }
@@ -274,11 +281,11 @@ dialog h3 { margin: 0; font-size: 18px; }
       <div class="card auto"><b id="n-auto">0</b><span>envio automático</span></div>
     </div>
     <div class="ferramentas">
-      <input type="search" id="busca" placeholder="Buscar por empresa ou CNPJ">
+      <input type="search" id="busca" placeholder="Buscar por empresa, CNPJ ou como conhecemos">
       <button class="btn btn-gold" type="button" id="b-novo">+ Novo cliente</button>
     </div>
     <table>
-      <thead><tr><th>Empresa / CNPJ</th><th>Prazo</th><th>Situação</th><th>Gerado em</th><th>Envio automático</th><th></th></tr></thead>
+      <thead><tr><th>Empresa / CNPJ / Origem</th><th>Prazo</th><th>Situação</th><th>Gerado em</th><th>Envio automático</th><th></th></tr></thead>
       <tbody id="linhas"></tbody>
     </table>
     <p class="vazio" id="vazio" hidden>Nenhum cliente ainda. Clique em “Novo cliente”.</p>
@@ -291,6 +298,8 @@ dialog h3 { margin: 0; font-size: 18px; }
     <h3 id="d-cliente-titulo">Novo cliente</h3>
     <label>Nome da empresa<input type="text" id="c-nome" maxlength="120" required></label>
     <label>CNPJ<input type="text" id="c-cnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" required></label>
+    <label>Como conhecemos o cliente (opcional)<input type="text" id="c-origem" maxlength="80" list="origens" placeholder="Ex.: indicação do Fulano, Google, Instagram"></label>
+    <datalist id="origens"><option value="Indicação"><option value="Google"><option value="Instagram"><option value="Facebook"><option value="WhatsApp"><option value="Contador"></datalist>
     <label>Prazo para gerar (dia de cada mês)<input type="number" id="c-prazo" min="1" max="28" value="10" required></label>
     <label class="switch"><input type="checkbox" id="c-auto"> O envio do Sintegra deste cliente é automático</label>
     <label id="c-envio-campo" hidden>Dia do envio automático (todo mês)<input type="number" id="c-envio" min="1" max="28"></label>
@@ -316,7 +325,18 @@ dialog h3 { margin: 0; font-size: 18px; }
   </form>
 </dialog>
 
-<div class="aviso" id="aviso" hidden></div>
+<dialog id="d-confirma">
+  <form method="dialog">
+    <h3 id="cf-titulo"></h3>
+    <p id="cf-texto" style="margin:0;color:var(--muted)"></p>
+    <div class="linha">
+      <button class="btn" type="button" id="cf-nao">Cancelar</button>
+      <button class="btn btn-gold" type="button" id="cf-sim"></button>
+    </div>
+  </form>
+</dialog>
+
+<div class="aviso" id="aviso" role="status" hidden><span></span><button type="button" hidden>Desfazer</button></div>
 
 <script>
 (function () {
@@ -336,7 +356,26 @@ dialog h3 { margin: 0; font-size: 18px; }
       });
     });
   }
-  function aviso(t) { var a = $('aviso'); a.textContent = t; a.hidden = false; clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, 2600); }
+  // Aviso no rodapé; com "desfazer", mostra o botão Desfazer por 8 segundos.
+  function aviso(t, desfazer) {
+    var a = $('aviso'), b = a.querySelector('button');
+    a.querySelector('span').textContent = t; a.hidden = false;
+    b.hidden = !desfazer; b.onclick = desfazer ? function () { a.hidden = true; desfazer(); } : null;
+    clearTimeout(aviso.t); aviso.t = setTimeout(function () { a.hidden = true; }, desfazer ? 8000 : 2600);
+  }
+  // Pergunta antes de apagar qualquer coisa. Responde true só se clicar no botão de confirmar.
+  function confirmar(titulo, texto, botao) {
+    var d = $('d-confirma');
+    $('cf-titulo').textContent = titulo; $('cf-texto').textContent = texto; $('cf-sim').textContent = botao;
+    d.showModal();
+    return new Promise(function (ok) {
+      function fim(sim) { $('cf-sim').onclick = $('cf-nao').onclick = d.oncancel = null; d.close(); ok(sim); }
+      $('cf-sim').onclick = function (e) { e.preventDefault(); fim(true); };
+      $('cf-nao').onclick = function (e) { e.preventDefault(); fim(false); };
+      d.oncancel = function (e) { e.preventDefault(); fim(false); };
+    });
+  }
+  function semAcento(t) { return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
   // ---------- datas ----------
   function mesDe(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
@@ -378,33 +417,38 @@ dialog h3 { margin: 0; font-size: 18px; }
     var titulo = nomeMes(m);
     $('mes-titulo').textContent = titulo.charAt(0).toUpperCase() + titulo.slice(1);
     $('mes-sub').textContent = 'Entrega até o dia 10 · competência ' + competencia;
-    var busca = soNum($('busca').value) || $('busca').value.trim().toLowerCase();
+    var busca = semAcento($('busca').value.trim()), buscaNum = /^[\d.\/\s-]+$/.test(busca) ? soNum(busca) : '';
     var lista = estado.clientes.map(function (c) { return { c: c, s: situacao(c, m) }; });
     var n = { ok: 0, warn: 0, crit: 0, auto: 0 };
     lista.forEach(function (x) { n[x.s.cls]++; });
     $('n-total').textContent = lista.length; $('n-ok').textContent = n.ok; $('n-pend').textContent = n.warn;
     $('n-atraso').textContent = n.crit; $('n-auto').textContent = estado.clientes.filter(function (c) { return c.automatico; }).length;
-    if (busca) lista = lista.filter(function (x) { return x.c.nome.toLowerCase().indexOf(busca) >= 0 || x.c.cnpj.indexOf(busca) >= 0; });
+    if (busca) lista = lista.filter(function (x) {
+      return semAcento(x.c.nome).indexOf(busca) >= 0 || semAcento(x.c.origem).indexOf(busca) >= 0 || (buscaNum && x.c.cnpj.indexOf(buscaNum) >= 0);
+    });
     lista.sort(function (a, b) { return a.s.ordem - b.s.ordem || a.c.nome.localeCompare(b.c.nome, 'pt-BR'); });
     var tb = $('linhas'); tb.textContent = '';
     lista.forEach(function (x) {
       var c = x.c, s = x.s, tr = document.createElement('tr');
       tr.innerHTML =
-        '<td data-rot="Empresa / CNPJ"><div class="nome"></div><div class="cnpj"></div></td>' +
+        '<td data-rot="Empresa / CNPJ"><div class="nome"></div><div class="cnpj"></div><div class="origem"></div></td>' +
         '<td data-rot="Prazo" class="prazo"><span></span><small></small></td>' +
         '<td data-rot="Situação"><span class="tag ' + s.cls + '"></span></td>' +
-        '<td data-rot="Gerado em"><div class="gerado"><input type="date" aria-label="Data em que o Sintegra foi gerado"><button class="btn btn-sm" type="button" data-a="hoje">Gerado hoje</button></div></td>' +
+        '<td data-rot="Gerado em"><div class="gerado"><input type="date" aria-label="Data em que o Sintegra foi gerado"><button class="btn btn-sm" type="button" data-a="hoje">Gerado hoje</button><button class="btn btn-sm btn-ghost" type="button" data-a="limpar">Desmarcar</button></div></td>' +
         '<td data-rot="Envio automático"><label class="switch"><input type="checkbox" data-a="auto"> Automático</label></td>' +
         '<td><div class="acoes"><button class="btn btn-sm" type="button" data-a="editar">Editar</button><button class="btn btn-sm" type="button" data-a="excluir">Excluir</button></div></td>';
       tr.querySelector('.nome').textContent = c.nome;
       tr.querySelector('.cnpj').textContent = fmtCnpj(c.cnpj);
+      var origem = tr.querySelector('.origem'); origem.textContent = c.origem ? 'Origem: ' + c.origem : ''; origem.hidden = !c.origem;
       tr.querySelector('.prazo span').textContent = br(s.prazo);
       tr.querySelector('.prazo small').textContent = textoPrazo(s);
       tr.querySelector('.tag').textContent = s.txt;
       var data = tr.querySelector('input[type=date]'); data.value = s.gerado || '';
       var hoje = tr.querySelector('[data-a=hoje]'); hoje.hidden = !!s.gerado;
+      var limpar = tr.querySelector('[data-a=limpar]'); limpar.hidden = !s.gerado;
       tr.querySelector('[data-a=auto]').checked = !!c.automatico;
-      data.addEventListener('change', function () { marcar(c, data.value); });
+      data.addEventListener('change', function () { if (data.value) marcar(c, data.value); else desmarcar(c, data); });
+      limpar.addEventListener('click', function () { desmarcar(c); });
       hoje.addEventListener('click', function () { marcar(c, hojeISO()); });
       tr.querySelector('[data-a=auto]').addEventListener('change', function (e) {
         // Ligar pede o dia do envio; o cliente só fica automático depois de salvar.
@@ -413,8 +457,8 @@ dialog h3 { margin: 0; font-size: 18px; }
       });
       tr.querySelector('[data-a=editar]').addEventListener('click', function () { abrirCliente(c); });
       tr.querySelector('[data-a=excluir]').addEventListener('click', function () {
-        if (!confirm('Excluir ' + c.nome + ' da lista? O histórico dele também some.')) return;
-        estado.clientes = estado.clientes.filter(function (o) { return o !== c; }); salvar('Cliente excluído');
+        confirmar('Excluir cliente?', 'Deseja mesmo excluir ' + c.nome + ' (CNPJ ' + fmtCnpj(c.cnpj) + ')? Todo o histórico dele também será apagado e não dá para desfazer.', 'Sim, excluir')
+          .then(function (sim) { if (!sim) return; estado.clientes = estado.clientes.filter(function (o) { return o !== c; }); salvar('Cliente excluído'); });
       });
       tb.appendChild(tr);
     });
@@ -422,8 +466,22 @@ dialog h3 { margin: 0; font-size: 18px; }
   }
   function marcar(c, iso) {
     c.gerados = c.gerados || {};
-    if (iso) c.gerados[mesAtual] = iso; else delete c.gerados[mesAtual];
-    salvar(iso ? 'Gerado em ' + br(iso) : 'Data apagada');
+    var m = mesAtual, antes = c.gerados[m];
+    c.gerados[m] = iso;
+    salvar('Gerado em ' + br(iso), function () {
+      if (antes) c.gerados[m] = antes; else delete c.gerados[m];
+      salvar('Desfeito');
+    });
+  }
+  // Tirar a data de "gerado" sempre pergunta antes.
+  function desmarcar(c, campo) {
+    var m = mesAtual, antes = (c.gerados || {})[m];
+    if (!antes) return;
+    confirmar('Desmarcar como gerado?', 'Deseja mesmo apagar a data ' + br(antes) + ' de ' + c.nome + ' neste mês?', 'Sim, desmarcar')
+      .then(function (sim) {
+        if (!sim) { if (campo) campo.value = antes; return; }
+        delete c.gerados[m]; salvar('Data apagada');
+      });
   }
   // Clientes automáticos: quando chega o dia do envio, a data "gerado em" é preenchida sozinha.
   // autoProximo guarda o próximo mês a preencher, então uma data apagada à mão não volta.
@@ -440,12 +498,13 @@ dialog h3 { margin: 0; font-size: 18px; }
     });
     return mudou;
   }
-  function salvar(msg) {
+  function salvar(msg, desfazer) {
     preencherAutomaticos();
     desenhar();
     return api('salvar', { rev: estado.rev, clientes: estado.clientes })
-      .then(function (r) { estado.rev = r.rev; if (msg) aviso(msg + ' · salvo'); })
-      .catch(function (e) { aviso(e.message); if (e.status === 409) carregar(); });
+      .then(function (r) { estado.rev = r.rev; if (msg) aviso(msg + ' · salvo', desfazer); })
+      // Se o servidor recusar, volta para o que está gravado lá.
+      .catch(function (e) { aviso(e.message); carregar(); });
   }
   function carregar() {
     return api('dados').then(function (d) {
@@ -460,7 +519,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     $('d-cliente-titulo').textContent = c ? 'Editar cliente' : 'Novo cliente';
     $('c-nome').value = c ? c.nome : ''; $('c-cnpj').value = c ? fmtCnpj(c.cnpj) : '';
     $('c-prazo').value = c ? c.prazoDia : 10; $('c-auto').checked = ligarAuto || (c ? !!c.automatico : false); $('c-msg').textContent = '';
-    $('c-envio').value = c && c.envioDia ? c.envioDia : '';
+    $('c-envio').value = c && c.envioDia ? c.envioDia : ''; $('c-origem').value = c && c.origem ? c.origem : '';
     mostrarEnvio();
     $('d-cliente').showModal(); (ligarAuto ? $('c-envio') : $('c-nome')).focus();
   }
@@ -474,13 +533,13 @@ dialog h3 { margin: 0; font-size: 18px; }
     if (!nome) { $('c-msg').textContent = 'Informe o nome da empresa.'; return; }
     if (!cnpjValido(cnpj)) { $('c-msg').textContent = 'CNPJ inválido. Confira os números.'; return; }
     var repetido = estado.clientes.some(function (o) { return o.cnpj === cnpj && o !== editando; });
-    if (repetido) { $('c-msg').textContent = 'Já existe um cliente com esse CNPJ.'; return; }
+    if (repetido) { $('c-msg').textContent = 'Esse CNPJ já está cadastrado em ' + estado.clientes.filter(function (o) { return o.cnpj === cnpj && o !== editando; })[0].nome + '.'; return; }
     var auto = $('c-auto').checked, envio = +$('c-envio').value;
     if (auto && !(envio >= 1 && envio <= 28)) { $('c-msg').textContent = 'Informe o dia do envio automático (1 a 28).'; return; }
     var c = editando || { id: Math.random().toString(36).slice(2, 12), gerados: {} };
     // Ao ligar o automático, começa a preencher a partir deste mês.
     if (auto && !c.automatico) c.autoProximo = mesDe(new Date());
-    c.nome = nome; c.cnpj = cnpj; c.prazoDia = prazo; c.automatico = auto;
+    c.nome = nome; c.cnpj = cnpj; c.prazoDia = prazo; c.automatico = auto; c.origem = $('c-origem').value.trim();
     if (auto) c.envioDia = envio;
     if (!editando) estado.clientes.push(c);
     $('d-cliente').close();
@@ -495,10 +554,10 @@ dialog h3 { margin: 0; font-size: 18px; }
   $('mes-hoje').addEventListener('click', function () { mesAtual = mesDe(new Date()); desenhar(); });
   $('b-sair').addEventListener('click', function () { api('sair').then(mostrarEntrada); });
   $('b-csv').addEventListener('click', function () {
-    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio']];
+    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como conhecemos']];
     estado.clientes.forEach(function (c) {
       var s = situacao(c, mesAtual);
-      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '']);
+      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '']);
     });
     var csv = '﻿' + linhas.map(function (l) { return l.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
     var a = document.createElement('a');
