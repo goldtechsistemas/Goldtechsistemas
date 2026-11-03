@@ -12,6 +12,10 @@ header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
 header('X-Frame-Options: DENY');
 header('Referrer-Policy: same-origin');
+header('X-Content-Type-Options: nosniff');
+header('Strict-Transport-Security: max-age=31536000');
+// Só carrega o que é deste site; nenhum script ou conexão de fora.
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'");
 
 function pasta_dados(): string {
     $fora = dirname(__DIR__, 2) . '/controle-dados';
@@ -214,7 +218,10 @@ if (isset($_GET['api'])) {
     $corpo = json_decode((string) file_get_contents('php://input'), true) ?: [];
     $responder = function (int $codigo, array $dados) { http_response_code($codigo); echo json_encode($dados, JSON_UNESCAPED_UNICODE); exit; };
     $tem_senha = is_file($ARQ_SENHA);
+    // Sessão vale por 2 horas sem uso; depois pede a senha de novo.
+    if (!empty($_SESSION['ok']) && time() - (int) ($_SESSION['uso'] ?? 0) > 7200) $_SESSION = [];
     $logado = !empty($_SESSION['ok']);
+    if ($logado) $_SESSION['uso'] = time();
 
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') $responder(405, ['erro' => 'Use POST']);
 
@@ -259,15 +266,6 @@ if (isset($_GET['api'])) {
     if (($_SERVER['HTTP_X_CONTROLE'] ?? '') !== '1') $responder(403, ['erro' => 'Origem inválida']);
 
     if ($api === 'estado') $responder(200, ['temSenha' => $tem_senha, 'logado' => $logado]);
-    if ($api === 'diag') {
-        // Teste de gravação: cria e apaga um arquivo vazio; não mostra caminho nem dados.
-        $t = $DADOS . '/teste-' . bin2hex(random_bytes(3));
-        $escreveu = @file_put_contents($t, '') !== false;
-        $erro = $escreveu ? '' : (string) (error_get_last()['message'] ?? '');
-        @unlink($t);
-        $responder(200, ['php' => PHP_VERSION, 'pasta' => basename($DADOS), 'gravavel' => is_writable($DADOS), 'teste' => $escreveu,
-            'erro' => preg_replace('#/home/[^\s:]+#', '[caminho]', $erro), 'mb' => function_exists('mb_strlen')]);
-    }
 
     // Limite de tentativas de senha: 8 erros em 15 minutos bloqueiam por 15 minutos.
     $tentativas = array_values(array_filter(ler_json($ARQ_TENTATIVAS, []), function ($t) { return $t > time() - 900; }));
@@ -279,7 +277,7 @@ if (isset($_GET['api'])) {
         if (mb_strlen($s) < 8) $responder(400, ['erro' => 'A senha precisa ter pelo menos 8 caracteres.']);
         gravar_json($ARQ_SENHA, ['hash' => password_hash($s, PASSWORD_DEFAULT), 'criada' => date('c')]);
         session_regenerate_id(true);
-        $_SESSION['ok'] = true;
+        $_SESSION['ok'] = true; $_SESSION['uso'] = time();
         $responder(200, ['ok' => true]);
     }
     if ($api === 'entrar') {
@@ -294,7 +292,7 @@ if (isset($_GET['api'])) {
         }
         gravar_json($ARQ_TENTATIVAS, []);
         session_regenerate_id(true);
-        $_SESSION['ok'] = true;
+        $_SESSION['ok'] = true; $_SESSION['uso'] = time();
         $responder(200, ['ok' => true]);
     }
 
@@ -971,7 +969,10 @@ dialog h3 { margin: 0; font-size: 18px; }
     $('crm-novo').hidden = true; $('crm-token').value = '';
     Promise.all([estadoIntegra(), estadoCrm()]).then(function () { $('d-integra').showModal(); }).catch(function (e) { aviso(e.message); });
   });
-  $('i-fechar').addEventListener('click', function () { $('d-integra').close(); });
+  $('i-fechar').addEventListener('click', function () { $('d-integra').close(); limparSenhas(); });
+  // Nada sensível fica guardado nos campos da página depois de usado (nem pelo "Inspecionar").
+  function limparSenhas() { ['senha1', 'senha2', 's-atual', 's-nova', 's-nova2', 'i-chave', 'crm-token'].forEach(function (id) { $(id).value = ''; }); }
+  ['d-senha', 'd-integra'].forEach(function (id) { $(id).addEventListener('close', limparSenhas); });
   $('i-gerar').addEventListener('click', function () {
     var existe = !$('i-apagar').hidden;
     (existe ? confirmar('Gerar chave nova?', 'A chave atual para de funcionar na hora. O outro sistema vai precisar da chave nova.', 'Sim, gerar nova') : Promise.resolve(true))
@@ -1022,12 +1023,12 @@ dialog h3 { margin: 0; font-size: 18px; }
   }, 60000);
 
   $('b-senha').addEventListener('click', function () { $('f-senha').reset(); $('s-msg').textContent = ''; $('d-senha').showModal(); });
-  $('s-cancelar').addEventListener('click', function () { $('d-senha').close(); });
+  $('s-cancelar').addEventListener('click', function () { $('d-senha').close(); limparSenhas(); });
   $('f-senha').addEventListener('submit', function (e) {
     e.preventDefault();
     if ($('s-nova').value !== $('s-nova2').value) { $('s-msg').textContent = 'As senhas novas não são iguais.'; return; }
     api('trocar-senha', { atual: $('s-atual').value, nova: $('s-nova').value })
-      .then(function () { $('d-senha').close(); aviso('Senha trocada'); })
+      .then(function () { $('d-senha').close(); limparSenhas(); aviso('Senha trocada'); })
       .catch(function (err) { $('s-msg').textContent = err.message; });
   });
 
@@ -1078,7 +1079,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     }
     $('entrada-botao').disabled = true;
     api(temSenha ? 'entrar' : 'criar-senha', { senha: s1 })
-      .then(function () { temSenha = true; mostrarPainel(); })
+      .then(function () { temSenha = true; limparSenhas(); mostrarPainel(); })
       .catch(function (err) { msg.textContent = err.message; if (err.status === 409) { temSenha = true; mostrarEntrada(); msg.textContent = err.message; } })
       .then(function () { $('entrada-botao').disabled = false; });
   });
