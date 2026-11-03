@@ -281,11 +281,11 @@ dialog h3 { margin: 0; font-size: 18px; }
       <div class="card auto"><b id="n-auto">0</b><span>envio automático</span></div>
     </div>
     <div class="ferramentas">
-      <input type="search" id="busca" placeholder="Buscar por empresa, CNPJ ou como conhecemos">
+      <input type="search" id="busca" placeholder="Buscar por empresa, CNPJ ou como chamamos o cliente">
       <button class="btn btn-gold" type="button" id="b-novo">+ Novo cliente</button>
     </div>
     <table>
-      <thead><tr><th>Empresa / CNPJ / Origem</th><th>Prazo</th><th>Situação</th><th>Gerado em</th><th>Envio automático</th><th></th></tr></thead>
+      <thead><tr><th>Empresa / CNPJ</th><th>Prazo</th><th>Situação</th><th>Gerado em</th><th>Envio automático</th><th></th></tr></thead>
       <tbody id="linhas"></tbody>
     </table>
     <p class="vazio" id="vazio" hidden>Nenhum cliente ainda. Clique em “Novo cliente”.</p>
@@ -298,8 +298,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     <h3 id="d-cliente-titulo">Novo cliente</h3>
     <label>Nome da empresa<input type="text" id="c-nome" maxlength="120" required></label>
     <label>CNPJ<input type="text" id="c-cnpj" inputmode="numeric" maxlength="18" placeholder="00.000.000/0000-00" required></label>
-    <label>Como conhecemos o cliente (opcional)<input type="text" id="c-origem" maxlength="80" list="origens" placeholder="Ex.: indicação do Fulano, Google, Instagram"></label>
-    <datalist id="origens"><option value="Indicação"><option value="Google"><option value="Instagram"><option value="Facebook"><option value="WhatsApp"><option value="Contador"></datalist>
+    <label>Como chamamos o cliente? (opcional)<input type="text" id="c-origem" maxlength="80" placeholder="Ex.: Padaria do João"></label>
     <label>Prazo para gerar (dia de cada mês)<input type="number" id="c-prazo" min="1" max="28" value="10" required></label>
     <label class="switch"><input type="checkbox" id="c-auto"> O envio do Sintegra deste cliente é automático</label>
     <label id="c-envio-campo" hidden>Dia do envio automático (todo mês)<input type="number" id="c-envio" min="1" max="28"></label>
@@ -439,7 +438,7 @@ dialog h3 { margin: 0; font-size: 18px; }
         '<td><div class="acoes"><button class="btn btn-sm" type="button" data-a="editar">Editar</button><button class="btn btn-sm" type="button" data-a="excluir">Excluir</button></div></td>';
       tr.querySelector('.nome').textContent = c.nome;
       tr.querySelector('.cnpj').textContent = fmtCnpj(c.cnpj);
-      var origem = tr.querySelector('.origem'); origem.textContent = c.origem ? 'Origem: ' + c.origem : ''; origem.hidden = !c.origem;
+      var origem = tr.querySelector('.origem'); origem.textContent = c.origem ? 'Chamamos de: ' + c.origem : ''; origem.hidden = !c.origem;
       tr.querySelector('.prazo span').textContent = br(s.prazo);
       tr.querySelector('.prazo small').textContent = textoPrazo(s);
       tr.querySelector('.tag').textContent = s.txt;
@@ -554,7 +553,7 @@ dialog h3 { margin: 0; font-size: 18px; }
   $('mes-hoje').addEventListener('click', function () { mesAtual = mesDe(new Date()); desenhar(); });
   $('b-sair').addEventListener('click', function () { api('sair').then(mostrarEntrada); });
   $('b-csv').addEventListener('click', function () {
-    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como conhecemos']];
+    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como chamamos']];
     estado.clientes.forEach(function (c) {
       var s = situacao(c, mesAtual);
       linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '']);
