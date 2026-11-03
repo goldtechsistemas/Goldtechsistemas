@@ -6,6 +6,7 @@
  * se a hospedagem não deixar, ficam em controle/dados com acesso bloqueado pelo .htaccess.
  */
 declare(strict_types=1);
+date_default_timezone_set('America/Sao_Paulo');
 
 header('X-Robots-Tag: noindex, nofollow');
 header('Cache-Control: no-store');
@@ -145,7 +146,7 @@ if (isset($_GET['api'])) {
             usleep(300000);
             $responder(401, ['erro' => 'Chave de integração inválida.']);
         }
-        if (!is_array($corpo) || !$corpo) $responder(400, ['erro' => 'Envie um JSON com os dados do cliente.']);
+        if (!is_array($corpo) || !$corpo) $responder(400, ['erro' => 'Envie um JSON válido (em UTF-8) com os dados do cliente.']);
         $lote = array_is_list($corpo) ? $corpo : (isset($corpo['clientes']) ? (array) $corpo['clientes'] : null);
         $itens = $lote ?? [$corpo];
         if (count($itens) > 500) $responder(400, ['erro' => 'Envie no máximo 500 clientes por vez.']);
@@ -159,6 +160,8 @@ if (isset($_GET['api'])) {
             if ($r['ok']) $mudou = true;
         }
         if ($mudou) {
+            foreach ($atual['clientes'] as &$c) $c['gerados'] = (object) (array) ($c['gerados'] ?? []);
+            unset($c);
             $atual['rev'] = (int) $atual['rev'] + 1; $atual['alterado'] = date('c');
             gravar_json($ARQ_CLIENTES, $atual);
         }
@@ -262,7 +265,7 @@ if (isset($_GET['api'])) {
                 // Envio automático: dia do mês em que o envio acontece e o próximo mês a preencher sozinho.
                 'envioDia' => max(0, min(28, (int) ($c['envioDia'] ?? 0))),
                 'autoProximo' => preg_match('/^\d{4}-\d{2}$/', (string) ($c['autoProximo'] ?? '')) ? (string) $c['autoProximo'] : '',
-                'gerados' => $gerados,
+                'gerados' => (object) $gerados, // sempre objeto {"AAAA-MM": data}, mesmo vazio
             ];
         }
         $novo = ['rev' => (int) $atual['rev'] + 1, 'clientes' => $limpos, 'alterado' => date('c')];
@@ -652,6 +655,8 @@ dialog h3 { margin: 0; font-size: 18px; }
   function carregar() {
     return api('dados').then(function (d) {
       estado = { rev: d.rev || 0, clientes: d.clientes || [] };
+      // Lista vazia vinda do servidor vira objeto, senão as datas novas não seriam gravadas.
+      estado.clientes.forEach(function (c) { if (!c.gerados || Array.isArray(c.gerados)) c.gerados = {}; });
       if (preencherAutomaticos()) salvar('Datas do envio automático atualizadas'); else desenhar();
     });
   }
