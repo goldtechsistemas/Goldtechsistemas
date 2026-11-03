@@ -30,6 +30,7 @@ $ARQ_SENHA = $DADOS . '/senha.json';
 $ARQ_CLIENTES = $DADOS . '/clientes.json';
 $ARQ_TENTATIVAS = $DADOS . '/tentativas.json';
 $ARQ_CHAVE = $DADOS . '/chave-api.json';
+$ARQ_CRM = $DADOS . '/crm.json'; // endereço e token do Gold Tech CRM (fora da pasta pública)
 
 function ler_json(string $arq, $padrao) {
     if (!is_file($arq)) return $padrao;
@@ -151,6 +152,55 @@ function aplicar_externo(array &$clientes, array $it): array {
     return $r;
 }
 
+// Busca as empresas do Gold Tech CRM e cadastra aqui as que faltam (o CNPJ evita cadastro repetido).
+// Marca noCrm em todos: true para quem está no CRM, false para quem não está. Nunca apaga cliente.
+function sincronizar_crm(string $pasta, string $arq_clientes, array $crm): array {
+    $ch = curl_init((string) $crm['url']);
+    curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 25, CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $crm['token'], 'Accept: application/json']]);
+    $corpo = curl_exec($ch);
+    $codigo = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+    $dados = is_string($corpo) ? json_decode($corpo, true) : null;
+    if ($codigo !== 200 || !is_array($dados) || !isset($dados['empresas'])) {
+        return ['ok' => false, 'erro' => 'O CRM não respondeu (código ' . $codigo . ').'];
+    }
+
+    $trava = travar($pasta);
+    $atual = ler_json($arq_clientes, ['rev' => 0, 'clientes' => []]);
+    $por_cnpj = [];
+    foreach ($atual['clientes'] as $i => $c) $por_cnpj[$c['cnpj']] = $i;
+    $no_crm = []; $novos = 0; $cpf = 0; $invalidos = [];
+    foreach ((array) $dados['empresas'] as $e) {
+        $doc = preg_replace('/\D/', '', (string) ($e['documento'] ?? ''));
+        $nome = mb_substr(trim((string) ($e['nome'] ?? '')), 0, 120);
+        if (strlen($doc) === 11) { $cpf++; continue; } // Sintegra é só para CNPJ
+        if (!cnpj_valido($doc)) { if (count($invalidos) < 30) $invalidos[] = $nome ?: '(sem nome)'; continue; }
+        $no_crm[$doc] = true;
+        if (!isset($por_cnpj[$doc])) {
+            $atual['clientes'][] = ['id' => bin2hex(random_bytes(6)), 'nome' => $nome ?: $doc, 'cnpj' => $doc, 'origem' => '', 'enviarArquivos' => false,
+                'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => [], 'envios' => [], 'noCrm' => true];
+            $por_cnpj[$doc] = count($atual['clientes']) - 1;
+            $novos++;
+        }
+    }
+    $mudou = $novos > 0;
+    foreach ($atual['clientes'] as &$c) {
+        $esta = isset($no_crm[$c['cnpj']]);
+        if (($c['noCrm'] ?? null) !== $esta) { $c['noCrm'] = $esta; $mudou = true; }
+        $c['gerados'] = (object) (array) ($c['gerados'] ?? []);
+        $c['envios'] = limpar_envios($c['envios'] ?? []);
+    }
+    unset($c);
+    if ($mudou) {
+        $atual['rev'] = (int) $atual['rev'] + 1; $atual['alterado'] = date('c');
+        gravar_json($arq_clientes, $atual);
+    }
+    $fora = count(array_filter($atual['clientes'], function ($c) { return empty($c['noCrm']); }));
+    return ['ok' => true, 'quando' => date('c'), 'noCrm' => count($no_crm), 'novos' => $novos, 'cpf' => $cpf,
+        'invalidos' => $invalidos, 'foraDoCrm' => $fora];
+}
+
 session_name('gtcontrole');
 session_set_cookie_params(['lifetime' => 0, 'path' => '/controle/', 'secure' => true, 'httponly' => true, 'samesite' => 'Strict']);
 session_start();
@@ -256,6 +306,23 @@ if (isset($_GET['api'])) {
         gravar_json($ARQ_SENHA, ['hash' => password_hash($nova, PASSWORD_DEFAULT), 'criada' => date('c')]);
         $responder(200, ['ok' => true]);
     }
+    if ($api === 'crm-estado') {
+        $crm = ler_json($ARQ_CRM, []);
+        $responder(200, ['configurado' => !empty($crm['url']) && !empty($crm['token']), 'ultima' => $crm['ultima'] ?? null]);
+    }
+    if ($api === 'crm-gerar') {
+        // O token só aparece agora, para ser colado na Vercel (variável CONTROLE_SINTEGRA_TOKEN do CRM).
+        $token = 'ctl_' . bin2hex(random_bytes(24));
+        gravar_json($ARQ_CRM, ['url' => 'https://gold-tech-crm.vercel.app/api/integracao/empresas', 'token' => $token, 'criado' => date('c'), 'ultima' => null]);
+        $responder(200, ['token' => $token]);
+    }
+    if ($api === 'crm-sincronizar') {
+        $crm = ler_json($ARQ_CRM, []);
+        if (empty($crm['url']) || empty($crm['token'])) $responder(400, ['erro' => 'A ligação com o CRM ainda não foi configurada.']);
+        $r = sincronizar_crm($DADOS, $ARQ_CLIENTES, $crm);
+        if ($r['ok']) { $crm['ultima'] = $r; gravar_json($ARQ_CRM, $crm); }
+        $responder($r['ok'] ? 200 : 502, $r);
+    }
     if ($api === 'chave-estado') {
         $chave = ler_json($ARQ_CHAVE, []);
         $responder(200, ['existe' => !empty($chave['hash']), 'criada' => $chave['criada'] ?? null, 'ultimoUso' => $chave['ultimoUso'] ?? null]);
@@ -295,6 +362,7 @@ if (isset($_GET['api'])) {
                 // Programas instalados no cliente.
                 'enviarArquivos' => !empty($c['enviarArquivos']),
                 'masterRemote' => !empty($c['masterRemote']),
+                'noCrm' => !empty($c['noCrm']), // está cadastrado no Gold Tech CRM (atualizado pela sincronização)
                 'prazoDia' => max(1, min(28, (int) ($c['prazoDia'] ?? 10))),
                 // Envio automático: dia do mês em que o envio acontece e o próximo mês a preencher sozinho.
                 'envioDia' => max(0, min(28, (int) ($c['envioDia'] ?? 0))),
@@ -397,6 +465,8 @@ tr:last-child td { border-bottom: 0; }
 .vazio { text-align: center; color: var(--muted); padding: 40px 16px; }
 .aviso button { margin-left: 10px; background: none; border: 0; color: var(--gold); font-weight: 700; cursor: pointer; padding: 0; }
 .origem { color: var(--faint); font-size: 12px; }
+.crm { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 700; letter-spacing: .04em; color: var(--auto); border: 1px solid var(--auto-dim); border-radius: 6px; padding: 1px 5px; vertical-align: middle; }
+.crm.fora { color: var(--faint); border-color: var(--line-2); }
 .email { display: block; font-size: 12px; color: var(--gold); margin-top: 4px; text-decoration: none; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .email:hover { text-decoration: underline; }
 .hist { display: grid; gap: 8px; max-height: 60vh; overflow: auto; }
@@ -446,6 +516,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     <div class="wrap">
       <h1><img class="logo" src="/img/logo-76.webp" width="304" height="76" alt="Gold Tech Sistemas"><span>Controle do Sintegra</span></h1>
       <button class="btn btn-sm btn-ghost" type="button" id="b-csv">Exportar planilha</button>
+      <button class="btn btn-sm btn-ghost" type="button" id="b-crm" hidden>Atualizar do CRM</button>
       <button class="btn btn-sm btn-ghost" type="button" id="b-integra">Integração</button>
       <button class="btn btn-sm btn-ghost" type="button" id="b-senha">Trocar senha</button>
       <button class="btn btn-sm btn-ghost" type="button" id="b-sair">Sair</button>
@@ -479,6 +550,7 @@ dialog h3 { margin: 0; font-size: 18px; }
       <label>Envio automático<select id="f-auto"><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
       <label>EnviarArquivos<select id="f-ea"><option value="">Todos</option><option value="sim">Instalado</option><option value="nao">Não instalado</option></select></label>
       <label>Master Remote<select id="f-mr"><option value="">Todos</option><option value="sim">Instalado</option><option value="nao">Não instalado</option></select></label>
+      <label>Gold Tech CRM<select id="f-crm"><option value="">Todos</option><option value="sim">Cadastrado no CRM</option><option value="nao">Fora do CRM</option></select></label>
       <button class="btn btn-sm btn-ghost" type="button" id="f-limpar" hidden>Limpar filtros</button>
       <span class="contagem" id="contagem"></span>
     </div>
@@ -556,6 +628,18 @@ dialog h3 { margin: 0; font-size: 18px; }
     <div class="linha">
       <button class="btn btn-ghost" type="button" id="i-apagar">Desligar integração</button>
       <button class="btn" type="button" id="i-gerar">Gerar chave</button>
+    </div>
+    <hr style="border:0;border-top:1px solid var(--line-2);margin:4px 0">
+    <h3>Gold Tech CRM</h3>
+    <p class="nota" id="crm-estado">As empresas cadastradas no CRM entram aqui sozinhas (o CNPJ evita cadastro repetido).</p>
+    <div id="crm-novo" hidden>
+      <label>Token do CRM: copie agora, ele não aparece de novo<input type="text" id="crm-token" readonly></label>
+      <p class="nota" style="margin-top:8px">Na Vercel, abra o projeto <b>gold-tech-crm</b> &gt; Settings &gt; Environment Variables e crie
+        <b>CONTROLE_SINTEGRA_TOKEN</b> (ambiente Production) com este valor. Depois é só avisar para publicar o CRM.</p>
+      <div class="linha" style="justify-content:flex-start;margin-top:8px"><button class="btn btn-sm" type="button" id="crm-copiar">Copiar token</button></div>
+    </div>
+    <div class="linha">
+      <button class="btn" type="button" id="crm-gerar">Gerar token do CRM</button>
       <button class="btn btn-gold" type="button" id="i-fechar">Fechar</button>
     </div>
   </form>
@@ -651,16 +735,16 @@ dialog h3 { margin: 0; font-size: 18px; }
     $('n-atraso').textContent = n.crit; $('n-auto').textContent = conta('automatico');
     $('n-ea').textContent = conta('enviarArquivos'); $('n-mr').textContent = conta('masterRemote');
     // Filtros: todos juntos (situação + automático + programas + busca).
-    var f = { sit: $('f-sit').value, auto: $('f-auto').value, ea: $('f-ea').value, mr: $('f-mr').value };
+    var f = { sit: $('f-sit').value, auto: $('f-auto').value, ea: $('f-ea').value, mr: $('f-mr').value, crm: $('f-crm').value };
     var simNao = function (v, marcado) { return !v || (v === 'sim') === !!marcado; };
     lista = lista.filter(function (x) {
       var okSit = !f.sit || (f.sit === 'falta' ? (x.s.cls === 'warn' || x.s.cls === 'crit') : f.sit === 'email' ? !!(x.c.envios || {})[m] : x.s.cls === f.sit);
-      return okSit && simNao(f.auto, x.c.automatico) && simNao(f.ea, x.c.enviarArquivos) && simNao(f.mr, x.c.masterRemote);
+      return okSit && simNao(f.auto, x.c.automatico) && simNao(f.ea, x.c.enviarArquivos) && simNao(f.mr, x.c.masterRemote) && simNao(f.crm, x.c.noCrm);
     });
-    ['f-sit', 'f-auto', 'f-ea', 'f-mr'].forEach(function (id) { $(id).classList.toggle('usado', !!$(id).value); });
-    var algum = f.sit || f.auto || f.ea || f.mr;
+    ['f-sit', 'f-auto', 'f-ea', 'f-mr', 'f-crm'].forEach(function (id) { $(id).classList.toggle('usado', !!$(id).value); });
+    var algum = f.sit || f.auto || f.ea || f.mr || f.crm;
     $('f-limpar').hidden = !algum && !busca;
-    var chave = !f.auto && !f.ea && !f.mr ? (f.sit ? 'sit:' + f.sit : (busca ? '' : 'todos'))
+    var chave = f.crm ? '' : !f.auto && !f.ea && !f.mr ? (f.sit ? 'sit:' + f.sit : (busca ? '' : 'todos'))
       : (!f.sit && !f.ea && !f.mr && f.auto === 'sim' ? 'auto:sim' : (!f.sit && !f.auto && !f.mr && f.ea === 'sim' ? 'ea:sim' : (!f.sit && !f.auto && !f.ea && f.mr === 'sim' ? 'mr:sim' : '')));
     document.querySelectorAll('.resumo .card').forEach(function (b) { b.classList.toggle('ativo', b.dataset.f === chave); });
     if (busca) lista = lista.filter(function (x) {
@@ -681,6 +765,11 @@ dialog h3 { margin: 0; font-size: 18px; }
         '<td data-rot="Master Remote"><label class="switch"><input type="checkbox" data-a="mr"> Instalado</label></td>' +
         '<td><div class="acoes"><button class="btn btn-sm" type="button" data-a="hist">Histórico</button><button class="btn btn-sm" type="button" data-a="editar">Editar</button><button class="btn btn-sm" type="button" data-a="excluir">Excluir</button></div></td>';
       tr.querySelector('.nome').textContent = c.nome;
+      if (crmLigado) {
+        var selo = document.createElement('span'); selo.className = 'crm' + (c.noCrm ? '' : ' fora');
+        selo.textContent = c.noCrm ? 'CRM' : 'FORA DO CRM'; selo.title = c.noCrm ? 'Cadastrado no Gold Tech CRM' : 'Não está no Gold Tech CRM';
+        tr.querySelector('.nome').appendChild(selo);
+      }
       tr.querySelector('.cnpj').textContent = fmtCnpj(c.cnpj);
       var origem = tr.querySelector('.origem'); origem.textContent = c.origem ? 'Chamamos de: ' + c.origem : ''; origem.hidden = !c.origem;
       tr.querySelector('.prazo span').textContent = br(s.prazo);
@@ -719,8 +808,8 @@ dialog h3 { margin: 0; font-size: 18px; }
     $('vazio').textContent = estado.clientes.length ? 'Nenhum cliente com esses filtros.' : 'Nenhum cliente ainda. Clique em “Novo cliente”.';
     $('vazio').hidden = lista.length > 0;
   }
-  ['f-sit', 'f-auto', 'f-ea', 'f-mr'].forEach(function (id) { $(id).addEventListener('change', desenhar); });
-  function limparFiltros() { ['f-sit', 'f-auto', 'f-ea', 'f-mr'].forEach(function (id) { $(id).value = ''; }); }
+  ['f-sit', 'f-auto', 'f-ea', 'f-mr', 'f-crm'].forEach(function (id) { $(id).addEventListener('change', desenhar); });
+  function limparFiltros() { ['f-sit', 'f-auto', 'f-ea', 'f-mr', 'f-crm'].forEach(function (id) { $(id).value = ''; }); }
   $('f-limpar').addEventListener('click', function () { limparFiltros(); $('busca').value = ''; desenhar(); });
   // Clicar num cartão do resumo filtra por ele.
   document.querySelectorAll('.resumo .card').forEach(function (b) {
@@ -847,12 +936,12 @@ dialog h3 { margin: 0; font-size: 18px; }
   $('mes-hoje').addEventListener('click', function () { mesAtual = mesDe(new Date()); desenhar(); });
   $('b-sair').addEventListener('click', function () { api('sair').then(mostrarEntrada); });
   $('b-csv').addEventListener('click', function () {
-    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como chamamos', 'EnviarArquivos', 'Master Remote']];
+    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como chamamos', 'EnviarArquivos', 'Master Remote', 'No CRM']];
     // Exporta só o que está aparecendo (respeita filtros e busca).
     var visiveis = [].map.call(document.querySelectorAll('#linhas .cnpj'), function (e) { return soNum(e.textContent); });
     estado.clientes.filter(function (c) { return visiveis.indexOf(c.cnpj) >= 0; }).forEach(function (c) {
       var s = situacao(c, mesAtual);
-      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '', c.enviarArquivos ? 'Instalado' : 'Não instalado', c.masterRemote ? 'Instalado' : 'Não instalado']);
+      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '', c.enviarArquivos ? 'Instalado' : 'Não instalado', c.masterRemote ? 'Instalado' : 'Não instalado', c.noCrm ? 'Sim' : 'Não']);
     });
     var csv = '﻿' + linhas.map(function (l) { return l.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
     var a = document.createElement('a');
@@ -874,7 +963,8 @@ dialog h3 { margin: 0; font-size: 18px; }
   $('b-integra').addEventListener('click', function () {
     $('i-url').value = location.origin + location.pathname.replace(/[^/]*$/, '') + '?api=externo';
     $('i-nova').hidden = true; $('i-chave').value = '';
-    estadoIntegra().then(function () { $('d-integra').showModal(); }).catch(function (e) { aviso(e.message); });
+    $('crm-novo').hidden = true; $('crm-token').value = '';
+    Promise.all([estadoIntegra(), estadoCrm()]).then(function () { $('d-integra').showModal(); }).catch(function (e) { aviso(e.message); });
   });
   $('i-fechar').addEventListener('click', function () { $('d-integra').close(); });
   $('i-gerar').addEventListener('click', function () {
@@ -892,6 +982,27 @@ dialog h3 { margin: 0; font-size: 18px; }
     var ch = $('i-chave'); ch.select();
     (navigator.clipboard ? navigator.clipboard.writeText(ch.value) : Promise.reject()).then(function () { aviso('Chave copiada'); }, function () { document.execCommand('copy'); aviso('Chave copiada'); });
   });
+  function estadoCrm() {
+    return api('crm-estado').then(function (e) {
+      var u = e.ultima;
+      $('crm-estado').textContent = !e.configurado ? 'Ligação com o CRM desligada: gere o token e coloque na Vercel.'
+        : u ? 'Ligado. Última busca: ' + dataHora(u.quando) + ' · ' + u.noCrm + ' empresa(s) do CRM aqui' + (u.cpf ? ' · ' + u.cpf + ' com CPF ficam de fora' : '') + (u.invalidos && u.invalidos.length ? ' · ' + u.invalidos.length + ' com CNPJ inválido no CRM: ' + u.invalidos.join(', ') : '') + '.'
+        : 'Token gerado. Falta colocar na Vercel e publicar o CRM; depois disso a busca começa sozinha.';
+      $('crm-gerar').textContent = e.configurado ? 'Gerar token novo' : 'Gerar token do CRM';
+    });
+  }
+  $('crm-gerar').addEventListener('click', function () {
+    var existe = $('crm-gerar').textContent !== 'Gerar token do CRM';
+    (existe ? confirmar('Gerar token novo do CRM?', 'O token atual para de funcionar. Vai ser preciso trocar o valor na Vercel e publicar o CRM de novo.', 'Sim, gerar novo') : Promise.resolve(true))
+      .then(function (sim) {
+        if (!sim) return;
+        return api('crm-gerar').then(function (r) { $('crm-token').value = r.token; $('crm-novo').hidden = false; $('crm-token').select(); crmLigado = true; $('b-crm').hidden = false; return estadoCrm(); });
+      }).catch(function (e) { aviso(e.message); });
+  });
+  $('crm-copiar').addEventListener('click', function () {
+    var t = $('crm-token'); t.select();
+    (navigator.clipboard ? navigator.clipboard.writeText(t.value) : Promise.reject()).then(function () { aviso('Token copiado'); }, function () { document.execCommand('copy'); aviso('Token copiado'); });
+  });
   $('i-apagar').addEventListener('click', function () {
     confirmar('Desligar integração?', 'A chave atual para de funcionar e o outro sistema não consegue mais gravar aqui.', 'Sim, desligar')
       .then(function (sim) { if (!sim) return; return api('chave-apagar').then(function () { $('i-nova').hidden = true; aviso('Integração desligada'); return estadoIntegra(); }); })
@@ -901,6 +1012,7 @@ dialog h3 { margin: 0; font-size: 18px; }
   setInterval(function () {
     if ($('tela-painel').hidden || document.hidden || document.querySelector('dialog[open]')) return;
     api('dados').then(function (d) { if ((d.rev || 0) !== estado.rev) carregar(); }).catch(function () {});
+    if (crmLigado) verCrm(); // com a tela aberta, também busca o CRM a cada 15 minutos
   }, 60000);
 
   $('b-senha').addEventListener('click', function () { $('f-senha').reset(); $('s-msg').textContent = ''; $('d-senha').showModal(); });
@@ -923,7 +1035,34 @@ dialog h3 { margin: 0; font-size: 18px; }
     $('senha1').autocomplete = temSenha ? 'current-password' : 'new-password';
     $('form-entrada').reset(); $('entrada-msg').textContent = ''; $('senha1').focus();
   }
-  function mostrarPainel() { $('tela-entrada').hidden = true; $('tela-painel').hidden = false; carregar(); }
+  // ---------- Gold Tech CRM ----------
+  // Ao abrir o controle, busca as empresas do CRM se a última busca tiver mais de 15 minutos.
+  var crmLigado = false;
+  function sincronizarCrm(avisar) {
+    $('b-crm').disabled = true;
+    return api('crm-sincronizar').then(function (r) {
+      var partes = [r.novos ? r.novos + ' cliente(s) novo(s) do CRM' : 'Nenhum cliente novo no CRM'];
+      if (r.cpf) partes.push(r.cpf + ' com CPF (fora do Sintegra)');
+      if (r.invalidos && r.invalidos.length) partes.push(r.invalidos.length + ' com CNPJ inválido no CRM');
+      if (avisar || r.novos) aviso(partes.join(' · '));
+      if (r.invalidos && r.invalidos.length && avisar) console.warn('CNPJ inválido no CRM:', r.invalidos);
+      return carregar();
+    }).catch(function (e) { if (avisar) aviso(e.message); })
+      .then(function () { $('b-crm').disabled = false; });
+  }
+  $('b-crm').addEventListener('click', function () { sincronizarCrm(true); });
+  function verCrm() {
+    return api('crm-estado').then(function (e) {
+      var antes = crmLigado;
+      crmLigado = e.configurado; $('b-crm').hidden = !e.configurado;
+      if (!e.configurado) return;
+      var ultima = e.ultima && e.ultima.quando ? new Date(e.ultima.quando).getTime() : 0;
+      if (Date.now() - ultima > 15 * 60000) return sincronizarCrm(false);
+      if (!antes) desenhar(); // mostra os selos "CRM" na primeira vez
+    }).catch(function () {});
+  }
+
+  function mostrarPainel() { $('tela-entrada').hidden = true; $('tela-painel').hidden = false; carregar().then(verCrm); }
   $('form-entrada').addEventListener('submit', function (e) {
     e.preventDefault();
     var s1 = $('senha1').value, msg = $('entrada-msg');
