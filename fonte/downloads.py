@@ -3,6 +3,7 @@
 Uso (na pasta do repositório):
   python fonte/downloads.py lista.txt                 troca links E senha (pede a senha nova duas vezes)
   python fonte/downloads.py lista.txt --manter-senha  troca só os links (pede a senha atual uma vez e confere)
+  python fonte/downloads.py --trocar "Nome" https://...  troca o link de um item só, mantendo os outros e a senha
 
   lista.txt: um link por linha, no formato   Nome | https://...
   A senha também pode vir da variável DOWNLOADS_SENHA.
@@ -28,19 +29,30 @@ MARCAS = r"/\*downloads:inicio\*/(.*?)/\*downloads:fim\*/"
 def chave(senha, sal):
     return PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=sal, iterations=ITERACOES).derive(senha.encode("utf-8"))
 
-manter = "--manter-senha" in sys.argv
+def simples(t):
+    import unicodedata
+    return "".join(c for c in unicodedata.normalize("NFD", t) if unicodedata.category(c) != "Mn").lower().strip()
+
+trocar = None
+if "--trocar" in sys.argv:
+    i = sys.argv.index("--trocar")
+    if len(sys.argv) < i + 3 or not sys.argv[i + 2].startswith("https://"):
+        sys.exit('Uso: python fonte/downloads.py --trocar "Nome do item" https://...')
+    trocar = (sys.argv[i + 1], sys.argv[i + 2])
+manter = "--manter-senha" in sys.argv or trocar is not None
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
-if len(args) != 1:
-    sys.exit(__doc__)
 itens = []
-for linha in open(args[0], encoding="utf-8"):
-    if "|" in linha:
-        nome, url = (p.strip() for p in linha.split("|", 1))
-        if not url.startswith("https://"):
-            sys.exit(f"Link precisa começar com https://  ->  {linha.strip()}")
-        itens.append({"nome": nome, "url": url})
-if not itens:
-    sys.exit("Nenhum link encontrado na lista")
+if trocar is None:
+    if len(args) != 1:
+        sys.exit(__doc__)
+    for linha in open(args[0], encoding="utf-8"):
+        if "|" in linha:
+            nome, url = (p.strip() for p in linha.split("|", 1))
+            if not url.startswith("https://"):
+                sys.exit(f"Link precisa começar com https://  ->  {linha.strip()}")
+            itens.append({"nome": nome, "url": url})
+    if not itens:
+        sys.exit("Nenhum link encontrado na lista")
 
 senha = os.environ.get("DOWNLOADS_SENHA")
 if manter:
@@ -48,9 +60,17 @@ if manter:
     atual = json.loads(re.search(MARCAS, open(PAGINA, encoding="utf-8").read(), re.S).group(1))
     senha = senha or getpass.getpass("Senha atual da área de downloads: ")
     try:
-        AESGCM(chave(senha, base64.b64decode(atual["s"]))).decrypt(base64.b64decode(atual["i"]), base64.b64decode(atual["c"]), None)
+        aberto = AESGCM(chave(senha, base64.b64decode(atual["s"]))).decrypt(base64.b64decode(atual["i"]), base64.b64decode(atual["c"]), None)
     except InvalidTag:
         sys.exit("Senha incorreta. Nada foi alterado.")
+    if trocar:
+        # Troca só o link do item com esse nome; os outros continuam como estão.
+        itens = json.loads(aberto)
+        achados = [it for it in itens if simples(it["nome"]) == simples(trocar[0])]
+        if len(achados) != 1:
+            sys.exit("Não achei o item \"" + trocar[0] + "\". Itens: " + ", ".join(it["nome"] for it in itens))
+        achados[0]["url"] = trocar[1]
+        print("Link de \"" + achados[0]["nome"] + "\" trocado.")
 elif not senha:
     senha = getpass.getpass("Senha da área de downloads: ")
     if senha != getpass.getpass("Repita a senha: "):
