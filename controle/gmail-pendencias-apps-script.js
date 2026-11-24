@@ -34,6 +34,17 @@ function verificar() { processar(BUSCA + ' newer_than:7d'); }
 // o que já foi lido é pulado.
 function importarHistorico() { processar(BUSCA + ' newer_than:400d'); }
 
+// Lê de novo todos os avisos do último ano, mesmo os que já têm a etiqueta (por exemplo, depois de
+// uma correção neste script). No controle não duplica nada: o aviso do mês é só atualizado.
+function relerTudo() {
+  var etiqueta = GmailApp.getUserLabelByName(ETIQUETA);
+  if (etiqueta) {
+    var lidas;
+    while ((lidas = GmailApp.search(BUSCA + ' newer_than:400d label:"' + ETIQUETA + '"', 0, 100)).length) etiqueta.removeFromThreads(lidas);
+  }
+  importarHistorico();
+}
+
 function processar(busca) {
   var chave = PropertiesService.getScriptProperties().getProperty('CHAVE');
   if (!chave) throw new Error('Falta a CHAVE: Configurações do projeto > Propriedades do script.');
@@ -73,7 +84,10 @@ function processar(busca) {
 function lerAviso(msg, conta) {
   var assunto = msg.getSubject();
   if (/^\s*(re|res|fw|fwd|enc)\s*:/i.test(assunto)) return null;
-  var corpo = msg.getPlainBody() || '';
+  // O aviso vem só em HTML; o texto simples do Gmail põe * em volta do negrito. Usa o HTML sem as marcações.
+  var corpo = (msg.getBody() || '').replace(/<br\s*\/?>/gi, '\n').replace(/<\/(p|div|tr|li)>/gi, '\n').replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&') + '\n' + (msg.getPlainBody() || '');
+  corpo = corpo.replace(/\*/g, '').replace(/[ \t]+/g, ' ');
   var cnpj = (corpo.match(/CNPJ:\s*([\d.\/-]{14,18})/i) || assunto.match(/CNPJ:?\s*([\d.\/-]{14,18})/i) || [])[1];
   if (!cnpj) return null;
   var nome = ((corpo.match(/Empresa:\s*(.+)/i) || [])[1] || (assunto.match(/Documentos pendentes\s*-\s*(.+?)\s*-\s*CNPJ/i) || [])[1] || '').trim();
