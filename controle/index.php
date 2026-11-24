@@ -89,6 +89,23 @@ function limpar_envio($e): ?array {
     $data = (string) ($e['data'] ?? '');
     return ['data' => data_valida($data) ? $data : '', 'arquivos' => $arquivos, 'link' => $link, 'assunto' => mb_substr(trim((string) ($e['assunto'] ?? '')), 0, 300)];
 }
+// Aviso de documentos pendentes (e-mail "Documentos pendentes" do EnviaArquivos): os arquivos não foram enviados.
+function limpar_pendencia($p): ?array {
+    if (!is_array($p)) return null;
+    $link = (string) ($p['link'] ?? '');
+    if ($link !== '' && strpos($link, 'https://mail.google.com/') !== 0) $link = '';
+    $d = function ($v) { $v = (string) $v; return data_valida($v) ? $v : ''; };
+    return ['data' => $d($p['data'] ?? ''), 'inicio' => $d($p['inicio'] ?? ''), 'fim' => $d($p['fim'] ?? ''),
+        'qtde' => max(0, min(99999, (int) ($p['qtde'] ?? 0))), 'link' => $link, 'assunto' => mb_substr(trim((string) ($p['assunto'] ?? '')), 0, 300)];
+}
+function limpar_pendencias($lista): object {
+    $saida = [];
+    foreach ((array) $lista as $mes => $p) {
+        $p = limpar_pendencia($p);
+        if (mes_valido((string) $mes) && $p && $p['data'] !== '') $saida[$mes] = $p;
+    }
+    return (object) $saida;
+}
 function limpar_envios($lista): object {
     $saida = [];
     foreach ((array) $lista as $mes => $e) {
@@ -123,13 +140,24 @@ function aplicar_externo(array &$clientes, array $it): array {
             $mes = substr($gerado, 0, 7);
         }
     }
+    $pend = null;
+    if (isset($it['pendencia'])) {
+        $pend = limpar_pendencia($it['pendencia']);
+        if (!$pend || $pend['data'] === '') return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'pendencia.data deve ser AAAA-MM-DD.'];
+        if ($mes === null) {
+            // Mês de entrega: o seguinte ao da competência; sem ela, o mês do próprio aviso.
+            if (isset($it['mes']) && mes_valido($it['mes'])) $mes = $it['mes'];
+            elseif (isset($it['competencia']) && mes_valido($it['competencia'])) $mes = date('Y-m', strtotime($it['competencia'] . '-01 +1 month'));
+            else $mes = substr($pend['data'], 0, 7);
+        }
+    }
     if (isset($it['envio']) && $gerado === null) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'envio precisa de gerado_em.'];
     if (isset($it['prazo_dia']) && ((int) $it['prazo_dia'] < 1 || (int) $it['prazo_dia'] > 28)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'prazo_dia deve ser de 1 a 28.'];
     if (isset($it['dia_envio']) && ((int) $it['dia_envio'] < 1 || (int) $it['dia_envio'] > 28)) return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'dia_envio deve ser de 1 a 28.'];
 
     $novo = $idx === null;
     $c = $novo
-        ? ['id' => bin2hex(random_bytes(6)), 'nome' => $nome, 'cnpj' => $cnpj, 'origem' => '', 'enviarArquivos' => false, 'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => [], 'envios' => []]
+        ? ['id' => bin2hex(random_bytes(6)), 'nome' => $nome, 'cnpj' => $cnpj, 'origem' => '', 'enviarArquivos' => false, 'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => [], 'envios' => [], 'pendencias' => []]
         : $clientes[$idx];
     if (isset($it['automatico']) && $it['automatico'] && !($it['dia_envio'] ?? $c['envioDia'] ?? 0)) {
         return ['ok' => false, 'cnpj' => $cnpj, 'erro' => 'Para envio automático, informe dia_envio.'];
@@ -146,6 +174,12 @@ function aplicar_externo(array &$clientes, array $it): array {
         $c['automatico'] = $auto;
     }
     if ($gerado !== null) { $c['gerados'] = (array) ($c['gerados'] ?? []); $c['gerados'][$mes] = $gerado; }
+    if ($pend) {
+        // Fica o aviso mais recente do mês.
+        $c['pendencias'] = (array) ($c['pendencias'] ?? []);
+        $antes = $c['pendencias'][$mes] ?? null;
+        if (!$antes || (string) ($antes['data'] ?? '') <= $pend['data']) $c['pendencias'][$mes] = $pend;
+    }
     if (isset($it['envio'])) {
         $c['envios'] = (array) ($c['envios'] ?? []);
         $c['envios'][$mes] = limpar_envio(array_merge((array) $it['envio'], ['data' => $gerado]));
@@ -186,7 +220,7 @@ function sincronizar_crm(string $pasta, string $arq_clientes, array $crm): array
         $no_crm[$doc] = true;
         if (!isset($por_cnpj[$doc])) {
             $atual['clientes'][] = ['id' => bin2hex(random_bytes(6)), 'nome' => $nome ?: $doc, 'cnpj' => $doc, 'origem' => '', 'enviarArquivos' => false,
-                'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => [], 'envios' => [], 'noCrm' => true];
+                'masterRemote' => false, 'automatico' => false, 'prazoDia' => 10, 'envioDia' => 0, 'autoProximo' => '', 'gerados' => [], 'envios' => [], 'pendencias' => [], 'noCrm' => true];
             $por_cnpj[$doc] = count($atual['clientes']) - 1;
             $novos++;
         }
@@ -197,6 +231,7 @@ function sincronizar_crm(string $pasta, string $arq_clientes, array $crm): array
         if (($c['noCrm'] ?? null) !== $esta) { $c['noCrm'] = $esta; $mudou = true; }
         $c['gerados'] = (object) (array) ($c['gerados'] ?? []);
         $c['envios'] = limpar_envios($c['envios'] ?? []);
+        $c['pendencias'] = limpar_pendencias($c['pendencias'] ?? []);
     }
     unset($c);
     if ($mudou) {
@@ -251,7 +286,7 @@ if (isset($_GET['api'])) {
             if ($r['ok']) $mudou = true;
         }
         if ($mudou) {
-            foreach ($atual['clientes'] as &$c) { $c['gerados'] = (object) (array) ($c['gerados'] ?? []); $c['envios'] = limpar_envios($c['envios'] ?? []); }
+            foreach ($atual['clientes'] as &$c) { $c['gerados'] = (object) (array) ($c['gerados'] ?? []); $c['envios'] = limpar_envios($c['envios'] ?? []); $c['pendencias'] = limpar_pendencias($c['pendencias'] ?? []); }
             unset($c);
             $atual['rev'] = (int) $atual['rev'] + 1; $atual['alterado'] = date('c');
             gravar_json($ARQ_CLIENTES, $atual);
@@ -372,6 +407,7 @@ if (isset($_GET['api'])) {
                 'autoProximo' => preg_match('/^\d{4}-\d{2}$/', (string) ($c['autoProximo'] ?? '')) ? (string) $c['autoProximo'] : '',
                 'gerados' => (object) $gerados, // sempre objeto {"AAAA-MM": data}, mesmo vazio
                 'envios' => limpar_envios($c['envios'] ?? []),
+                'pendencias' => limpar_pendencias($c['pendencias'] ?? []),
             ];
         }
         $novo = ['rev' => (int) $atual['rev'] + 1, 'clientes' => $limpos, 'alterado' => date('c')];
@@ -397,6 +433,7 @@ if (isset($_GET['api'])) {
   --text: #f1ece0; --muted: #aaa392; --faint: #857f70; --gold: #d6a82e; --gold-hi: #f0c95a; --on-gold: #17130a;
   --ok: #34a872; --ok-dim: rgba(52, 168, 114, .15); --crit: #e8705a; --crit-dim: rgba(232, 112, 90, .15);
   --warn: #e8b23a; --warn-dim: rgba(232, 178, 58, .14); --auto: #8fa4c8; --auto-dim: rgba(143, 164, 200, .16);
+  --nota: #f08a4b; --nota-dim: rgba(240, 138, 75, .16);
 }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
@@ -435,14 +472,14 @@ header.bar h1 { margin: 0; font-size: 17px; margin-right: auto; }
 .mes { display: flex; align-items: center; gap: 10px; margin: 22px 0 4px; flex-wrap: wrap; }
 .mes h2 { margin: 0; font-size: 24px; }
 .mes small { color: var(--muted); display: block; font-size: 13px; }
-.resumo { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
+.resumo { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 10px; margin: 18px 0; }
 .card { text-align: left; cursor: pointer; font: inherit; color: inherit; }
 .card:hover { border-color: var(--line); }
 .card.ativo { border-color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
 .card { background: var(--ink-2); border: 1px solid var(--line-2); border-radius: 14px; padding: 12px 14px; }
 .card b { display: block; font-size: 24px; line-height: 1.2; }
 .card span { font-size: 12px; color: var(--muted); }
-.card.crit b { color: var(--crit); } .card.ok b { color: var(--ok); } .card.warn b { color: var(--warn); } .card.auto b { color: var(--auto); }
+.card.crit b { color: var(--crit); } .card.ok b { color: var(--ok); } .card.warn b { color: var(--warn); } .card.auto b { color: var(--auto); } .card.nota b { color: var(--nota); }
 .ferramentas { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
 .ferramentas input { flex: 1; min-width: 200px; }
 .filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 12px; }
@@ -459,6 +496,9 @@ tr:last-child td { border-bottom: 0; }
 .tag { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
 .tag.ok { background: var(--ok-dim); color: var(--ok); } .tag.crit { background: var(--crit-dim); color: var(--crit); }
 .tag.warn { background: var(--warn-dim); color: var(--warn); } .tag.auto { background: var(--auto-dim); color: var(--auto); }
+.tag.nota { background: var(--nota-dim); color: var(--nota); }
+.pend { display: block; font-size: 12px; color: var(--nota); margin-top: 4px; text-decoration: none; }
+a.pend:hover { text-decoration: underline; }
 .prazo small { display: block; color: var(--muted); font-size: 12px; }
 .gerado { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .gerado input { width: auto; padding: 6px 8px; font-size: 14px; }
@@ -537,6 +577,7 @@ dialog h3 { margin: 0; font-size: 18px; }
       <button type="button" class="card ok" data-f="sit:ok"><b id="n-ok">0</b><span>gerados</span></button>
       <button type="button" class="card warn" data-f="sit:warn"><b id="n-pend">0</b><span>pendentes</span></button>
       <button type="button" class="card crit" data-f="sit:crit"><b id="n-atraso">0</b><span>atrasados</span></button>
+      <button type="button" class="card nota" data-f="sit:nota"><b id="n-nota">0</b><span>com nota pendente</span></button>
       <button type="button" class="card auto" data-f="auto:sim"><b id="n-auto">0</b><span>envio automático</span></button>
       <button type="button" class="card" data-f="ea:sim"><b id="n-ea">0</b><span>EnviarArquivos instalado</span></button>
       <button type="button" class="card" data-f="mr:sim"><b id="n-mr">0</b><span>Master Remote instalado</span></button>
@@ -548,7 +589,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     <div class="filtros">
       <label>Situação no mês<select id="f-sit">
         <option value="">Todos</option><option value="ok">Gerados</option><option value="warn">Pendentes</option>
-        <option value="crit">Atrasados</option><option value="auto">Aguardando envio automático</option><option value="falta">Ainda não gerados (pendentes + atrasados)</option><option value="email">Enviados por e-mail</option>
+        <option value="crit">Atrasados</option><option value="auto">Aguardando envio automático</option><option value="nota">Com nota pendente</option><option value="falta">Ainda não gerados (pendentes, atrasados e com nota pendente)</option><option value="email">Enviados por e-mail</option>
       </select></label>
       <label>Envio automático<select id="f-auto"><option value="">Todos</option><option value="sim">Sim</option><option value="nao">Não</option></select></label>
       <label>EnviarArquivos<select id="f-ea"><option value="">Todos</option><option value="sim">Instalado</option><option value="nao">Não instalado</option></select></label>
@@ -711,6 +752,8 @@ dialog h3 { margin: 0; font-size: 18px; }
   function situacao(c, m) {
     var gerado = (c.gerados || {})[m], prazo = prazoISO(m, c.prazoDia || 10), hoje = hojeISO();
     if (gerado) return { cls: 'ok', txt: 'Gerado', ordem: 3, prazo: prazo, gerado: gerado };
+    var pend = (c.pendencias || {})[m];
+    if (pend) return { cls: 'nota', txt: 'Nota pendente', ordem: 0, prazo: prazo, pend: pend };
     if (c.automatico) return { cls: 'auto', txt: 'Automático', ordem: 2, prazo: prazo, envio: c.envioDia ? prazoISO(m, c.envioDia) : '' };
     if (hoje > prazo) return { cls: 'crit', txt: 'Atrasado', ordem: 0, prazo: prazo };
     return { cls: 'warn', txt: 'Pendente', ordem: 1, prazo: prazo };
@@ -731,17 +774,17 @@ dialog h3 { margin: 0; font-size: 18px; }
     $('mes-sub').textContent = 'Entrega até o dia 10 · competência ' + competencia;
     var busca = semAcento($('busca').value.trim()), buscaNum = /^[\d.\/\s-]+$/.test(busca) ? soNum(busca) : '';
     var lista = estado.clientes.map(function (c) { return { c: c, s: situacao(c, m) }; });
-    var n = { ok: 0, warn: 0, crit: 0, auto: 0 };
+    var n = { ok: 0, warn: 0, crit: 0, auto: 0, nota: 0 };
     lista.forEach(function (x) { n[x.s.cls]++; });
     var conta = function (campo) { return estado.clientes.filter(function (c) { return c[campo]; }).length; };
     $('n-total').textContent = lista.length; $('n-ok').textContent = n.ok; $('n-pend').textContent = n.warn;
-    $('n-atraso').textContent = n.crit; $('n-auto').textContent = conta('automatico');
+    $('n-atraso').textContent = n.crit; $('n-nota').textContent = n.nota; $('n-auto').textContent = conta('automatico');
     $('n-ea').textContent = conta('enviarArquivos'); $('n-mr').textContent = conta('masterRemote');
     // Filtros: todos juntos (situação + automático + programas + busca).
     var f = { sit: $('f-sit').value, auto: $('f-auto').value, ea: $('f-ea').value, mr: $('f-mr').value, crm: $('f-crm').value };
     var simNao = function (v, marcado) { return !v || (v === 'sim') === !!marcado; };
     lista = lista.filter(function (x) {
-      var okSit = !f.sit || (f.sit === 'falta' ? (x.s.cls === 'warn' || x.s.cls === 'crit') : f.sit === 'email' ? !!(x.c.envios || {})[m] : x.s.cls === f.sit);
+      var okSit = !f.sit || (f.sit === 'falta' ? (x.s.cls === 'warn' || x.s.cls === 'crit' || x.s.cls === 'nota') : f.sit === 'email' ? !!(x.c.envios || {})[m] : x.s.cls === f.sit);
       return okSit && simNao(f.auto, x.c.automatico) && simNao(f.ea, x.c.enviarArquivos) && simNao(f.mr, x.c.masterRemote) && simNao(f.crm, x.c.noCrm);
     });
     ['f-sit', 'f-auto', 'f-ea', 'f-mr', 'f-crm'].forEach(function (id) { $(id).classList.toggle('usado', !!$(id).value); });
@@ -781,6 +824,13 @@ dialog h3 { margin: 0; font-size: 18px; }
       var data = tr.querySelector('input[type=date]'); data.value = s.gerado || '';
       var hoje = tr.querySelector('[data-a=hoje]'); hoje.hidden = !!s.gerado;
       var limpar = tr.querySelector('[data-a=limpar]'); limpar.hidden = !s.gerado;
+      if (s.pend) {
+        // Aviso de nota pendente: quantidade, período e link para o e-mail.
+        var p = s.pend, aP = document.createElement(p.link ? 'a' : 'span'); aP.className = 'pend';
+        aP.textContent = (p.qtde ? p.qtde + ' documento(s) pendente(s)' : 'Documentos pendentes') + (p.inicio && p.fim ? ' · ' + br(p.inicio) + ' a ' + br(p.fim) : '') + ' · aviso de ' + br(p.data) + (p.link ? ' · abrir e-mail' : '');
+        if (p.link) { aP.href = p.link; aP.target = '_blank'; aP.rel = 'noopener'; }
+        tr.querySelector('.gerado').parentNode.appendChild(aP);
+      }
       var envio = (c.envios || {})[m], link = tr.querySelector('.email');
       if (envio && envio.link) {
         link.href = envio.link; link.hidden = false;
@@ -827,12 +877,18 @@ dialog h3 { margin: 0; font-size: 18px; }
   function abrirHistorico(c) {
     $('h-titulo').textContent = 'Histórico · ' + c.nome;
     var lista = $('h-lista'); lista.textContent = '';
-    var meses = Object.keys(Object.assign({}, c.gerados || {}, c.envios || {})).sort().reverse();
+    var meses = Object.keys(Object.assign({}, c.gerados || {}, c.envios || {}, c.pendencias || {})).sort().reverse();
     if (!meses.length) { var v = document.createElement('div'); v.textContent = 'Nenhum envio registrado ainda.'; lista.appendChild(v); }
     meses.forEach(function (m) {
-      var g = (c.gerados || {})[m], e = (c.envios || {})[m], d = document.createElement('div');
+      var g = (c.gerados || {})[m], e = (c.envios || {})[m], pd = (c.pendencias || {})[m], d = document.createElement('div');
       var t = document.createElement('b'), mesTxt = nomeMes(m); t.textContent = mesTxt.charAt(0).toUpperCase() + mesTxt.slice(1); d.appendChild(t);
       var sub = document.createElement('small'); sub.textContent = 'Competência ' + nomeMes(somaMes(m, -1)) + ' · ' + (g ? 'gerado em ' + br(g) : 'sem data de gerado'); d.appendChild(sub);
+      if (pd) {
+        var ps = document.createElement('small'); ps.style.color = 'var(--nota)';
+        ps.textContent = 'Nota pendente: ' + (pd.qtde || '?') + ' documento(s)' + (pd.inicio && pd.fim ? ' de ' + br(pd.inicio) + ' a ' + br(pd.fim) : '') + ' · aviso de ' + br(pd.data) + (g ? ' (depois foi gerado)' : '');
+        d.appendChild(ps);
+        if (pd.link) { var lp = document.createElement('a'); lp.href = pd.link; lp.target = '_blank'; lp.rel = 'noopener'; lp.textContent = 'Abrir o aviso de pendência'; d.appendChild(lp); }
+      }
       if (e) {
         if (e.arquivos && e.arquivos.length) { var a = document.createElement('small'); a.textContent = 'Arquivos: ' + e.arquivos.join(', '); d.appendChild(a); }
         if (e.link) { var l = document.createElement('a'); l.href = e.link; l.target = '_blank'; l.rel = 'noopener'; l.textContent = 'Abrir o e-mail no Gmail'; d.appendChild(l); }
@@ -884,6 +940,19 @@ dialog h3 { margin: 0; font-size: 18px; }
       // Se o servidor recusar, volta para o que está gravado lá.
       .catch(function (e) { aviso(e.message); carregar(); });
   }
+  // Quando chega um aviso de nota pendente com a tela aberta, mostra o nome da empresa.
+  var pendenciasVistas = null;
+  function avisarPendenciasNovas() {
+    var atuais = {}, novas = [];
+    estado.clientes.forEach(function (c) {
+      Object.keys(c.pendencias).forEach(function (m) {
+        var k = c.cnpj + m + c.pendencias[m].data; atuais[k] = true;
+        if (pendenciasVistas && !pendenciasVistas[k]) novas.push(c.nome);
+      });
+    });
+    pendenciasVistas = atuais;
+    if (novas.length) setTimeout(function () { aviso('Nota pendente: ' + novas.slice(0, 3).join(', ') + (novas.length > 3 ? ' e mais ' + (novas.length - 3) : '')); }, 300);
+  }
   function carregar() {
     return api('dados').then(function (d) {
       estado = { rev: d.rev || 0, clientes: d.clientes || [] };
@@ -891,7 +960,9 @@ dialog h3 { margin: 0; font-size: 18px; }
       estado.clientes.forEach(function (c) {
         if (!c.gerados || Array.isArray(c.gerados)) c.gerados = {};
         if (!c.envios || Array.isArray(c.envios)) c.envios = {};
+        if (!c.pendencias || Array.isArray(c.pendencias)) c.pendencias = {};
       });
+      avisarPendenciasNovas();
       if (preencherAutomaticos()) salvar('Datas do envio automático atualizadas'); else desenhar();
     });
   }
@@ -939,12 +1010,12 @@ dialog h3 { margin: 0; font-size: 18px; }
   $('mes-hoje').addEventListener('click', function () { mesAtual = mesDe(new Date()); desenhar(); });
   $('b-sair').addEventListener('click', function () { api('sair').then(mostrarEntrada); });
   $('b-csv').addEventListener('click', function () {
-    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como chamamos', 'EnviarArquivos', 'Master Remote', 'No CRM']];
+    var linhas = [['Empresa', 'CNPJ', 'Prazo', 'Situação', 'Gerado em', 'Envio automático', 'Dia do envio', 'Como chamamos', 'EnviarArquivos', 'Master Remote', 'No CRM', 'Nota pendente']];
     // Exporta só o que está aparecendo (respeita filtros e busca).
     var visiveis = [].map.call(document.querySelectorAll('#linhas .cnpj'), function (e) { return soNum(e.textContent); });
     estado.clientes.filter(function (c) { return visiveis.indexOf(c.cnpj) >= 0; }).forEach(function (c) {
       var s = situacao(c, mesAtual);
-      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '', c.enviarArquivos ? 'Instalado' : 'Não instalado', c.masterRemote ? 'Instalado' : 'Não instalado', c.noCrm ? 'Sim' : 'Não']);
+      linhas.push([c.nome, fmtCnpj(c.cnpj), br(s.prazo), s.txt, s.gerado ? br(s.gerado) : '', c.automatico ? 'Sim' : 'Não', c.automatico && c.envioDia ? c.envioDia : '', c.origem || '', c.enviarArquivos ? 'Instalado' : 'Não instalado', c.masterRemote ? 'Instalado' : 'Não instalado', c.noCrm ? 'Sim' : 'Não', s.pend ? (s.pend.qtde || '') + ' documento(s), aviso de ' + br(s.pend.data) : '']);
     });
     var csv = '﻿' + linhas.map(function (l) { return l.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(';'); }).join('\r\n');
     var a = document.createElement('a');
