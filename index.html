@@ -689,7 +689,11 @@ footer.site { position: relative; border-top: 0; }
   .fab { display: none; }
   /* sem desfoque no celular: rolagem mais leve em aparelhos simples */
   .aurora i, .form-card { animation: none; }
-  .nfce-stage .leao { width: 400px; height: 400px; margin: -200px 0 0 -200px; }
+  /* no celular a nota ocupa a largura toda: o leão fica acima dela */
+  .nfce-stage { padding-top: 250px; }
+  .nfce-stage .leao { width: 260px; height: 260px; top: 0; margin: 0 0 0 -130px; }
+  .nfce-stage .leao.fundo { opacity: 1; transform: none; }
+  .nfce-stage .chip-a { top: 234px; }
   .final .leao { width: 190px; height: 190px; }
   .paper { background: radial-gradient(130% 34% at 80% 70%, rgba(246, 190, 70, .2), transparent 70%), radial-gradient(120% 34% at 0% 8%, rgba(255, 170, 30, .14), transparent 70%), #0b0905; }
   .hero { --nevoa: 0px; }
