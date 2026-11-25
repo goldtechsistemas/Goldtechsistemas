@@ -608,6 +608,7 @@ footer.site { position: relative; border-top: 0; }
 .final h2 { letter-spacing: -.035em; }
 
 /* leão da marca, formado por partículas */
+.rastro { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 70; pointer-events: none; }
 .leao { position: absolute; pointer-events: none; }
 .nfce-stage .leao { width: 720px; height: 720px; left: 50%; top: 50%; margin: -360px 0 0 -360px; z-index: -1; transition: opacity 1.4s ease, transform 1.6s cubic-bezier(.2, .7, .2, 1); }
 .nfce-stage .leao.fundo { opacity: .85; transform: scale(1.04); }
@@ -1504,6 +1505,55 @@ footer.site { position: relative; border-top: 0; }
       document.addEventListener('visibilitychange', ligar);
       window.addEventListener('resize', function () { if (cv.offsetWidth !== T) { medir(); pintar(calmo ? 1e4 : performance.now() - t0); } });
     }
+  }, 0);
+  // Rastro de luz dourada atrás do mouse (só com mouse; desliga sozinho quando ele para).
+  setTimeout(function () {
+    if (calmo || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    var cv = document.createElement('canvas'), g = cv.getContext('2d'), W, H, dpr;
+    var VIDA = 520, pts = [], faiscas = [], rodando = false, ant = 0;
+    cv.className = 'rastro'; cv.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(cv);
+    function medir() {
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5); W = window.innerWidth; H = window.innerHeight;
+      cv.width = W * dpr; cv.height = H * dpr;
+    }
+    medir(); window.addEventListener('resize', medir);
+    function quadro(t) {
+      var dt = Math.min(t - ant, 50), i; ant = t;
+      g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+      while (pts.length && t - pts[0].t > VIDA) pts.shift();
+      faiscas = faiscas.filter(function (f) { return t - f.t < f.v; });
+      if (!pts.length && !faiscas.length) { rodando = false; return; }
+      g.globalCompositeOperation = 'lighter'; g.lineCap = 'round';
+      for (i = 2; i < pts.length; i++) {  // curva suave que afina e apaga para trás
+        var a = pts[i - 2], b = pts[i - 1], c = pts[i];
+        var k = Math.max(0, 1 - (t - c.t) / VIDA) * i / pts.length;
+        g.beginPath(); g.moveTo((a.x + b.x) / 2, (a.y + b.y) / 2); g.quadraticCurveTo(b.x, b.y, (b.x + c.x) / 2, (b.y + c.y) / 2);
+        g.strokeStyle = 'rgba(228,168,0,' + .13 * k + ')'; g.lineWidth = 18 * k + 1; g.stroke();
+        g.strokeStyle = 'rgba(255,203,46,' + .75 * k + ')'; g.lineWidth = 3.4 * k + .2; g.stroke();
+      }
+      faiscas.forEach(function (f) {
+        var k = 1 - (t - f.t) / f.v;
+        f.x += f.vx * dt; f.y += f.vy * dt; f.vy += .00012 * dt;
+        g.fillStyle = 'rgba(255,224,138,' + .9 * k + ')';
+        g.beginPath(); g.arc(f.x, f.y, f.r * k, 0, 6.283); g.fill();
+      });
+      g.globalCompositeOperation = 'source-over';
+      requestAnimationFrame(quadro);
+    }
+    window.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var t = performance.now(), u = pts[pts.length - 1];
+      var d = u ? Math.hypot(e.clientX - u.x, e.clientY - u.y) : 0;
+      if (u && d < 2) return;
+      pts.push({ x: e.clientX, y: e.clientY, t: t });
+      if (pts.length > 70) pts.shift();
+      for (var n = Math.min(2, Math.random() * d / 14 | 0); n > 0 && faiscas.length < 60; n--) {
+        faiscas.push({ x: e.clientX, y: e.clientY, vx: (Math.random() - .5) * .08, vy: (Math.random() - .5) * .08, r: .8 + Math.random() * 1.7, t: t, v: 500 + Math.random() * 500 });
+      }
+      if (!rodando) { rodando = true; ant = t; requestAnimationFrame(quadro); }
+    }, { passive: true });
+    document.documentElement.addEventListener('mouseleave', function () { pts = []; });
   }, 0);
   // Luz que acompanha o mouse nos cartões.
   document.querySelectorAll('.pain, .quote, .pillar').forEach(function (el) {
