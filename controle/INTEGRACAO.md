@@ -86,6 +86,16 @@ Resposta (HTTP 200), com o resultado de cada um na mesma ordem. Os que tiverem e
 
 A tela do controle confere a cada minuto se algo mudou e mostra o que o outro sistema gravou.
 
+## Gold Tech CRM
+
+O controle busca as empresas do CRM em `GET https://gold-tech-crm.vercel.app/api/integracao/empresas` (token gerado no botão **Integração**, guardado na Vercel como `CONTROLE_SINTEGRA_TOKEN`) e cadastra as que faltam pelo CNPJ, com prazo no dia 10. CPF fica de fora.
+
+A busca acontece:
+
+- na hora em que uma empresa com CNPJ é cadastrada no CRM (ou ganha o CNPJ depois): o CRM chama `POST ?api=crm-aviso` com `Authorization: Bearer <token>`, e o controle busca a lista;
+- ao abrir a tela do controle, se a última busca tiver mais de 15 minutos;
+- no botão de buscar no CRM.
+
 ## Leitura automática do Gmail
 
 O arquivo [gmail-apps-script.js](gmail-apps-script.js) é um script do Google (Apps Script) que usa esta integração. Ele lê os e-mails "Arquivos Empresa ... - CNPJ: ..." enviados pela conta e dá baixa sozinho. As instruções para ligar estão no começo do arquivo.

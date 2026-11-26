@@ -297,6 +297,22 @@ if (isset($_GET['api'])) {
         $ok = count(array_filter($resultados, function ($r) { return $r['ok']; }));
         $responder(200, ['gravados' => $ok, 'com_erro' => count($resultados) - $ok, 'resultados' => $resultados]);
     }
+    // Aviso do Gold Tech CRM: entrou empresa com CNPJ lá. Usa o mesmo token da ligação com o CRM e busca a lista na hora,
+    // então a empresa aparece aqui sem precisar abrir a tela (cliente novo entra com prazo no dia 10).
+    if ($api === 'crm-aviso') {
+        $crm = ler_json($ARQ_CRM, []);
+        $auth = (string) ($_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '');
+        $enviado = stripos($auth, 'Bearer ') === 0 ? trim(substr($auth, 7)) : '';
+        if (empty($crm['url']) || empty($crm['token']) || $enviado === '' || !hash_equals((string) $crm['token'], $enviado)) {
+            usleep(300000);
+            $responder(401, ['erro' => 'Token do CRM inválido.']);
+        }
+        $r = sincronizar_crm($DADOS, $ARQ_CLIENTES, $crm);
+        $crm = ler_json($ARQ_CRM, $crm); // relê: a tela pode ter gravado no meio
+        if ($r['ok']) { $crm['ultima'] = $r; unset($crm['falha']); } else { $crm['falha'] = ['quando' => date('c'), 'erro' => $r['erro']]; }
+        gravar_json($ARQ_CRM, $crm);
+        $responder($r['ok'] ? 200 : 502, $r);
+    }
     // Só aceita chamadas da própria tela (cabeçalho que outro site não consegue mandar).
     if (($_SERVER['HTTP_X_CONTROLE'] ?? '') !== '1') $responder(403, ['erro' => 'Origem inválida']);
 
@@ -1063,7 +1079,7 @@ dialog h3 { margin: 0; font-size: 18px; }
     return api('crm-estado').then(function (e) {
       var u = e.ultima;
       $('crm-estado').textContent = !e.configurado ? 'Ligação com o CRM desligada: gere o token e coloque na Vercel.'
-        : u ? 'Ligado. Última busca: ' + dataHora(u.quando) + ' · ' + u.noCrm + ' empresa(s) do CRM aqui' + (u.cpf ? ' · ' + u.cpf + ' com CPF ficam de fora' : '') + (u.invalidos && u.invalidos.length ? ' · ' + u.invalidos.length + ' com CNPJ inválido no CRM: ' + u.invalidos.join(', ') : '') + '.'
+        : u ? 'Ligado: empresa cadastrada no CRM entra aqui sozinha, com prazo no dia 10. Última busca: ' + dataHora(u.quando) + ' · ' + u.noCrm + ' empresa(s) do CRM aqui' + (u.cpf ? ' · ' + u.cpf + ' com CPF ficam de fora' : '') + (u.invalidos && u.invalidos.length ? ' · ' + u.invalidos.length + ' com CNPJ inválido no CRM: ' + u.invalidos.join(', ') : '') + '.'
         : 'Token gerado. Falta colocar na Vercel e publicar o CRM; depois disso a busca começa sozinha.';
       if (e.configurado && e.falha) $('crm-estado').textContent += ' Última tentativa com erro (' + dataHora(e.falha.quando) + '): ' + e.falha.erro;
       $('crm-gerar').textContent = e.configurado ? 'Gerar token novo' : 'Gerar token do CRM';
